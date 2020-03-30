@@ -171,6 +171,7 @@ tw_gini_df %>%
   labs(title = "Measures of Income Inequality in Taiwan",
        x = " ",
        y = "Inequality Measure Value")
+
 ```
 Figure 7: Measures of Income Inequality for Taiwan
 

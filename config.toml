@@ -10,7 +10,7 @@ defaultContentLanguage = "en"
 defaultContentLanguageInSubdir = false
 
 [permalinks]
-    post = "/:year/:month/:day/:slug/"
+    post = "/:year/:slug/"
 
 [[menu.main]] 
     name = "About"
@@ -35,8 +35,6 @@ defaultContentLanguageInSubdir = false
     
 [languages.en]
   languageCode = "en-us"
-[languages.zh]
-  languageCode = "zh-tw"
 
 
 [params]
