@@ -1,0 +1,63 @@
+baseurl = "https://github.com/dorseytf/TW_Pol_Econ_Blog/"
+languageCode = "en-us"
+title = "Exploring Taiwan's Political Economy"
+copyright = "&copy; {year} Travis Dorsey"
+theme = "hugo-lithium"
+disqusShortname = ""
+ignoreFiles = ["\\.Rmd$", "\\.Rmarkdown$", "_files$", "_cache$"]
+
+defaultContentLanguage = "en"
+defaultContentLanguageInSubdir = false
+
+[permalinks]
+    post = "/:year/:month/:day/:slug/"
+
+[[menu.main]] 
+    name = "About"
+    url = "/about/"
+    weight = 1
+[[menu.main]]
+    name = "Posts"
+    url = "#post"
+    weight = 2
+[[menu.main]]
+    name = "中文版"
+    url = "#posts-zh"
+    weight = 3
+[[menu.main]]
+    name = "台語版"
+    url = "#posts-tw"
+    weight = 4
+[[menu.main]]
+    name = "GitHub"
+    url = "https://github.com/dorseytf/TW_Pol_Econ_Blog"
+    weight = 5
+    
+[languages.en]
+  languageCode = "en-us"
+[languages.zh]
+  languageCode = "zh-tw"
+
+
+[params]
+    name = "Travis Dorsey"
+    description = "An Exploration of Taiwan's Political Economy"
+
+    # options for highlight.js (version, additional languages, and theme)
+    highlightjsVersion = "9.12.0"
+    highlightjsCDN = "//cdnjs.cloudflare.com/ajax/libs"
+    highlightjsLang = ["r", "yaml"]
+    highlightjsTheme = "github"
+
+    MathJaxCDN = "//cdnjs.cloudflare.com/ajax/libs"
+    MathJaxVersion = "2.7.5"
+
+    # path to the favicon, under "static"
+    favicon = "newlogo.jpg"
+
+    [params.logo]
+    url = "newlogo.jpg"
+    width = 50
+    height = 50
+    alt = "Logo"
+
