@@ -111,46 +111,8 @@ There is also evidence that the way mainstream and traditional media outlets cov
 # What Do These Factors Look Like in Taiwan?
 
 ## Economic Trends in Taiwan
-```{r include=FALSE}
-
-molurlfile <- "https://raw.githubusercontent.com/dorseytf/TaiwanMMT/master/Taiwan%20MoL%20Data.csv"
-
-earnings_urlfile <- "https://raw.githubusercontent.com/dorseytf/TaiwanMMT/master/Taiwan%20Earnings%20Data.csv"
-
-tw_mol_data <- read_csv(url(molurlfile)) %>%
-  clean_names()
-
-tw_earnings_data <- read_csv(url(earnings_urlfile)) %>%
-  clean_names() %>%
-  filter(!is.na(metric)) %>%
-  separate(year_and_month, c("year", "month")) %>%
-  mutate(day = ifelse(month == "FEB", "28", "30")) %>%
-  mutate(date = paste(year, month, day, sep = "-")) %>%
-  mutate(date = ymd(date)) %>%
-  select(-c(year, month, day))
-
-earnings_ts <- ts(tw_earnings_data$statistical_value[which(tw_earnings_data$metric == "Monthly Real Earnings(NT)")],
-                  frequency = 12,
-                  start = c(1980, 1))
-
-earnings_trend <- decompose(earnings_ts)$trend
-```
 
 ### I. Inequality
-```{r tw_inequal_setup, echo=FALSE, message=FALSE}
-inequality_url <- "https://raw.githubusercontent.com/dorseytf/TaiwanMMT/master/Taiwan%20Income%20Inequality%20Data.csv"
-expenditures_url <- "https://raw.githubusercontent.com/dorseytf/TaiwanMMT/master/Taiwan%20Expenditures%20by%20Category.csv"
-
-tw_gini_df <- read_csv(url(inequality_url))[, c(1,2,8,9)] %>%
-  gather("inequality_measure", "value", -c(Year, Metric)) %>%
-  filter(!is.na(value)) %>%
-  clean_names()
-
-tw_inequality_df <- read_csv(url(inequality_url))[, -c(8:9)] %>%
-  gather("quintile", "value", -c(Year, Metric))
-
-```
-
 Taiwan has not been immune to [the trend](https://taiwaninsight.org/2018/12/21/economic-inequality-and-low-wages-in-taiwan/) of [high inequality](https://www.tandfonline.com/doi/abs/10.1080/10670560701809577?journalCode=cjcc20) seen elsewhere, in terms of both income [and](https://www.cw.com.tw/article/article.action?id=5096030&_ga=2.248406340.294892371.1585168209-1399055695.1579278642) [wealth](http://www.econ.ntu.edu.tw/ter/new/data/new/TER46-4/TER464-2.pdf). 
 
 [Lien, et al (2019)](http://www.econ.ntu.edu.tw/uploads/asset/data/5e60b2c148b8a14a85000573/macro_1090312.pdf) utilized the Individual Wealth Register from Taiwan's Ministry of Finance to build a dataset of wealth distribution for Taiwan covering the period 2004 to 2014. Using this data, they found that, although certain assets such as stocks have concentrated toward the top, Taiwan's Gini coefficient for overall wealth remained fairly steady around 0.79 for the period, which is comparable to South Korea and Sweden, and lower than that of the US. 
@@ -161,56 +123,18 @@ While wealth inequality in Taiwan may not have increased significantly over the 
 
 In terms of income inequality, regardless of the measure used (either Gini Coefficient or the Ratio of Income Share of the Top 20% to the bottom 20%), we see that income inequality has been steadily increasing in Taiwan since the 1980s. While Taiwan's inequality is considerably better than in many other developed countries, the trend still has troubling implications. 
 
-```{r tw_gini1, echo=FALSE}
-tw_gini_df %>%
-  ggplot(aes(x = year, y = value, color = inequality_measure)) +
-  geom_line() +
-  facet_wrap(~inequality_measure, scales = "free") +
-  scale_color_viridis_d() +
-  guides(color = "none") +
-  labs(title = "Measures of Income Inequality in Taiwan",
-       x = " ",
-       y = "Inequality Measure Value")
-
-```
-Figure 7: Measures of Income Inequality for Taiwan
+![Figure 7: Measures of Income Inequality in Taiwan](/post/2020-03-30-part-1-how-the-populist-wave-came-to-taiwan_files/Measures of Income Inequality for Taiwan.jpg)
 
 Looking at average savings per household, we again see a significant divergence between the top income quintile and the rest of the population.
 
-```{r tw_income, echo=FALSE}
-library(directlabels)
-
-tw_inequality_df %>%
-  filter(!str_detect(Metric, "Percent distribution")) %>%
-  ggplot(aes(x = Year, y = value, color = quintile)) +
-  geom_line() +
-  geom_dl(aes(label = quintile), method = list("last.points", cex = 0.8)) +
-  scale_color_viridis_d(guide = "none") +
-  scale_y_continuous(labels = dollar) +
-  scale_x_continuous(expand = expand_scale(mult = c(0,0.14))) +
-  labs(title = "Average Savings per Household by Income Quintile in Taiwan",
-       x = " ",
-       y = "Average Savings per Household in NT$")
-```
-Figure 8: Average Savings per Household by Income Quintile for Taiwan
+![Figure 8: Average Savings per Household by Income Quintile in Taiwan](/post/2020-03-30-part-1-how-the-populist-wave-came-to-taiwan_files/Average Savings per Household in Taiwan.jpg)
 
 
 ### II. Stagnant Earnings and Unemployment
 While casual observers may only be familiar with Taiwan’s development success story as one of the four “Asian Tigers” (along with South Korea, Hong Kong, and Singapore) who saw dramatic growth and development beginning in the 1960s, for scholars and ordinary Taiwanese people, [stagnant wages](https://english.cw.com.tw/article/article.action?id=2638) have been the biggest economic story for almost two decades. 
 
-```{r earnings_ts, echo=FALSE}
-ts_df(earnings_trend) %>%
-  filter(!is.na(value)) %>%
-  ggplot(aes(x = time, y = value)) +
-  geom_line() +
-  scale_y_continuous(labels = dollar) +
-  labs(title = "Real Monthly Earnings in Taiwan",
-       subtitle = "Seasonally Adjusted; Industry and Service Sectors",
-       caption = "Data source: Directorate-General of Budget, Accounting and Statistics",
-       x = " ",
-       y = "Real Monthly Earnings (in NT$)")
-```
-Figure 9: Real Monthly Earnings in Taiwan have stagnated
+![Figure 9: Real Monthly Earnings in Taiwan have stagnated](/post/2020-03-30-part-1-how-the-populist-wave-came-to-taiwan_files/Real Monthly Earnings in Taiwan.jpg)
+
 
 This is largely the result of an issue that is shared with most other developed countries: productivity and wages have decoupled. This means that despite the fact that Taiwan’s GDP and worker productivity continue to grow, real wages are stuck near 2002 levels. If wages were paid in line with productivity, earnings would be significantly higher for the average worker. 
 
@@ -229,47 +153,11 @@ In addition to these stagnant wages, Taiwan also has the [4th longest working ho
 ### III. Housing Prices
 As in many other countries around the world, housing prices have also [risen significantly](http://www.econ.sinica.edu.tw/UpFiles/2013090214141704234/Periodicals_Pdf2013090215154369017/EC452-3.pdf) in Taiwan relative to incomes. Utilizing the same housing median multiple metric from before for Taiwan over the period 2002-2019, we see that the country as a whole has been Severly Unaffordable for nearly the entire time. The capital Taipei fares even worse, with a housing median multiple above 10 since early 2009. Given that Taiwan's largely mountainous terrain limits the available area for new housing, this is not entirely surprising. 
 
-```{r tw_hmm, echo=FALSE, message=FALSE}
-tw_housing_url <- "https://raw.githubusercontent.com/dorseytf/TaiwanMMT/master/Taiwan%20Housing%20Data.csv"
-
-tw_housing_data <- read_csv(url(tw_housing_url)) %>%
-  clean_names() %>%
-  separate(year_and_quarter, c("year", "qtr"), sep = "Q") %>%
-  mutate(year = as.numeric(year) + 1911,
-         qtr = as.numeric(qtr)) %>%
-  mutate(time = paste0(year, ":Q", qtr)) %>%
-  mutate(time = lubridate::yq(time)) %>%
-  select(-c(year, qtr)) %>%
-  gather("locality", "value", -c(metric, time)) %>%
-  mutate(locality = gsub("_", " ", locality)) %>%
-  mutate(locality = str_to_title(locality))
-
-tw_housing_data %>%
-  filter(metric == "Housing Median Multiple") %>%
-  ggplot(aes(x = time, y = value, color = locality)) +
-  geom_line() +
-  scale_color_viridis_d(name = "Locality") +
-  labs(title = "Quarterly Housing Median Multiple for Taiwan and Taipei City",
-       x = " ",
-       y = "Housing Median Multiple")
-
-```
-Figure 12: Quarterly Housing Median Multiple for Taiwan and Taipei
+![Figure 12: Quarterly Housing Median Multiple for Taiwan and Taipei](/post/2020-03-30-part-1-how-the-populist-wave-came-to-taiwan_files/Quarterly Housing Median Multiple for Taiwan.jpg)
 
 We see the same picture using [alternative measures](http://www.econ.sinica.edu.tw/UpFiles/2013090214141704234/Periodicals_Pdf2013090215154369017/EC452-3.pdf), such as the Price-to-Income Ratio and the Loan-Payment-to-Income Ratio. 
 
-```{r tw_housing_ratios, echo=FALSE, message=FALSE}
-tw_housing_data %>%
-  filter(!metric %in% c("Housing Median Multiple")) %>%
-  ggplot(aes(x = time, y = value, color = locality)) + 
-  geom_line() +
-  facet_wrap(~metric, scales = "free") +
-  scale_color_viridis_d(name = "Locality") +
-  labs(title = "Taiwan's Price-to-Income and Loan Payment-to-Income Ratios",
-       x = " ",
-       y = "Ratio")
-```
-Figure 13: Measures of Taiwan's Housing Affordability Crisis
+![Figure 13: Measures of Taiwan's Housing Affordability Crisis](/post/2020-03-30-part-1-how-the-populist-wave-came-to-taiwan_files/Taiwan Housing Ratios.jpg)
 
 While this unaffordability is offset somewhat by Taiwan's historically low interest rates, the unaffordability crisis has hit younger workers particularly hard. [Surveys show](https://www.storm.mg/article/45838) that nearly half of adults in the 25-40 age range live with their parents, and less than 30% own their own home. Around 44% of respondents in this age range also expressed interest in applying for social housing (rentals that are subsidized by the government) in order to have a chance to save enough to eventually purchase their own home. 
 
