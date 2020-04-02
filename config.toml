@@ -36,6 +36,7 @@ hasCJKLanguage = true
     weight = 5
 
 [params]
+    site = "Exploring Taiwan's Political Economy"
     name = "Travis Dorsey"
     description = "An Exploration of Taiwan's Political Economy"
 
