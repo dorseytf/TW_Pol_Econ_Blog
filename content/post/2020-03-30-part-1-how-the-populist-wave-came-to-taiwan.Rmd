@@ -74,7 +74,8 @@ library(kableExtra)
 tibble(`Housing Affordability Rating` = c("Affordable", "Moderately Unaffordable", "Seriously Unaffordable", "Severly Unaffordable"),
        `Median Multiple` = c("3.0 & Under", "3.1 to 4.0", "4.1 to 5.0", "5.1 & Over")) %>%
   kable('html', align = c('l','c')) %>%
-  kable_styling(bootstrap_options = "striped", full_width = F)
+  kable_styling(bootstrap_options = "striped", full_width = F, font_size = 12) %>%
+  row_spec(0, bold = TRUE, background = "grey", color = "white") 
 
 ```
 
@@ -85,8 +86,10 @@ hmm_urlfile <- "https://raw.githubusercontent.com/dorseytf/TaiwanMMT/master/Worl
 
 world_hmm_data <- read_csv(url(hmm_urlfile)) 
 
-kable(world_hmm_data, 'html') %>%
-  kable_styling(bootstrap_options = "striped", full_width = F)
+kable(world_hmm_data, 'html', align = c("l", "c", "c", "c", "c", "c", "c")) %>%
+  kable_styling(bootstrap_options = c("striped", "condensed"), full_width = F, font_size = 12) %>%
+  row_spec(0, bold = TRUE, background = "grey", color = "white") %>%
+  row_spec(9, bold = TRUE, background = "grey", color = "white") 
 ```
 Figure 5: Housing Market Multiple Results for 8 Countries
 
