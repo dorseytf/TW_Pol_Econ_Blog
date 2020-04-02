@@ -1,5 +1,4 @@
 baseurl = "https://github.com/dorseytf/TW_Pol_Econ_Blog/"
-languageCode = "en-us"
 title = "Exploring Taiwan's Political Economy"
 copyright = "&copy; {year} Travis Dorsey"
 theme = "hugo-lithium"
@@ -7,10 +6,12 @@ disqusShortname = ""
 ignoreFiles = ["\\.Rmd$", "\\.Rmarkdown$", "_files$", "_cache$"]
 
 defaultContentLanguage = "en"
-defaultContentLanguageInSubdir = false
+defaultContentLanguageInSubdir = true
 
 [permalinks]
-    post = "/:year/:slug/"
+    zh = "/zh/:year/:slug/"
+    tw = "/tw/:year/:slug/"
+    en = "/en/:year/:slug/"
 
 [[menu.main]] 
     name = "About"
@@ -18,24 +19,83 @@ defaultContentLanguageInSubdir = false
     weight = 1
 [[menu.main]]
     name = "Posts"
-    url = "#post"
+    url = "/en/"
     weight = 2
 [[menu.main]]
     name = "中文版"
-    url = "#posts-zh"
+    url = "/zh/"
     weight = 3
 [[menu.main]]
     name = "台語版"
-    url = "#posts-tw"
+    url = "/tw/"
     weight = 4
 [[menu.main]]
     name = "GitHub"
     url = "https://github.com/dorseytf/TW_Pol_Econ_Blog"
     weight = 5
     
-[languages.en]
-  languageCode = "en-us"
+[[menu.en]] 
+    name = "About"
+    url = "/about/"
+    weight = 1
+[[menu.en]]
+    name = "Posts"
+    url = "/en/"
+    weight = 2
+[[menu.en]]
+    name = "中文版"
+    url = "/zh/"
+    weight = 3
+[[menu.en]]
+    name = "台語版"
+    url = "/tw/"
+    weight = 4
+[[menu.en]]
+    name = "GitHub"
+    url = "https://github.com/dorseytf/TW_Pol_Econ_Blog"
+    weight = 5
 
+[[menu.zh]] 
+    name = "About"
+    url = "/zh/about/"
+    weight = 1
+[[menu.zh]]
+    name = "Posts"
+    url = "/en/"
+    weight = 2
+[[menu.zh]]
+    name = "中文版"
+    url = "/zh/"
+    weight = 3
+[[menu.zh]]
+    name = "台語版"
+    url = "/tw/"
+    weight = 4
+[[menu.zh]]
+    name = "GitHub"
+    url = "https://github.com/dorseytf/TW_Pol_Econ_Blog"
+    weight = 5
+    
+[[menu.tw]] 
+    name = "About"
+    url = "/tw/about/"
+    weight = 1
+[[menu.tw]]
+    name = "Posts"
+    url = "/en/"
+    weight = 2
+[[menu.tw]]
+    name = "中文版"
+    url = "/zh/"
+    weight = 3
+[[menu.tw]]
+    name = "台語版"
+    url = "/tw/"
+    weight = 4
+[[menu.tw]]
+    name = "GitHub"
+    url = "https://github.com/dorseytf/TW_Pol_Econ_Blog"
+    weight = 5
 
 [params]
     name = "Travis Dorsey"
@@ -58,4 +118,3 @@ defaultContentLanguageInSubdir = false
     width = 50
     height = 50
     alt = "Logo"
-
