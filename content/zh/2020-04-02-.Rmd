@@ -22,3 +22,22 @@ tags:
   - politics
   - populism
 ---
+
+
+
+```{r init_setup, echo=FALSE, include=FALSE, warning=FALSE}
+library(readr)
+library(janitor)
+library(tidyverse)
+library(scales)
+library(lubridate)
+library(tsbox)
+
+```
+
+# 
+
+
+
+
+
