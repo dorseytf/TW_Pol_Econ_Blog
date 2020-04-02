@@ -23,11 +23,11 @@ hasCJKLanguage = true
     url = "/en/"
     weight = 2
 [[menu.main]]
-    name = "中文版"
+    name = "中文篇"
     url = "/zh/"
     weight = 3
 [[menu.main]]
-    name = "台語版"
+    name = "台語篇"
     url = "/tw/"
     weight = 4
 [[menu.main]]
