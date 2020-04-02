@@ -57,7 +57,7 @@ defaultContentLanguageInSubdir = true
 
 [[menu.zh]] 
     name = "About"
-    url = "/zh/about/"
+    url = "/about_zh/"
     weight = 1
 [[menu.zh]]
     name = "Posts"
@@ -78,7 +78,7 @@ defaultContentLanguageInSubdir = true
     
 [[menu.tw]] 
     name = "About"
-    url = "/tw/about/"
+    url = "/about_tw/"
     weight = 1
 [[menu.tw]]
     name = "Posts"
