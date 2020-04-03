@@ -10,12 +10,8 @@ output:
     toc: true
     toc_depth: 2
     number_sections: false
-categories:
-  - data
-  - economics
-  - media
-  - politics
-  - populism
+category:
+  - Proactive Policies for Safeguarding Democracy
 tags:
   - data
   - economics
