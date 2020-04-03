@@ -13,11 +13,11 @@ output:
 category:
   - Proactive Policies for Safeguarding Democracy
 tags:
-  - data
-  - economics
-  - media
-  - politics
-  - populism
+  - 資料
+  - 經濟
+  - 媒體
+  - 政治
+  - 民粹主義
 ---
 
 
