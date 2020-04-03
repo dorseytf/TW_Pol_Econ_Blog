@@ -1,0 +1,44 @@
+---
+title: 第一篇：  民粹主義波如何來台
+author: Travis Dorsey
+date: '2020-04-02'
+weight: 4
+slug: 第一篇＿民粹主義波如何來台
+hidden: true
+output:
+  blogdown::html_page:
+    toc: true
+    toc_depth: 2
+    number_sections: false
+categories:
+  - data
+  - economics
+  - media
+  - politics
+  - populism
+tags:
+  - data
+  - economics
+  - media
+  - politics
+  - populism
+---
+
+
+
+```{r init_setup, echo=FALSE, include=FALSE, warning=FALSE}
+library(readr)
+library(janitor)
+library(tidyverse)
+library(scales)
+library(lubridate)
+library(tsbox)
+
+```
+
+# 
+
+
+
+
+
