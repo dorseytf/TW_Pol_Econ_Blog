@@ -54,5 +54,7 @@ library(tsbox)
 
 ### II. 收入停滯與失業
 
+很多國家除了分配不均之外還有持續高的失業率，尤其是[希臘]( https://tradingeconomics.com/greece/youth-unemployment-rate)，[西班牙]( https://tradingeconomics.com/spain/youth-unemployment-rate)和[義大利]( https://tradingeconomics.com/italy/youth-unemployment-rate)的年輕人。連失業率較低的國家都還是有現在的收入比歷史趨勢低的狀況。 很多經濟學家已經找到了薪資[跟不上]( http://www.oecd.org/economy/decoupling-of-wages-from-productivity/)生產率的有力[證據](https://www.epi.org/productivity-pay-gap/) 而這是不分國家的現象。 此外，現在的[年輕人的收入]( https://www.newamerica.org/millennials/reports/emerging-millennial-wealth-gap/)跟上一代的薪水完全[比不上了]( https://younginvincibles.org/financial-health-young-america/). 
 
+![圖 3: 美國的生產率與薪水的趨勢已解藕](/zh/2020-04-02-_files/EPI Productivity Decoupling.png)
 
