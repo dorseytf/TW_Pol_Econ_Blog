@@ -49,5 +49,10 @@ library(tsbox)
 
 ![圖 1: 美國財富分配十分位](/zh/2020-04-02-_files/Wealth Share by Decile 2016.png)
 
+![圖 2: OECD各國的收入分配不均提高了](/zh/2020-04-02-_files/OECD Income Inequality.png)
+
+
+### II. 收入停滯與失業
+
 
 
