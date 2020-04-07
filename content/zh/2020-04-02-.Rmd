@@ -59,11 +59,23 @@ library(tsbox)
 ![圖 3: 美國的生產率與薪水的趨勢已解藕](/zh/2020-04-02-_files/EPI Productivity Decoupling.png)
 
 
-### III. 房價
+### III. 住宅可近性的狀況
 
-這幾十年來除了收入停滯之外，房價也同時在[爆長]( http://www.oecd.org/social/affordable-housing-database/housing-market/)。 這個狀況製造了許多問題，包含少數的年輕人有能力買房，房子人滿為患，以及花在住房的收入比例[不段提高]( http://www.oecd.org/social/affordable-housing-database/housing-conditions/)，低收入的家庭為最受傷害的。 
+這幾十年來除了收入停滯之外，房價也同時在[飆漲]( http://www.oecd.org/social/affordable-housing-database/housing-market/)。 這個狀況製造了許多問題，包含少數的年輕人有能力買房，房子人滿為患，以及花在住房的收入比例[不段提高]( http://www.oecd.org/social/affordable-housing-database/housing-conditions/)，低收入的家庭為最受傷害的。 
 
 ![圖 4: OECD的住房狀況指標](/zh/2020-04-02-_files/OECD Housing Indicators.png)
 
+另一個有用的住宅可近性指摽是房價中位數倍數 (本指標來至[Demographia]( http://www.demographia.com/dhi.pdf)的報告)，他是用房價中位數除於家庭收入中位數來衡量住宅可近性。 Demographia將房價中位數倍數分為這四個分類：
+
+```{r hmm_table, echo=FALSE, message=FALSE}
+library(knitr)
+library(kableExtra)
+
+tibble(`住宅可近性等級` = c("可近", "中等不可近", "相當不可近", "極度不可近"),
+       `房價中位數倍數` = c("3.0倍以下", "3.1–4.0 倍之間", "4.1–5.0 倍之間", "5.1 倍以上")) %>%
+  kable('html', align = c('l','c')) %>%
+  kable_styling(bootstrap_options = "striped", full_width = F, font_size = 12) %>%
+  row_spec(0, bold = TRUE, background = "grey", color = "white") 
+```
 
 
