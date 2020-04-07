@@ -40,7 +40,7 @@ library(tsbox)
 
 ***
 
-## 經濟特徵如何變成民粹主義的基礎
+## 經濟特徵如何成為民粹主義的基礎
 
 ### I. 分配不均
 
@@ -57,4 +57,13 @@ library(tsbox)
 很多國家除了分配不均之外還有持續高的失業率，尤其是[希臘]( https://tradingeconomics.com/greece/youth-unemployment-rate)，[西班牙]( https://tradingeconomics.com/spain/youth-unemployment-rate)和[義大利]( https://tradingeconomics.com/italy/youth-unemployment-rate)的年輕人。連失業率較低的國家都還是有現在的收入比歷史趨勢低的狀況。 很多經濟學家已經找到了薪資[跟不上]( http://www.oecd.org/economy/decoupling-of-wages-from-productivity/)生產率的有力[證據](https://www.epi.org/productivity-pay-gap/) 而這是不分國家的現象。 此外，現在的[年輕人的收入]( https://www.newamerica.org/millennials/reports/emerging-millennial-wealth-gap/)跟上一代的薪水完全[比不上了]( https://younginvincibles.org/financial-health-young-america/). 
 
 ![圖 3: 美國的生產率與薪水的趨勢已解藕](/zh/2020-04-02-_files/EPI Productivity Decoupling.png)
+
+
+### III. 房價
+
+這幾十年來除了收入停滯之外，房價也同時在[爆長]( http://www.oecd.org/social/affordable-housing-database/housing-market/)。 這個狀況製造了許多問題，包含少數的年輕人有能力買房，房子人滿為患，以及花在住房的收入比例[不段提高]( http://www.oecd.org/social/affordable-housing-database/housing-conditions/)，低收入的家庭為最受傷害的。 
+
+![圖 4: OECD的住房狀況指標](/zh/2020-04-02-_files/OECD Housing Indicators.png)
+
+
 
