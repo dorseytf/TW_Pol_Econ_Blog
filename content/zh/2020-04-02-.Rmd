@@ -107,5 +107,8 @@ kable(world_hmm_data, 'html', align = c("l", "c", "c", "c", "c", "c", "c")) %>%
 ### I. 社交媒體
 隨然各黨政客都會用社交媒體，但是因為它不受監管，非等級制和[民主的結構](http://eprints.whiterose.ac.uk/104297/1/Korr%20igen.pdf#page=121)，所以社交媒體跟民粹主義者就特別合。 因為社交媒體提供的信息與傳統的 『精英擁有』 媒體不同，所以民粹主義者的支持者會比較相信來至社交媒體的新聞和信息，不管是真的還是假的。
 
-其實這個就是一個很重要的點：因為社交媒體不受監管也不用先過檢查，所以民粹主義者跟他們的支持者就能提供無證據的信息，改新聞以符合他們的想法，或直接寫假新聞。 為了回應這個假信息的問題，事實檢查現在爆紅，不過
+其實這個就是一個很重要的點：因為社交媒體不受監管也不用先過檢查，所以民粹主義者跟他們的支持者就能提供無證據的信息，改新聞以符合他們的想法，或直接寫假新聞。 為了回應這個假信息的問題，事實檢查變了很流行。不過現在有[不少](https://link.springer.com/article/10.1007/s11109-010-9112-2)的[研究結果](https://journals.sagepub.com/doi/abs/10.1177/1478929918786852?journalCode=pswa)表示事實檢查的[效果不彰](https://journals.sagepub.com/doi/full/10.1177/0956797617714579)，甚至誤傳次數比事實檢查[多三倍](https://www.americanpressinstitute.org/fact-checking-project/new-fact-checking-research-false-information-floods-twitter-many-americans-confidently-wrong/)。 就算用戶碰到一份很仔細的駁斥報告，他們不一定會接受，反而有人會更堅持這些造謠是真的。 社交媒體的信息又爆多，所以潛在的支持者[可以定制](https://www.tandfonline.com/doi/full/10.1080/15205436.2017.1291817)專注於維護其政治信仰的信息彈幕。 
+
+### II. 主流媒體
+
 
