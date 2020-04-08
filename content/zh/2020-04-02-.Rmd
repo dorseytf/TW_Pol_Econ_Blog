@@ -71,11 +71,41 @@ library(tsbox)
 library(knitr)
 library(kableExtra)
 
-tibble(`住宅可近性等級` = c("可近", "中等不可近", "相當不可近", "極度不可近"),
+tibble(`住房負擔能力等級` = c("可負擔得起", "中等負擔不起", "相當負擔不起", "極度負擔不起"),
        `房價中位數倍數` = c("3.0倍以下", "3.1–4.0 倍之間", "4.1–5.0 倍之間", "5.1 倍以上")) %>%
   kable('html', align = c('l','c')) %>%
   kable_styling(bootstrap_options = "striped", full_width = F, font_size = 12) %>%
   row_spec(0, bold = TRUE, background = "grey", color = "white") 
 ```
 
+在2019年的報告裡Demographia 將八個國家做比較住住房負擔能力的狀況。報告內容顯示在這八個國家裡面唯一的有『負擔得起』等級住宅市場的國家是美國，可是這十個『負擔得起』等級的住宅市場所佔比例小於全美國住宅市場的五分之一。 再說，除了新加坡，愛爾蘭，和美國之外其他的國家都有超過三分之二的市場屬於『極度負擔不起』等級。只有美國有至少一半的市場屬於『負擔得起』或『中等負擔不起』等級。
+
+```{r world_hmm, echo=FALSE, message=FALSE}
+hmm_urlfile <- "https://raw.githubusercontent.com/dorseytf/TaiwanMMT/master/World%20Housing%20Median%20Multiple.csv"
+
+world_hmm_data <- read_csv(url(hmm_urlfile)) 
+world_hmm_data$Nation <- c("澳大利亞", "加拿大", "香港", "愛爾蘭", "新西蘭", "新加坡", "英國", "美國", "總計")
+
+colnames(world_hmm_data) <- c("國家名號", "可負擔得起的市場", "中等負擔不起的市場", "相當負擔不起的市場", "極度負擔不起的市場", "總計", "房價中位數倍數")
+
+kable(world_hmm_data, 'html', align = c("l", "c", "c", "c", "c", "c", "c")) %>%
+  kable_styling(bootstrap_options = c("striped", "condensed"), full_width = F, font_size = 12) %>%
+  row_spec(0, bold = TRUE, background = "grey", color = "white") %>%
+  row_spec(9, bold = TRUE, background = "grey", color = "white") 
+```
+圖 5: 八個國家分析房價中位數倍數結果
+
+如今的工作前景不佳和負擔不起的住宅，再加上財富分配不均的狀況，民粹主義者的訴求就還蠻有說服力和可信感。 比較成功的民粹主義者會利用這個新鮮的可信聲譽來說服更多支持者，將政策辯論重新發揮自己的優勢，還讓一班的政客驚訝。
+
+*** 
+
+## 民粹主義者如何利用不斷變化的媒體格局
+
+溝通就是民粹主義者最拿手的一招。 民粹主義者是靠『揭露真相』和『提出政客不敢提的話題』這兩個方式將自己與一班政客區分，不過他們也會常常[造謠](https://www.scopus.com/record/display.uri?eid=2-s2.0-85030773900&origin=inward&txGid=34953e8fcef78b459bcd97132acaae3d)。 隨然從前一直都有會造謠的政客，但是現在因爲社交媒體無所不在的現象，以廣告收入為主的媒體，還有傳統媒體的[同謀](https://journals.sagepub.com/doi/abs/10.1177/0267323118790156)，所以民粹主義者能夠吸引[更多觀眾](https://doi.org/10.1057/s41304-017-0137-4)，加強和合法化他們的談話要點(如 [Mazzoleni](https://link.springer.com/chapter/10.1057/9780230592100_4))，還有製造一個支持者可以[自選](https://www.tandfonline.com/doi/full/10.1080/15205436.2017.1291817)吸收的以保持態度為主的訊息彈幕。
+
+
+### I. 社交媒體
+隨然各黨政客都會用社交媒體，但是因為它不受監管，非等級制和[民主的結構](http://eprints.whiterose.ac.uk/104297/1/Korr%20igen.pdf#page=121)，所以社交媒體跟民粹主義者就特別合。 因為社交媒體提供的信息與傳統的 『精英擁有』 媒體不同，所以民粹主義者的支持者會比較相信來至社交媒體的新聞和信息，不管是真的還是假的。
+
+其實這個就是一個很重要的點：因為社交媒體不受監管也不用先過檢查，所以民粹主義者跟他們的支持者就能提供無證據的信息，改新聞以符合他們的想法，或直接寫假新聞。 為了回應這個假信息的問題，事實檢查現在爆紅，不過
 
