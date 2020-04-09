@@ -131,13 +131,17 @@ kable(world_hmm_data, 'html', align = c("l", "c", "c", "c", "c", "c", "c")) %>%
 
 ![圖 7: 台灣收入分配不均的指標](/zh/2020-04-02-_files/Measures of Income Inequality for Taiwan_zh.jpg)
 
-就平均每戶儲蓄而言，又呈現了前20%跟後80%的明顯分歧。
+就平均每戶儲蓄而言，又呈現了收入前20%跟後80%的明顯分歧。
 
 ![圖 8: 台灣戶數五等分位組之平均每戶儲蓄](/zh/2020-04-02-_files/Average Savings per Household in Taiwan_zh.jpg)
 
 
 ### II. 收入停滯與失業
+大多數的人可能只熟悉台灣為亞洲四小龍之一的經濟發展成功（其他三個為南韓，香港，以及星加坡），但是對學家和一班台灣人來講，這二十年來最重要的趨勢就是收入[停滯](https://english.cw.com.tw/article/article.action?id=2638)。
 
+![圖 9: 台灣人每月實際收入已停滯](/zh/2020-04-02-_files/Real Monthly Earnings in Taiwan_zh.jpg)
 
+這個趨勢的原因其實跟各國的原因一樣：薪資和生產率已脫鉤。 因此，隨然台灣的ＧＤＰ和生產率一直以來都在漲，可是實際薪資停留在2002年的水平。如果薪資是跟者生產率漲的話，一班台灣人的收入就會相當的高。
 
+![圖 10: 台灣薪資和生產率已脫鉤](/zh/2020-04-02-_files/Decoupling of Prod and Wages in Taiwan.png)
 
