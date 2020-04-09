@@ -59,7 +59,7 @@ library(tsbox)
 ![圖 3: 美國的生產率與薪水的趨勢已解藕](/zh/2020-04-02-_files/EPI Productivity Decoupling.png)
 
 
-### III. 住宅可近性的狀況
+### III. 房價的狀況
 
 這幾十年來除了收入停滯之外，房價也同時在[飆漲]( http://www.oecd.org/social/affordable-housing-database/housing-market/)。 這個狀況製造了許多問題，包含少數的年輕人有能力買房，房子人滿為患，以及花在住房的收入比例[不段提高]( http://www.oecd.org/social/affordable-housing-database/housing-conditions/)，低收入的家庭為最受傷害的。 
 
@@ -150,4 +150,12 @@ kable(world_hmm_data, 'html', align = c("l", "c", "c", "c", "c", "c", "c")) %>%
 ![圖 11: 台灣中小企業的出口額佔總出口額比率一直在減少](/zh/2020-04-02-_files/SME Share of Exports.png)
 
 光看這件事，這種轉變並不一定是壞事。 問題出現在那些佔總出口比率高的公司幾乎都專注於中間商品，因此這些公司在增值鏈上的能力受到嚴重限制。 因為在台灣貿易佔總ＧＤＰ的比率非常高，所以卡在較低的價值水平的勞工和公司也不少，因此許多觀察家認為這個趨勢就是薪資和生產率脫鉤最重要原因之一。
+
+收入停滯之外，在工時方面台灣在主要國家中[排名第4](https://www.taiwannews.com.tw/en/news/3785553)，在亞洲只有星加坡的工時比較多。 近年勞動部的報告顯示46%的台灣人在前12個月之內有加過班，而每月平均約為16個小時。 不過在這方面台灣也已經開始改善了。 台灣的每年總工時卻比2008年已減少了122個小時。 調查也表示差不多70%的台灣人對他們的工作很滿足。
+
+
+### III. 房價的狀況
+跟世界各國一樣，近年來台灣的房價也在[飆漲](http://www.econ.sinica.edu.tw/UpFiles/2013090214141704234/Periodicals_Pdf2013090215154369017/EC452-3.pdf)。 根據我們上面的分析方法，用各種住房負擔能力的指摽來了解台灣的住房市場，結果還是一樣：在2002年到2019年之間，台灣幾乎每一年都是『極度負擔不起』的等級。
+
+![圖 12: 台灣全國以及台北市的季度房價中位數倍數](/zh/2020-04-02-_files/Quarterly Housing Median Multiple for Taiwan_zh.jpg)
 

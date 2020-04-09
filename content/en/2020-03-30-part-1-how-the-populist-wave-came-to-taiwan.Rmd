@@ -67,7 +67,7 @@ Another useful metric for examining housing affordability relative to incomes is
 library(knitr)
 library(kableExtra)
 
-tibble(`Housing Affordability Rating` = c("Affordable", "Moderately Unaffordable", "Seriously Unaffordable", "Severly Unaffordable"),
+tibble(`Housing Affordability Rating` = c("Affordable", "Moderately Unaffordable", "Seriously Unaffordable", "Extremely Unaffordable"),
        `Median Multiple` = c("3.0 & Under", "3.1 to 4.0", "4.1 to 5.0", "5.1 & Over")) %>%
   kable('html', align = c('l','c')) %>%
   kable_styling(bootstrap_options = "striped", full_width = F, font_size = 12) %>%
@@ -75,7 +75,7 @@ tibble(`Housing Affordability Rating` = c("Affordable", "Moderately Unaffordable
 
 ```
 
-Comparing 8 countries in 2019, Demographia found that only the US has any markets in the Affordable category, but these 10 affordable markets represent less than 1/5th of the total major markets in the US. Only Singapore, Ireland, and the US have less than 1/3 of their markets in the Severly Unaffordable category, and only the US has at least half of their markets in the Affordable or Moderately Unaffordable categories (Median Market < 4.1).
+Comparing 8 countries in 2019, Demographia found that only the US has any markets in the Affordable category, but these 10 affordable markets represent less than 1/5th of the total major markets in the US. Only Singapore, Ireland, and the US have less than 1/3 of their markets in the Extremely Unaffordable category, and only the US has at least half of their markets in the Affordable or Moderately Unaffordable categories (Median Market < 4.1).
 
 ```{r world_hmm, echo=FALSE, message=FALSE}
 hmm_urlfile <- "https://raw.githubusercontent.com/dorseytf/TaiwanMMT/master/World%20Housing%20Median%20Multiple.csv"
@@ -150,7 +150,7 @@ In addition to these stagnant wages, Taiwan also has the [4th longest working ho
 
 
 ### III. Housing Prices
-As in many other countries around the world, housing prices have also [risen significantly](http://www.econ.sinica.edu.tw/UpFiles/2013090214141704234/Periodicals_Pdf2013090215154369017/EC452-3.pdf) in Taiwan relative to incomes. Utilizing the same housing median multiple metric from before for Taiwan over the period 2002-2019, we see that the country as a whole has been Severly Unaffordable for nearly the entire time. The capital Taipei fares even worse, with a housing median multiple above 10 since early 2009. Given that Taiwan's largely mountainous terrain limits the available area for new housing, this is not entirely surprising. 
+As in many other countries around the world, housing prices have also [risen significantly](http://www.econ.sinica.edu.tw/UpFiles/2013090214141704234/Periodicals_Pdf2013090215154369017/EC452-3.pdf) in Taiwan relative to incomes. Utilizing the same housing median multiple metric from before for Taiwan over the period 2002-2019, we see that the country as a whole has been Extremely Unaffordable for nearly the entire time. The capital Taipei fares even worse, with a housing median multiple above 10 since early 2009. Given that Taiwan's largely mountainous terrain limits the available area for new housing, this is not entirely surprising. 
 
 ![Figure 12: Quarterly Housing Median Multiple for Taiwan and Taipei](/post/2020-03-30-part-1-how-the-populist-wave-came-to-taiwan_files/Quarterly Housing Median Multiple for Taiwan.jpg)
 
