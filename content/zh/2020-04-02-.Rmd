@@ -129,3 +129,15 @@ kable(world_hmm_data, 'html', align = c("l", "c", "c", "c", "c", "c", "c")) %>%
 
 就收入分配而言，無倫使用什麼指標(比如Gini Coefficient或者前20％與後20％的收入份額比率)， 結果還是一樣：從80年代到現在台灣的收入分配不均一直在穩步增加。 台灣的收入分配不均沒有到別的國家那麼嚴重，不過這個趨勢還是令人擔憂。
 
+![圖 7: 台灣收入分配不均的指標](/zh/2020-04-02-_files/Measures of Income Inequality for Taiwan_zh.jpg)
+
+就平均每戶儲蓄而言，又呈現了前20%跟後80%的明顯分歧。
+
+![圖 8: 台灣戶數五等分位組之平均每戶儲蓄](/zh/2020-04-02-_files/Average Savings per Household in Taiwan_zh.jpg)
+
+
+### II. 收入停滯與失業
+
+
+
+
