@@ -159,3 +159,10 @@ kable(world_hmm_data, 'html', align = c("l", "c", "c", "c", "c", "c", "c")) %>%
 
 ![圖 12: 台灣全國以及台北市的季度房價中位數倍數](/zh/2020-04-02-_files/Quarterly Housing Median Multiple for Taiwan_zh.jpg)
 
+用[別種的指標](http://www.econ.sinica.edu.tw/UpFiles/2013090214141704234/Periodicals_Pdf2013090215154369017/EC452-3.pdf)，比如房價所得比或貸款負擔率，結果還是一樣。
+
+![圖 13: 台灣房價負擔不起的危機指標](/zh/2020-04-02-_files/Taiwan Housing Ratios_zh.jpg)
+
+
+
+
