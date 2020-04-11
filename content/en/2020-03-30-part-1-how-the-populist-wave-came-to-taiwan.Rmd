@@ -9,12 +9,8 @@ output:
     toc: true
     toc_depth: 2
     number_sections: false
-categories:
-  - economics
-  - politics
-  - populism
-  - data
-  - media
+category:
+  - Proactive Policies for Safeguarding Democracy
 tags:
   - economics
   - politics
@@ -71,7 +67,7 @@ Another useful metric for examining housing affordability relative to incomes is
 library(knitr)
 library(kableExtra)
 
-tibble(`Housing Affordability Rating` = c("Affordable", "Moderately Unaffordable", "Seriously Unaffordable", "Severly Unaffordable"),
+tibble(`Housing Affordability Rating` = c("Affordable", "Moderately Unaffordable", "Seriously Unaffordable", "Extremely Unaffordable"),
        `Median Multiple` = c("3.0 & Under", "3.1 to 4.0", "4.1 to 5.0", "5.1 & Over")) %>%
   kable('html', align = c('l','c')) %>%
   kable_styling(bootstrap_options = "striped", full_width = F, font_size = 12) %>%
@@ -79,7 +75,7 @@ tibble(`Housing Affordability Rating` = c("Affordable", "Moderately Unaffordable
 
 ```
 
-Comparing 8 countries in 2019, Demographia found that only the US has any markets in the Affordable category, but these 10 affordable markets represent less than 1/5th of the total major markets in the US. Only Singapore, Ireland, and the US have less than 1/3 of their markets in the Severly Unaffordable category, and only the US has at least half of their markets in the Affordable or Moderately Unaffordable categories (Median Market < 4.1).
+Comparing 8 countries in 2019, Demographia found that only the US has any markets in the Affordable category, but these 10 affordable markets represent less than 1/5th of the total major markets in the US. Only Singapore, Ireland, and the US have less than 1/3 of their markets in the Extremely Unaffordable category, and only the US has at least half of their markets in the Affordable or Moderately Unaffordable categories (Median Market < 4.1).
 
 ```{r world_hmm, echo=FALSE, message=FALSE}
 hmm_urlfile <- "https://raw.githubusercontent.com/dorseytf/TaiwanMMT/master/World%20Housing%20Median%20Multiple.csv"
@@ -104,7 +100,7 @@ Communication lies at the core of the populist approach to politics. Populists d
 ### I. Social Media
 While politicians and parties across the spectrum utilize social media, it is particularly well-suited to populists because of its largely unregulated, non-hierarchical, and democratic structure (see [Bartlett](http://eprints.whiterose.ac.uk/104297/1/Korr%20igen.pdf#page=121) in European Populism and Winning the Immigration Debate, 2014). Since social media provides information separately from traditional, "elite-owned" media outlets, supporters of populists tend to trust the news and information they receive via social media more, whether or not it is actually factual.
 
-Indeed, the unfiltered nature of social media allows populists and their supporters to make claims without evidence, alter news stories to more readily align with their beliefs, and even simply fabricate false narratives. In response to this, fact checking has grown significantly, although there is [abundant](https://link.springer.com/article/10.1007/s11109-010-9112-2) [evidence](https://journals.sagepub.com/doi/abs/10.1177/1478929918786852?journalCode=pswa) that it is often [ineffective](https://journals.sagepub.com/doi/full/10.1177/0956797617714579) and misinformation can outnumber attempts to correct it by [3:1](https://www.americanpressinstitute.org/fact-checking-project/new-fact-checking-research-false-information-floods-twitter-many-americans-confidently-wrong/). Even when people are presented with a detailed debunking of misinformation, they often . The overwhelming amount of information available on social media also allows potential supporters to [tailor a media diet](https://www.tandfonline.com/doi/full/10.1080/15205436.2017.1291817) that is focused on maintaining their beliefs. 
+Indeed, the unfiltered nature of social media allows populists and their supporters to make claims without evidence, alter news stories to more readily align with their beliefs, and even simply fabricate false narratives. In response to this, fact checking has grown significantly, although there is [abundant](https://link.springer.com/article/10.1007/s11109-010-9112-2) [evidence](https://journals.sagepub.com/doi/abs/10.1177/1478929918786852?journalCode=pswa) that it is often [ineffective](https://journals.sagepub.com/doi/full/10.1177/0956797617714579) and misinformation can outnumber attempts to correct it by [3:1](https://www.americanpressinstitute.org/fact-checking-project/new-fact-checking-research-false-information-floods-twitter-many-americans-confidently-wrong/). Even when people are presented with a detailed debunking of misinformation, it often has the opposite effect, and serves to solidify their beliefs. The overwhelming amount of information available on social media also allows potential supporters to [tailor a media diet](https://www.tandfonline.com/doi/full/10.1080/15205436.2017.1291817) that is focused on maintaining their beliefs. 
 
 ### II. Mainstream Media
 There is also evidence that the way mainstream and traditional media outlets cover populists can contribute to spreading their message and lending an air of credibility to them. Esser, Stepinska, and Hopmann (in Populist Political Communication in Europe, 2016) point out [several cases](https://www.uzh.ch/cmsssl/ikmz/dam/jcr:bffdb399-af58-4d95-88f8-409dffd41e61/Chapter28%20%20Populism%20and%20the%20media.pdf) where even largely negative coverage led to improved electoral success for populist parties in Europe. [Content analysis](https://journals.sagepub.com/doi/abs/10.1111/1467-9248.12074) of opinion articles across Europe also shows that public debates in even elite media outlets have become more populist over time, correlating strongly with the electoral success of populist parties. 
@@ -154,7 +150,7 @@ In addition to these stagnant wages, Taiwan also has the [4th longest working ho
 
 
 ### III. Housing Prices
-As in many other countries around the world, housing prices have also [risen significantly](http://www.econ.sinica.edu.tw/UpFiles/2013090214141704234/Periodicals_Pdf2013090215154369017/EC452-3.pdf) in Taiwan relative to incomes. Utilizing the same housing median multiple metric from before for Taiwan over the period 2002-2019, we see that the country as a whole has been Severly Unaffordable for nearly the entire time. The capital Taipei fares even worse, with a housing median multiple above 10 since early 2009. Given that Taiwan's largely mountainous terrain limits the available area for new housing, this is not entirely surprising. 
+As in many other countries around the world, housing prices have also [risen significantly](http://www.econ.sinica.edu.tw/UpFiles/2013090214141704234/Periodicals_Pdf2013090215154369017/EC452-3.pdf) in Taiwan relative to incomes. Utilizing the same housing median multiple metric from before for Taiwan over the period 2002-2019, we see that the country as a whole has been Extremely Unaffordable for nearly the entire time. The capital Taipei fares even worse, with a housing median multiple above 10 since early 2009. Given that Taiwan's largely mountainous terrain limits the available area for new housing, this is not entirely surprising. 
 
 ![Figure 12: Quarterly Housing Median Multiple for Taiwan and Taipei](/post/2020-03-30-part-1-how-the-populist-wave-came-to-taiwan_files/Quarterly Housing Median Multiple for Taiwan.jpg)
 
@@ -188,7 +184,7 @@ Leading up to the presidential election, many outlets, and particularly those wi
 ### III. Misinformation on Social Media
 As in the rest of the world, the spread of misleading information and [false rumors](https://g0v.news/killing-fake-news-dead-on-taiwans-most-popular-messaging-app-c99d93582cbe) on social media are a growing problem in Taiwan, especially in the run up to [elections](https://www.reuters.com/article/us-taiwan-election-media/chinese-rumors-and-cyber-armies-taiwan-fights-election-fake-news-idUSKBN1YL2MF). These problems are exacerbated by the focused efforts of China's misinformation campaign. 
 
-As social media and messaging apps become [ubiquitious](https://focustaiwan.tw/society/201907090020), fake news and rumors become harder to combat, with more avenues for dissemination and replication. In the run up to the 2019 presidential election in Taiwan, Facebook set up a ["war room"](https://focustaiwan.tw/sci-tech/201912300015) in Taipei specifically to combat the spread of fake news before the election, and on one Friday alone closed [118 pages, 99 groups, and 51 accounts](https://www.taiwannews.com.tw/en/news/3836533) for violations of their terms of service (one of the groups, which supported the populist KMT candidate, had over 150,000 members). 
+As social media and messaging apps become [ubiquitious](https://focustaiwan.tw/society/201907090020), fake news and rumors become harder to combat, with more avenues for dissemination and replication. In the run up to the 2019 presidential election in Taiwan, Facebook set up a ["war room"](https://focustaiwan.tw/sci-tech/201912300015) in Taipei specifically to combat the spread of fake news before the election, and on one Friday alone closed [118 pages, 99 groups, and 51 accounts](https://www.taiwannews.com.tw/en/news/3836533) for violations of their terms of service (one of the groups, which supported the populist KMT candidate, had over 150,000 members).
 
 Taiwan's most popular messaging app by far is Line, with about 75% of the population already using the app by 2013 (only 2 years after its release). While it soon became one of the most common ways to communicate with friends and family, false rumors and fake news stories quickly ran rampant just as with Facebook. In Taiwan, these are often designed specifically to trick [older users](https://www.taiwannews.com.tw/en/news/3577292), who use social media widely, but are less likely to [fact check](https://g0v.news/killing-fake-news-dead-on-taiwans-most-popular-messaging-app-c99d93582cbe) claims they see. Many also argue that the group chat feature of the app can also lead to media bubbles that reinforce existing political and social divisions. 
 

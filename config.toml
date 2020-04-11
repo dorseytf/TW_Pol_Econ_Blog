@@ -60,4 +60,4 @@ hasCJKLanguage = true
     
 [taxonomies]
   tag = "tags"
-  category = "categories"
+  category = "category"
