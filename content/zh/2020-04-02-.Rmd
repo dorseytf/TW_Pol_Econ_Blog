@@ -1,9 +1,9 @@
 ---
-title: 第一篇：  民粹主義波如何來台
+title: 第一篇：  民粹主義浪潮如何來台
 author: Travis Dorsey
 date: '2020-04-02'
 weight: 4
-slug: 第一篇＿民粹主義波如何來台
+slug: 第一篇＿民粹主義浪潮如何來台
 hidden: true
 output:
   blogdown::html_page:
@@ -32,8 +32,8 @@ library(tsbox)
 
 ```
 
-# 世界各國的民粹主義波
-近年來，很多民粹主義的候選人在世界各國都[上台了]( https://www.journalofdemocracy.org/articles/the-signs-of-deconsolidation/)，因此吸引了很多人的注意（如[這篇](https://www.theguardian.com/commentisfree/2018/nov/09/us-democracy-countries-global-authoritarian), [這篇](https://foreignpolicy.com/2019/11/04/europes-populist-governments-have-a-problem-their-capital-cities-czech-republic-hungary-poland-slovakia/), [這篇](https://www.bloomberg.com/quicktake/populism), [這篇](https://voxeu.org/article/rise-populism)）。 不過重點是為什麼這些[對民主有敵意]( https://www.v-dem.net/media/filer_public/99/de/99dedd73-f8bc-484c-8b91-44ba601b6e6b/v-dem_democracy_report_2019.pdf)的民粹政客可以在民主國家找到這麼多支持者，甚至總統首相都選上了? 隨然民粹主義沒有一個確切的定義，但是大部分的民粹主義學家都會[同意]( https://www.bloomberg.com/quicktake/populism) 它主要的[定義特徵](https://www.theguardian.com/commentisfree/2015/feb/17/problem-populism-syriza-podemos-dark-side-europe) 為把社會撕裂成兩組人種：真正的公民跟不可相信的貴族。這幾年來，民粹政客這樣分裂社會有比較成功是因為越來越多人覺得他們所提的不公平和委屈的點的信譽度好像蠻高的。 這個信譽度的來源不少，不過我這裡想更了解兩個因素：
+# 世界各國的民粹主義浪潮
+近年來，很多民粹主義的候選人在世界各國都[上台了]( https://www.journalofdemocracy.org/articles/the-signs-of-deconsolidation/)，因此吸引了很多人的注意（如[這篇](https://www.theguardian.com/commentisfree/2018/nov/09/us-democracy-countries-global-authoritarian), [這篇](https://foreignpolicy.com/2019/11/04/europes-populist-governments-have-a-problem-their-capital-cities-czech-republic-hungary-poland-slovakia/), [這篇](https://www.bloomberg.com/quicktake/populism), [這篇](https://voxeu.org/article/rise-populism)）。 不過重點是為什麼這些[對民主有敵意]( https://www.v-dem.net/media/filer_public/99/de/99dedd73-f8bc-484c-8b91-44ba601b6e6b/v-dem_democracy_report_2019.pdf)的民粹政客可以在民主國家找到這麼多支持者，甚至總統首相都選上了? 隨然民粹主義沒有一個確切的定義，但是大部分的民粹主義學家都會[同意]( https://www.bloomberg.com/quicktake/populism) 它主要的[定義特徵](https://www.theguardian.com/commentisfree/2015/feb/17/problem-populism-syriza-podemos-dark-side-europe) 為把社會撕裂成兩組人種：真正的公民跟不可相信的貴族。這幾年來，民粹政客這樣分裂社會有比較成功是因為越來越多人覺得他們所提的不公平和委屈的點的可信度好像蠻高的。 這個可信度的來源不少，不過我這裡想更了解兩個因素：
 
 1. 分配不均
 2. 媒體環境的改變
@@ -61,7 +61,7 @@ library(tsbox)
 
 ### III. 房價的狀況
 
-這幾十年來除了收入停滯之外，房價也同時在[飆漲]( http://www.oecd.org/social/affordable-housing-database/housing-market/)。 這個狀況製造了許多問題，包含少數的年輕人有能力買房，房子人滿為患，以及花在住房的收入比例[不段提高]( http://www.oecd.org/social/affordable-housing-database/housing-conditions/)，低收入的家庭為最受傷害的。 
+這幾十年來除了收入停滯之外，房價也同時在[飆漲]( http://www.oecd.org/social/affordable-housing-database/housing-market/)。 這個狀況製造了許多問題，包含只有少數的年輕人有能力買房，房子人滿為患，以及花在住房的收入比例[不段提高]( http://www.oecd.org/social/affordable-housing-database/housing-conditions/)，低收入的家庭為最受傷害的。 
 
 ![圖 4: OECD的住房狀況指標](/zh/2020-04-02-_files/OECD Housing Indicators.png)
 
@@ -110,7 +110,7 @@ kable(world_hmm_data, 'html', align = c("l", "c", "c", "c", "c", "c", "c")) %>%
 其實這個就是一個很重要的點：因為社交媒體不受監管也不用先過檢查，所以民粹政客跟他們的支持者就能提供無證據的信息，改新聞以符合他們的想法，或直接寫假新聞。 為了回應這個假信息的問題，事實檢查變了很流行。不過現在有[不少](https://link.springer.com/article/10.1007/s11109-010-9112-2)的[研究結果](https://journals.sagepub.com/doi/abs/10.1177/1478929918786852?journalCode=pswa)表示事實檢查的[效果不彰](https://journals.sagepub.com/doi/full/10.1177/0956797617714579)，甚至誤傳次數比事實檢查[多三倍](https://www.americanpressinstitute.org/fact-checking-project/new-fact-checking-research-false-information-floods-twitter-many-americans-confidently-wrong/)。 就算用戶碰到一份很仔細的駁斥報告，他們不一定會接受，反而有人會更堅持這些造謠是真的。 社交媒體的信息又爆多，所以潛在的支持者[可以定制](https://www.tandfonline.com/doi/full/10.1080/15205436.2017.1291817)專注於維護其政治信仰的信息彈幕。 
 
 ### II. 主流媒體
-現在還有證據顯示主流媒體和傳統的媒體公司如何報導這些民粹政客也會影響到他們的信譽度以及傳播他們的想法。歐洲有好幾個[案例](https://www.uzh.ch/cmsssl/ikmz/dam/jcr:bffdb399-af58-4d95-88f8-409dffd41e61/Chapter28%20%20Populism%20and%20the%20media.pdf)，甚至媒體對候選人的負面報導還是幫助了民粹黨的得票率。 歐洲各國報紙上的意見文章[內容分析顯示](https://journals.sagepub.com/doi/abs/10.1111/1467-9248.12074)政治討論的話題越來越像民粹政客所提供的話題，與民粹黨的選舉成功緊密相關。
+現在還有證據顯示主流媒體和傳統的媒體公司如何報導這些民粹政客也會影響到他們的可信度以及傳播他們的想法。歐洲有好幾個[案例](https://www.uzh.ch/cmsssl/ikmz/dam/jcr:bffdb399-af58-4d95-88f8-409dffd41e61/Chapter28%20%20Populism%20and%20the%20media.pdf)，甚至媒體對候選人的負面報導還是幫助了民粹黨的得票率。 歐洲各國報紙上的意見文章[內容分析顯示](https://journals.sagepub.com/doi/abs/10.1111/1467-9248.12074)政治討論的話題越來越像民粹政客所提供的話題，與民粹黨的選舉成功緊密相關。
 
 ***
 
@@ -181,6 +181,8 @@ kable(world_hmm_data, 'html', align = c("l", "c", "c", "c", "c", "c", "c")) %>%
 ### II. 中國對台灣傳統媒體的影響
 
 如果觀眾朋友想要更了解中國對台灣媒體施加影響的計劃，我全力推薦*Asian Survey* (2014) 的[這篇](https://www.jstor.org/stable/10.1525/as.2014.54.3.515)。簡而言之，在2000年代尾，中國開始採取一致行動，鼓勵親中的大亨購買媒體，目的為轉向親中報導，給投資在中國的媒體老闆壓力，以及利用嵌入式廣告來影響台灣。最近還有中國間諜王立強案列，該間諜揭露了他親身參與中國統戰滲透台灣的過程，還說明了中國，為了讓他們支持韓國瑜及其他親中候選人向台灣的[各媒體公司，黑社會，宮廟，以及大學校長](https://www.thestandnews.com/politics/%E9%9C%87%E6%92%BC%E9%A6%99%E6%B8%AF%E5%8F%B0%E7%81%A3-%E4%B8%AD%E5%9C%8B%E7%95%AB%E5%AE%B6%E9%96%93%E8%AB%9C%E7%8E%8B%E7%AB%8B%E5%BC%B7/) 提供金錢。根據這位間諜的說法，中國甚至還[給了韓國瑜錢](https://www.taiwannews.com.tw/en/news/3823247)。^[[民調表示](https://www.taipeitimes.com/News/taiwan/archives/2019/08/26/2003721153)，快90%的受訪者認為台灣的媒體需要加強核實新聞能力，而超過65%的受訪者表示反對『台灣的媒體很專業』這句。近58%的受訪者認為新聞的質量是社會問題的主要根源，而72.9%的受訪者擔心由於政客和企業的影響而產生的偏見。]
+
+為了增加觀眾以及加強說服力，親中媒體還進行了一個付收視費的計畫：答應只看親中電台的小吃店就可以跟親中媒體拿[500元付收視費](https://news.ltn.com.tw/news/politics/breakingnews/2654079)。
 
 在2020年的總統選舉前，很多媒體，尤其是親中的，[一直不斷](https://thediplomat.com/2020/03/the-rise-and-rapid-fall-of-han-kuo-yu/)地播放關於民粹主義候選人韓國瑜[的新聞](https://thediplomat.com/2019/06/taiwans-democracy-is-utterly-confounded-by-populist-mayor-han-kuo-yu/)。連一班的媒體也都一直在講韓國瑜的事，可是不管有什麼啟示，甚至他[曾經跟黑社會的人有關係](https://www.taiwannews.com.tw/en/news/3577292)，[厭女症](http://www.taipeitimes.com/News/feat/archives/2018/12/08/2003705705)到[種族主義](http://www.taipeitimes.com/News/taiwan/archives/2019/03/09/2003711147)，好像沒有任何事可以影響到[他的支持率](https://popula.com/2019/03/05/all-hail-the-korean-fish/)。
 
