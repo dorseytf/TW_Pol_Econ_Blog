@@ -1,6 +1,6 @@
 ---
 title: 第一篇：  民粹主義浪潮如何來台
-author: Travis Dorsey
+author: 杜欣川
 date: '2020-04-02'
 weight: 4
 slug: 第一篇＿民粹主義浪潮如何來台
@@ -101,16 +101,22 @@ kable(world_hmm_data, 'html', align = c("l", "c", "c", "c", "c", "c", "c")) %>%
 
 ## 民粹政客如何利用不斷變化的媒體格局
 
-溝通就是民粹政客最拿手的一招。 民粹政客是靠『揭露真相』和『提出政客不敢提的話題』這兩個方式將自己與一班政客區分，不過他們也會常常[造謠](https://www.scopus.com/record/display.uri?eid=2-s2.0-85030773900&origin=inward&txGid=34953e8fcef78b459bcd97132acaae3d)。 隨然從前一直都有會造謠的政客，但是現在因爲社交媒體無所不在的現象，以廣告收入為主的媒體，還有傳統媒體的[同謀](https://journals.sagepub.com/doi/abs/10.1177/0267323118790156)，所以民粹政客能夠吸引[更多觀眾](https://doi.org/10.1057/s41304-017-0137-4)，加強和合法化他們的談話要點(如 [Mazzoleni](https://link.springer.com/chapter/10.1057/9780230592100_4))，還有製造一個支持者可以[自選](https://www.tandfonline.com/doi/full/10.1080/15205436.2017.1291817)吸收的以保持態度為主的訊息彈幕。
+因為民粹政客是靠『揭露真相』和『提出政客不敢提的話題』這兩個方式將自己與一班政客區分，所以媒體報導對民粹主義的發展非常重要。 近幾十年來有兩個對現代的民粹主義浪潮很有幫助的媒體環境的趨勢。 第一，黨派媒體的發展， 在傳統媒體和社交媒體上都有重新定義了大多數主流媒體的政治言論以及讓公民能夠[自選](https://www.tandfonline.com/doi/full/10.1080/15205436.2017.1291817) 吸收以保持態度為主的信息彈幕。 第二， 民粹政客現在不只能夠吸引[更多觀眾](https://doi.org/10.1057/s41304-017-0137-4)，而且，因為傳統媒體的[同謀](https://journals.sagepub.com/doi/abs/10.1177/0267323118790156)， 所以還能吸引會加強和合法化民粹談話要點的一些馬不停蹄的媒體報導(如 [Mazoleni](https://link.springer.com/chapter/10.1057/9780230592100_4))。 
 
+### I. 媒體遊說
+自建立[明顯黨派媒體](https://global.oup.com/academic/product/echo-chamber-9780195398601?cc=us&lang=en&)以來，許多學家因為[證據也不少](https://academic.oup.com/poq/article-abstract/80/S1/298/2223402?redirectedFrom=fulltext)所以都恐怕這種媒體環境會製造公民會自選吸收以保持態度為主的信息，就是所謂的『回聲室』。 隨然專家仍在辯論[回聲室](https://journals.sagepub.com/doi/full/10.1177/2158244019832705)對大多數的人的[範圍](https://www.dartmouth.edu/~nyhan/fake-news-2016.pdf)和[影響](https://kf-site-production.s3.amazonaws.com/media_elements/files/000/000/133/original/Topos_KF_White-Paper_Nyhan_V1.pdf)， 但是越來越多的證據表明，至少在政治上較為活躍的，具有高度黨派性的人群會有選擇地進行接觸。 
 
-### I. 社交媒體
-隨然各黨政客都會用社交媒體，但是因為它不受監管，非等級制和[民主的結構](http://eprints.whiterose.ac.uk/104297/1/Korr%20igen.pdf#page=121)，所以社交媒體跟民粹政客就特別合。 因為社交媒體提供的信息與傳統的 『精英擁有』 媒體不同，所以民粹政客的支持者會比較相信來至社交媒體的新聞和信息，不管是真的還是假的。
+隨然有研究表明因為黨派媒體的觀眾比主流媒體的少所以影響也會比較低，不過有確鑿的證據表明黨派媒體的整體影響難以衡量。 研究顯示黨派媒體表達的觀點不僅限於觀眾，而且實際上這些觀點可以通過[人際交流](http://faculty.wcas.northwestern.edu/~jnd260/pub/Druckman,%20Levendusky,%20and%20McLain%20No%20Need%20to%20Watch.pdf)有效地傳播。 現在民粹政客可以利用社交媒體的廣泛範圍提高這種兩階段溝通流程的影響，因為民粹政客跟支持者在社交媒體上能夠傳播它們的關點給更多人。 不過，因為大部分的研究只關注到觀眾在社交媒體上看到的新聞是否來自新聞媒體，檢查新聞來自朋友會有多大影響的研究比較少，所以這是一個需要更多實證研究的領域。 
+
+另外，隨然研究表明大多數的人還是以主流新聞媒體為主（而有些學家認為對迴聲室的擔憂被誇大了）， 歐洲各國報紙上的意見文章[內容分析顯示](https://journals.sagepub.com/doi/abs/10.1111/1467-9248.12074)政治討論的話題越來越像民粹政客所提供的話題。 即使在主流新聞媒體上，話題已經轉移到與民粹政客談話要點更多的重疊，這可能有助於使這些談話要點[合法化](https://link.springer.com/chapter/10.1057/9780230592100_4)。 這種意識形態上的轉變似乎與歐洲民粹黨在選舉中的成功緊密相關。
+
+### II. 更多的觀眾
+如前所述，主流媒體也常常向民粹政客提供他們[渴望的關注](https://journals.sagepub.com/doi/abs/10.1177/0267323118790156)。 就算大部分的媒體報導是負面的，新聞媒體還是向民粹政客提供一個可以用來接觸更多人的平台，而且民粹政客可以指出這些負面的報導是各種政府機關或寡頭不想讓他們傳播自己的意見。Esser，Stepinska和Hopmann的[研究表明](https://www.uzh.ch/cmsssl/ikmz/dam/jcr:bffdb399-af58-4d95-88f8-409dffd41e61/Chapter28%20%20Populism%20and%20the%20media.pdf)在很大程度上受到媒體負面報導後，幾個民粹黨取得了選舉成功。
+
+即使主流媒體不採納或討論他們的談話要點，社交媒體也為民粹政客提供了另一種途徑來[擴大他們的知名度](https://link.springer.com/article/10.1057/s41304-017-0137-4)。隨然各黨政客都會用社交媒體，但是因為它不受監管也有[民主的結構](http://eprints.whiterose.ac.uk/104297/1/Korr%20igen.pdf#page=121)，所以社交媒體跟民粹政客就特別合。 因為社交媒體提供的信息與傳統的 『精英擁有』 媒體不同，所以民粹政客的支持者會比較相信來至社交媒體的新聞和信息，不管是真的還是假的。
 
 其實這個就是一個很重要的點：因為社交媒體不受監管也不用先過檢查，所以民粹政客跟他們的支持者就能提供無證據的信息，改新聞以符合他們的想法，或直接寫假新聞。 為了回應這個假信息的問題，事實檢查變了很流行。不過現在有[不少](https://link.springer.com/article/10.1007/s11109-010-9112-2)的[研究結果](https://journals.sagepub.com/doi/abs/10.1177/1478929918786852?journalCode=pswa)表示事實檢查的[效果不彰](https://journals.sagepub.com/doi/full/10.1177/0956797617714579)，甚至誤傳次數比事實檢查[多三倍](https://www.americanpressinstitute.org/fact-checking-project/new-fact-checking-research-false-information-floods-twitter-many-americans-confidently-wrong/)。 就算用戶碰到一份很仔細的駁斥報告，他們不一定會接受，反而有人會更堅持這些造謠是真的。 社交媒體的信息又爆多，所以潛在的支持者[可以定制](https://www.tandfonline.com/doi/full/10.1080/15205436.2017.1291817)專注於維護其政治信仰的信息彈幕。 
 
-### II. 主流媒體
-現在還有證據顯示主流媒體和傳統的媒體公司如何報導這些民粹政客也會影響到他們的可信度以及傳播他們的想法。歐洲有好幾個[案例](https://www.uzh.ch/cmsssl/ikmz/dam/jcr:bffdb399-af58-4d95-88f8-409dffd41e61/Chapter28%20%20Populism%20and%20the%20media.pdf)，甚至媒體對候選人的負面報導還是幫助了民粹黨的得票率。 歐洲各國報紙上的意見文章[內容分析顯示](https://journals.sagepub.com/doi/abs/10.1111/1467-9248.12074)政治討論的話題越來越像民粹政客所提供的話題，與民粹黨的選舉成功緊密相關。
 
 ***
 
