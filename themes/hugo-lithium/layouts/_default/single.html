@@ -9,7 +9,7 @@
 
     
     <p class="terms">
-      {{ range $i := (slice "categories" "tags") }}
+      {{ range $i := (slice "category" "tags") }}
       {{ with ($.Param $i) }}
       {{ $i | title }}:
       {{ range $k := . }}
