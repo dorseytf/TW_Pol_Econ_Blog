@@ -40,6 +40,8 @@ hasCJKLanguage = true
     site = "Exploring Taiwan's Political Economy"
     name = "Travis Dorsey"
     description = "An Exploration of Taiwan's Political Economy"
+    
+    footer = "&copy; 2020 Travis Dorsey"
 
     # options for highlight.js (version, additional languages, and theme)
     highlightjsVersion = "9.12.0"
