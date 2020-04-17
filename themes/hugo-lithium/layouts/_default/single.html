@@ -6,7 +6,6 @@
     <h1 class="article-title">{{ .Title }}</h1>
     
     By: {{ .Params.author }} / {{ .Date.Format "2006-01-02" }} / {{ .ReadingTime }} min read
-
     
     <p class="terms">
       {{ range $i := (slice "category" "tags") }}
