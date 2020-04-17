@@ -4,9 +4,8 @@
 
   <article class="article">
     <h1 class="article-title">{{ .Title }}</h1>
-    
+    {{ if eq .Section "post" }}
     By: {{ .Params.author }} / {{ .Date.Format "2006-01-02" }} / {{ .ReadingTime }} min read
-
     
     <p class="terms">
       {{ range $i := (slice "category" "tags") }}
@@ -18,7 +17,7 @@
       {{ end }}
       {{ end }}
     </p>
-
+    {{ end }}
     <div class="article-content">
       {{ .Content }}
     </div>
