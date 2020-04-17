@@ -1,4 +1,4 @@
-baseurl = "https://github.com/dorseytf/TW_Pol_Econ_Blog/"
+baseurl = "https://poli-econ-tw.netlify.app/"
 title = "Exploring Taiwan's Political Economy"
 copyright = "&copy; {year} Travis Dorsey"
 theme = "hugo-lithium"
