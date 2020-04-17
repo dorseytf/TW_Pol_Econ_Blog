@@ -1,5 +1,5 @@
 +++
-title = "積極保護民主的政策 "
+title = "積極保護民主的政策"
 description = "An Analysis of the Recent Populist Onslaught and How Taiwan Managed to Avoid it"
 +++
 
