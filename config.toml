@@ -54,8 +54,8 @@ hasCJKLanguage = true
 
     [params.logo]
     url = "newlogo.jpg"
-    width = 50
-    height = 50
+    width = 100
+    height = 100
     alt = "Logo"
     
 [taxonomies]

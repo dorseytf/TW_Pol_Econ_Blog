@@ -5,6 +5,7 @@ date: '2020-04-02'
 weight: 4
 slug: 第一篇＿民粹主義浪潮如何來台
 hidden: true
+bibliography: part1_bib.bib
 output:
   blogdown::html_page:
     toc: true
@@ -33,7 +34,7 @@ library(tsbox)
 ```
 
 # 世界各國的民粹主義浪潮
-近年來，很多民粹主義的候選人在世界各國都[上台了]( https://www.journalofdemocracy.org/articles/the-signs-of-deconsolidation/)，因此吸引了很多人的注意（如[這篇](https://www.theguardian.com/commentisfree/2018/nov/09/us-democracy-countries-global-authoritarian), [這篇](https://foreignpolicy.com/2019/11/04/europes-populist-governments-have-a-problem-their-capital-cities-czech-republic-hungary-poland-slovakia/), [這篇](https://www.bloomberg.com/quicktake/populism), [這篇](https://voxeu.org/article/rise-populism)）。 不過重點是為什麼這些[對民主有敵意]( https://www.v-dem.net/media/filer_public/99/de/99dedd73-f8bc-484c-8b91-44ba601b6e6b/v-dem_democracy_report_2019.pdf)的民粹政客可以在民主國家找到這麼多支持者，甚至總統首相都選上了? 隨然民粹主義沒有一個確切的定義，但是大部分的民粹主義學家都會[同意]( https://www.bloomberg.com/quicktake/populism) 它主要的[定義特徵](https://www.theguardian.com/commentisfree/2015/feb/17/problem-populism-syriza-podemos-dark-side-europe) 為把社會撕裂成兩組人種：真正的公民跟不可相信的貴族。這幾年來，民粹政客這樣分裂社會有比較成功是因為越來越多人覺得他們所提的不公平和委屈的點的可信度好像蠻高的。 這個可信度的來源不少，不過我這裡想更了解兩個因素：
+近年來，很多民粹主義的候選人在世界各國都[上台了]( https://www.journalofdemocracy.org/articles/the-signs-of-deconsolidation/) ^[@foa17]，因此吸引了很多人的注意（如[這篇](https://www.theguardian.com/commentisfree/2018/nov/09/us-democracy-countries-global-authoritarian)  ^[@fuchs18], [這篇](https://foreignpolicy.com/2019/11/04/europes-populist-governments-have-a-problem-their-capital-cities-czech-republic-hungary-poland-slovakia/) ^[@gosling19], [這篇](https://www.bloomberg.com/quicktake/populism)  ^[@champion19], [這篇](https://voxeu.org/article/rise-populism) ^[@tabellini19]）。 不過重點是為什麼這些[對民主有敵意]( https://www.v-dem.net/media/filer_public/99/de/99dedd73-f8bc-484c-8b91-44ba601b6e6b/v-dem_democracy_report_2019.pdf) ^[@vdem19] 的民粹政客可以在民主國家找到這麼多支持者，甚至總統首相都選上了? 隨然民粹主義沒有一個確切的定義，但是大部分的民粹主義學家都會[同意]( https://www.bloomberg.com/quicktake/populism) ^[@champion19] 它主要的[定義特徵](https://www.theguardian.com/commentisfree/2015/feb/17/problem-populism-syriza-podemos-dark-side-europe) ^[@mudde15] 為把社會撕裂成兩組人種：真正的公民跟不可相信的貴族。這幾年來，民粹政客這樣分裂社會有比較成功是因為越來越多人覺得他們所提的不公平和委屈的點的可信度好像蠻高的。 這個可信度的來源不少，不過我這裡想更了解兩個因素：
 
 1. 分配不均
 2. 媒體環境的改變
@@ -44,8 +45,8 @@ library(tsbox)
 
 ### I. 分配不均
 
-這幾十年來，世界各國的財富差距跟[收入差距]( https://www.oecd.org/els/soc/49499779.pdf)逐漸擴大。 隨然2008年全球金融海嘯之後許多指標表示世界經濟復甦樣子，但是復甦效益分配不均，無倫是
-看國際資料還是各地國內資料都有分配不均的狀況。 其實分配不均不只在2008年後急速成長，它還有受到經濟學家和一班人的重視 (像是托馬斯·皮凱蒂爆紅的現象)。就算國家的合計指標表示經濟已復甦好了(比如美國)，民粹政客可以利用分配不均製造的不滿去說敷公民。
+這幾十年來，世界各國的財富差距跟[收入差距]( https://www.oecd.org/els/soc/49499779.pdf) ^[@oecd_ineq11]逐漸擴大。 隨然2008年全球金融海嘯之後許多指標表示世界經濟復甦樣子，但是復甦效益分配不均，無倫是
+看國際資料還是各地國內資料都有分配不均的狀況。 其實分配不均不只在2008年後[急速成長](https://www.bloomberg.com/quicktake/income-inequality) ^[@bloom_ineq]，它還有受到經濟學家和一班人的重視 (像是托馬斯·皮凱蒂爆紅的現象)。就算國家的合計指標表示經濟已復甦好了(比如美國)，民粹政客可以利用分配不均製造的不滿去說敷公民。
 
 ![圖 1: 美國財富分配十分位](/zh/2020-04-02-_files/Wealth Share by Decile 2016.png)
 
@@ -54,18 +55,18 @@ library(tsbox)
 
 ### II. 收入停滯與失業
 
-很多國家除了分配不均之外還有持續高的失業率，尤其是[希臘]( https://tradingeconomics.com/greece/youth-unemployment-rate)，[西班牙]( https://tradingeconomics.com/spain/youth-unemployment-rate)和[義大利]( https://tradingeconomics.com/italy/youth-unemployment-rate)的年輕人。連失業率較低的國家都還是有現在的收入比歷史趨勢低的狀況。 很多經濟學家已經找到了薪資[跟不上]( http://www.oecd.org/economy/decoupling-of-wages-from-productivity/)生產率的有力[證據](https://www.epi.org/productivity-pay-gap/) 而這是不分國家的現象。 此外，現在的[年輕人的收入]( https://www.newamerica.org/millennials/reports/emerging-millennial-wealth-gap/)跟上一代的薪水完全[比不上了]( https://younginvincibles.org/financial-health-young-america/). 
+很多國家除了分配不均之外還有持續高的失業率，尤其是[希臘]( https://tradingeconomics.com/greece/youth-unemployment-rate) ^[@gr_unemp]，[西班牙]( https://tradingeconomics.com/spain/youth-unemployment-rate) ^[@es_unemp]和[義大利]( https://tradingeconomics.com/italy/youth-unemployment-rate) ^[@it_unemp]的年輕人。連失業率較低的國家都還是有現在的收入比歷史趨勢低的狀況。 很多經濟學家已經找到了薪資[跟不上]( http://www.oecd.org/economy/decoupling-of-wages-from-productivity/) ^[@oecd_decoup]生產率的有力[證據](https://www.epi.org/productivity-pay-gap/) ^[@epi_pay_gap]而這是不分國家的現象。 此外，現在的[年輕人的收入]( https://www.newamerica.org/millennials/reports/emerging-millennial-wealth-gap/) ^[@new_am]跟上一代的薪水完全[比不上了]( https://younginvincibles.org/financial-health-young-america/) ^[@young_am]. 
 
 ![圖 3: 美國的生產率與薪水的趨勢已解藕](/zh/2020-04-02-_files/EPI Productivity Decoupling.png)
 
 
 ### III. 房價的狀況
 
-這幾十年來除了收入停滯之外，房價也同時在[飆漲]( http://www.oecd.org/social/affordable-housing-database/housing-market/)。 這個狀況製造了許多問題，包含只有少數的年輕人有能力買房，房子人滿為患，以及花在住房的收入比例[不段提高]( http://www.oecd.org/social/affordable-housing-database/housing-conditions/)，低收入的家庭為最受傷害的。 
+這幾十年來除了收入停滯之外，房價也同時在[飆漲]( http://www.oecd.org/social/affordable-housing-database/housing-market/) ^[@oecd_housing]。 這個狀況製造了許多問題，包含只有少數的年輕人有能力買房，房子人滿為患，以及花在住房的收入比例[不段提高]( http://www.oecd.org/social/affordable-housing-database/housing-conditions/) ^[@oecd_housing2]，低收入的家庭為最受傷害的。 
 
 ![圖 4: OECD的住房狀況指標](/zh/2020-04-02-_files/OECD Housing Indicators.png)
 
-另一個有用的住宅可近性指摽是房價中位數倍數 (本指標來至[Demographia]( http://www.demographia.com/dhi.pdf)的報告)，他是用房價中位數除於家庭收入中位數來衡量住宅可近性。 Demographia將房價中位數倍數分為這四個分類：
+另一個有用的住宅可近性指摽是房價中位數倍數 (本指標來至[Demographia]( http://www.demographia.com/dhi.pdf) ^[@demog20]的報告)，他是用房價中位數除於家庭收入中位數來衡量住宅可近性。 Demographia將房價中位數倍數分為這四個分類：
 
 ```{r hmm_table, echo=FALSE, message=FALSE}
 library(knitr)
@@ -101,21 +102,21 @@ kable(world_hmm_data, 'html', align = c("l", "c", "c", "c", "c", "c", "c")) %>%
 
 ## 民粹政客如何利用不斷變化的媒體格局
 
-因為民粹政客是靠『揭露真相』和『提出政客不敢提的話題』這兩個方式將自己與一班政客區分，所以媒體報導對民粹主義的發展非常重要。 近幾十年來有兩個對現代的民粹主義浪潮很有幫助的媒體環境的趨勢。 第一，黨派媒體的發展， 在傳統媒體和社交媒體上都有重新定義了大多數主流媒體的政治言論以及讓公民能夠[自選](https://www.tandfonline.com/doi/full/10.1080/15205436.2017.1291817) 吸收以保持態度為主的信息彈幕。 第二， 民粹政客現在不只能夠吸引[更多觀眾](https://doi.org/10.1057/s41304-017-0137-4)，而且，因為傳統媒體的[同謀](https://journals.sagepub.com/doi/abs/10.1177/0267323118790156)， 所以還能吸引會加強和合法化民粹談話要點的一些馬不停蹄的媒體報導(如 [Mazoleni](https://link.springer.com/chapter/10.1057/9780230592100_4))。 
+因為民粹政客是靠『揭露真相』和『提出政客不敢提的話題』這兩個方式將自己與一班政客區分，所以媒體報導對民粹主義的發展非常重要。 近幾十年來有兩個對現代的民粹主義浪潮很有幫助的媒體環境的趨勢。 第一，黨派媒體的發展， 在傳統媒體和社交媒體上都有重新定義了大多數主流媒體的政治言論以及讓公民能夠[自選](https://www.tandfonline.com/doi/full/10.1080/15205436.2017.1291817) ^[@hameleers17]吸收以保持態度為主的信息彈幕。 第二， 民粹政客現在不只能夠吸引[更多觀眾](https://doi.org/10.1057/s41304-017-0137-4) ^[@salgado19]，而且，因為傳統媒體的[同謀](https://journals.sagepub.com/doi/abs/10.1177/0267323118790156) ^[@freedman18]， 所以還能吸引會加強和合法化民粹談話要點的一些馬不停蹄的媒體報導(如 [Mazoleni](https://link.springer.com/chapter/10.1057/9780230592100_4) ^[@mazzo08])。 
 
 ### I. 媒體遊說
-自建立[明顯黨派媒體](https://global.oup.com/academic/product/echo-chamber-9780195398601?cc=us&lang=en&)以來，許多學家因為[證據也不少](https://academic.oup.com/poq/article-abstract/80/S1/298/2223402?redirectedFrom=fulltext)所以都恐怕這種媒體環境會製造公民會自選吸收以保持態度為主的信息，就是所謂的『回聲室』。 隨然專家仍在辯論[回聲室](https://journals.sagepub.com/doi/full/10.1177/2158244019832705)對大多數的人的[範圍](https://www.dartmouth.edu/~nyhan/fake-news-2016.pdf)和[影響](https://kf-site-production.s3.amazonaws.com/media_elements/files/000/000/133/original/Topos_KF_White-Paper_Nyhan_V1.pdf)， 但是越來越多的證據表明，至少在政治上較為活躍的，具有高度黨派性的人群會有選擇地進行接觸。 
+自建立[明顯黨派媒體](https://global.oup.com/academic/product/echo-chamber-9780195398601?cc=us&lang=en&) ^[@echo_chamber]以來，許多學家因為[證據也不少](https://academic.oup.com/poq/article-abstract/80/S1/298/2223402?redirectedFrom=fulltext) ^[@flaxman_16]所以都恐怕這種媒體環境會製造公民會自選吸收以保持態度為主的信息，就是所謂的『回聲室』。 隨然專家仍在辯論[回聲室](https://journals.sagepub.com/doi/full/10.1177/2158244019832705) ^[@eady_19]對大多數的人的[範圍](https://www.dartmouth.edu/~nyhan/fake-news-2016.pdf) ^[@guess_20]和[影響](https://kf-site-production.s3.amazonaws.com/media_elements/files/000/000/133/original/Topos_KF_White-Paper_Nyhan_V1.pdf) ^[@nyhan]， 但是越來越多的證據表明，至少在政治上較為活躍的，具有高度黨派性的人群會有選擇地進行接觸。 
 
-隨然有研究表明因為黨派媒體的觀眾比主流媒體的少所以影響也會比較低，不過有確鑿的證據表明黨派媒體的整體影響難以衡量。 研究顯示黨派媒體表達的觀點不僅限於觀眾，而且實際上這些觀點可以通過[人際交流](http://faculty.wcas.northwestern.edu/~jnd260/pub/Druckman,%20Levendusky,%20and%20McLain%20No%20Need%20to%20Watch.pdf)有效地傳播。 現在民粹政客可以利用社交媒體的廣泛範圍提高這種兩階段溝通流程的影響，因為民粹政客跟支持者在社交媒體上能夠傳播它們的關點給更多人。 不過，因為大部分的研究只關注到觀眾在社交媒體上看到的新聞是否來自新聞媒體，檢查新聞來自朋友會有多大影響的研究比較少，所以這是一個需要更多實證研究的領域。 
+隨然有研究表明因為黨派媒體的觀眾比主流媒體的少所以影響也會比較低，不過有確鑿的證據表明黨派媒體的整體影響難以衡量。 研究顯示黨派媒體表達的觀點不僅限於觀眾，而且實際上這些觀點可以通過[人際交流](http://faculty.wcas.northwestern.edu/~jnd260/pub/Druckman,%20Levendusky,%20and%20McLain%20No%20Need%20to%20Watch.pdf) ^[@druck18]有效地傳播。 現在民粹政客可以利用社交媒體的廣泛範圍提高這種兩階段溝通流程的影響，因為民粹政客跟支持者在社交媒體上能夠傳播它們的關點給更多人。 不過，因為大部分的研究只關注到觀眾在社交媒體上看到的新聞是否來自新聞媒體，檢查新聞來自朋友會有多大影響的研究比較少，所以這是一個需要更多實證研究的領域。 
 
-另外，隨然研究表明大多數的人還是以主流新聞媒體為主（而有些學家認為對迴聲室的擔憂被誇大了）， 歐洲各國報紙上的意見文章[內容分析顯示](https://journals.sagepub.com/doi/abs/10.1111/1467-9248.12074)政治討論的話題越來越像民粹政客所提供的話題。 即使在主流新聞媒體上，話題已經轉移到與民粹政客談話要點更多的重疊，這可能有助於使這些談話要點[合法化](https://link.springer.com/chapter/10.1057/9780230592100_4)。 這種意識形態上的轉變似乎與歐洲民粹黨在選舉中的成功緊密相關。
+另外，隨然研究表明大多數的人還是以主流新聞媒體為主（而有些學家認為對迴聲室的擔憂被誇大了）， 歐洲各國報紙上的意見文章[內容分析顯示](https://journals.sagepub.com/doi/abs/10.1111/1467-9248.12074) ^[@roo_13]政治討論的話題越來越像民粹政客所提供的話題。 即使在主流新聞媒體上，話題已經轉移到與民粹政客談話要點更多的重疊，這可能有助於使這些談話要點[合法化](https://link.springer.com/chapter/10.1057/9780230592100_4) ^[@mazzo08]。 這種意識形態上的轉變似乎與歐洲民粹黨在選舉中的成功緊密相關。
 
 ### II. 更多的觀眾
-如前所述，主流媒體也常常向民粹政客提供他們[渴望的關注](https://journals.sagepub.com/doi/abs/10.1177/0267323118790156)。 就算大部分的媒體報導是負面的，新聞媒體還是向民粹政客提供一個可以用來接觸更多人的平台，而且民粹政客可以指出這些負面的報導是各種政府機關或寡頭不想讓他們傳播自己的意見。Esser，Stepinska和Hopmann的[研究表明](https://www.uzh.ch/cmsssl/ikmz/dam/jcr:bffdb399-af58-4d95-88f8-409dffd41e61/Chapter28%20%20Populism%20and%20the%20media.pdf)在很大程度上受到媒體負面報導後，幾個民粹黨取得了選舉成功。
+如前所述，主流媒體也常常向民粹政客提供他們[渴望的關注](https://journals.sagepub.com/doi/abs/10.1177/0267323118790156) ^[@freedman18]。 就算大部分的媒體報導是負面的，新聞媒體還是向民粹政客提供一個可以用來接觸更多人的平台，而且民粹政客可以指出這些負面的報導是各種政府機關或寡頭不想讓他們傳播自己的意見。Esser，Stepinska和Hopmann的[研究表明](https://www.uzh.ch/cmsssl/ikmz/dam/jcr:bffdb399-af58-4d95-88f8-409dffd41e61/Chapter28%20%20Populism%20and%20the%20media.pdf) ^[@esser_etal]在很大程度上受到媒體負面報導後，幾個民粹黨取得了選舉成功。
 
-即使主流媒體不採納或討論他們的談話要點，社交媒體也為民粹政客提供了另一種途徑來[擴大他們的知名度](https://link.springer.com/article/10.1057/s41304-017-0137-4)。隨然各黨政客都會用社交媒體，但是因為它不受監管也有[民主的結構](http://eprints.whiterose.ac.uk/104297/1/Korr%20igen.pdf#page=121)，所以社交媒體跟民粹政客就特別合。 因為社交媒體提供的信息與傳統的 『精英擁有』 媒體不同，所以民粹政客的支持者會比較相信來至社交媒體的新聞和信息，不管是真的還是假的。
+即使主流媒體不採納或討論他們的談話要點，社交媒體也為民粹政客提供了另一種途徑來[擴大他們的知名度](https://link.springer.com/article/10.1057/s41304-017-0137-4) ^[@salgado19]。隨然各黨政客都會用社交媒體，但是因為它不受監管也有[民主的結構](http://eprints.whiterose.ac.uk/104297/1/Korr%20igen.pdf#page=121) ^[@bartlett]，所以社交媒體跟民粹政客就特別合。 因為社交媒體提供的信息與傳統的 『精英擁有』 媒體不同，所以民粹政客的支持者會比較相信來至社交媒體的新聞和信息，不管是真的還是假的。
 
-其實這個就是一個很重要的點：因為社交媒體不受監管也不用先過檢查，所以民粹政客跟他們的支持者就能提供無證據的信息，改新聞以符合他們的想法，或直接寫假新聞。 為了回應這個假信息的問題，事實檢查變了很流行。不過現在有[不少](https://link.springer.com/article/10.1007/s11109-010-9112-2)的[研究結果](https://journals.sagepub.com/doi/abs/10.1177/1478929918786852?journalCode=pswa)表示事實檢查的[效果不彰](https://journals.sagepub.com/doi/full/10.1177/0956797617714579)，甚至誤傳次數比事實檢查[多三倍](https://www.americanpressinstitute.org/fact-checking-project/new-fact-checking-research-false-information-floods-twitter-many-americans-confidently-wrong/)。 就算用戶碰到一份很仔細的駁斥報告，他們不一定會接受，反而有人會更堅持這些造謠是真的。 社交媒體的信息又爆多，所以潛在的支持者[可以定制](https://www.tandfonline.com/doi/full/10.1080/15205436.2017.1291817)專注於維護其政治信仰的信息彈幕。 
+其實這個就是一個很重要的點：因為社交媒體不受監管也不用先過檢查，所以民粹政客跟他們的支持者就能提供無證據的信息，改新聞以符合他們的想法，或直接寫假新聞。 為了回應這個假信息的問題，事實檢查變了很流行。不過現在有[不少](https://link.springer.com/article/10.1007/s11109-010-9112-2) ^[@nyhan_2]的[研究結果](https://journals.sagepub.com/doi/abs/10.1177/1478929918786852?journalCode=pswa) ^[@nieminen]表示事實檢查的[效果不彰](https://journals.sagepub.com/doi/full/10.1177/0956797617714579) ^[@chan_17]，甚至誤傳次數比事實檢查[多三倍](https://www.americanpressinstitute.org/fact-checking-project/new-fact-checking-research-false-information-floods-twitter-many-americans-confidently-wrong/) ^[@api_15]。 就算用戶碰到一份很仔細的駁斥報告，他們不一定會接受，反而有人會更堅持這些造謠是真的。 
 
 
 ***
@@ -125,9 +126,9 @@ kable(world_hmm_data, 'html', align = c("l", "c", "c", "c", "c", "c", "c")) %>%
 ## 台灣的經濟趨勢
 
 ### I. 分配不均
-台灣跟世界各國一樣沒避免[分配不均](https://www.tandfonline.com/doi/abs/10.1080/10670560701809577?journalCode=cjcc20)的[趨勢](https://taiwaninsight.org/2018/12/21/economic-inequality-and-low-wages-in-taiwan/)，在收入方面和[財富](https://www.cw.com.tw/article/article.action?id=5096030&_ga=2.248406340.294892371.1585168209-1399055695.1579278642)方面[都是](http://www.econ.ntu.edu.tw/ter/new/data/new/TER46-4/TER464-2.pdf)。
+台灣跟世界各國一樣沒避免[分配不均](https://www.tandfonline.com/doi/abs/10.1080/10670560701809577?journalCode=cjcc20) ^[@lee_08] 的[趨勢](https://taiwaninsight.org/2018/12/21/economic-inequality-and-low-wages-in-taiwan/) ^[@chang_wages]，在收入方面和[財富](https://www.cw.com.tw/article/article.action?id=5096030&_ga=2.248406340.294892371.1585168209-1399055695.1579278642) ^[@lu_19]方面[都是](http://www.econ.ntu.edu.tw/ter/new/data/new/TER46-4/TER464-2.pdf) ^[@wu_18]。
 
-[連賢明等教授](http://www.econ.ntu.edu.tw/uploads/asset/data/5e60b2c148b8a14a85000573/macro_1090312.pdf) 使用財政部 2004 至 2014 年的財產登錄資料並結合各種個人財富資料來分析台灣的財富分配狀況。他們的研究顯示，隨然有幾種資產(像股票)在這時間往最富豪的家庭集中的趨勢，但是臺灣財富的吉尼係數(所謂的Gini coefficient) 沒有什麼變化而臺灣的財富不均數據低於美國, 跟瑞典和韓國相近。
+[連賢明等教授](http://www.econ.ntu.edu.tw/uploads/asset/data/5e60b2c148b8a14a85000573/macro_1090312.pdf) ^[@lien_19]使用財政部 2004 至 2014 年的財產登錄資料並結合各種個人財富資料來分析台灣的財富分配狀況。他們的研究顯示，隨然有幾種資產(像股票)在這時間往最富豪的家庭集中的趨勢，但是臺灣財富的吉尼係數(所謂的Gini coefficient) 沒有什麼變化而臺灣的財富不均數據低於美國, 跟瑞典和韓國相近。
 
 ![圖 6: 台灣的財富分配以及平均身價](/zh/2020-04-02-_files/Taiwan Welath Pyramid.jpg)
 
@@ -143,7 +144,7 @@ kable(world_hmm_data, 'html', align = c("l", "c", "c", "c", "c", "c", "c")) %>%
 
 
 ### II. 收入停滯與失業
-大多數的人可能只熟悉台灣為亞洲四小龍之一的經濟發展成功（其他三個為南韓，香港，以及星加坡），但是對學家和一班台灣人來講，這二十年來最重要的趨勢就是收入[停滯](https://english.cw.com.tw/article/article.action?id=2638)。
+大多數的人可能只熟悉台灣為亞洲四小龍之一的經濟發展成功（其他三個為南韓，香港，以及星加坡），但是對學家和一班台灣人來講，這二十年來最重要的趨勢就是收入[停滯](https://english.cw.com.tw/article/article.action?id=2638) ^[@huang_20]。
 
 ![圖 9: 台灣人每月實際收入已停滯](/zh/2020-04-02-_files/Real Monthly Earnings in Taiwan_zh.jpg)
 
@@ -151,60 +152,64 @@ kable(world_hmm_data, 'html', align = c("l", "c", "c", "c", "c", "c", "c")) %>%
 
 ![圖 10: 台灣薪資和生產率已脫鉤](/zh/2020-04-02-_files/Decoupling of Prod and Wages in Taiwan.png)
 
-隨然顯示台灣的經濟已回覆的[指標不少](https://www.taiwan.gov.tw/content_7.php)，甚至台灣的經濟增長率和對美國出口增長率都為亞洲四小龍之內最高的，不過這次的經濟回復分配不均。與韓國和日本（大型企業佔總產量的大部分）相反，台灣的中小企業佔所有企業的97％。 儘管如此，自90年代以來，中小企業的出口額佔總出口額比率一直在減少，2018年僅佔13.7％。
+隨然顯示台灣的經濟已回覆的[指標不少](https://www.taiwan.gov.tw/content_7.php) ^[@gov_econ]，甚至台灣的[經濟增長率](https://www.taiwannews.com.tw/en/news/3756340)和對美國出口增長率都為亞洲四小龍之內最高的 ^[@twnews_asian_tigers]，不過這次的經濟回復分配不均。與韓國和日本（大型企業佔總產量的大部分）相反，台灣的中小企業佔所有企業的97％。 儘管如此，自90年代以來，中小企業的出口額佔總出口額比率一直在減少，2018年僅佔13.7％。
 
 ![圖 11: 台灣中小企業的出口額佔總出口額比率一直在減少](/zh/2020-04-02-_files/SME Share of Exports.png)
 
 光看這件事，這種轉變並不一定是壞事。 問題出現在那些佔總出口比率高的公司幾乎都專注於中間商品，因此這些公司在增值鏈上的能力受到嚴重限制。 因為在台灣貿易佔總ＧＤＰ的比率非常高，所以卡在較低的價值水平的勞工和公司也不少，因此許多觀察家認為這個趨勢就是薪資和生產率脫鉤最重要因素之一。
 
-收入停滯之外，在工時方面台灣在主要國家中[排名第4](https://www.taiwannews.com.tw/en/news/3785553)，在亞洲只有星加坡的工時比較多。 近年勞動部的報告顯示46%的台灣人在前12個月之內有加過班，而每月平均約為16個小時。 不過在這方面台灣也已經開始改善了。 台灣的每年總工時卻比2008年已減少了122個小時。 調查也表示差不多70%的台灣人對他們的工作很滿足。
+收入停滯之外，在工時方面台灣在主要國家中[排名第4](https://www.taiwannews.com.tw/en/news/3785553) ^[@twnews_work_hours]，在亞洲只有星加坡的工時比較多。 近年勞動部的報告顯示46%的台灣人在前12個月之內有加過班，而每月平均約為16個小時。 不過在這方面台灣也已經開始改善了。 台灣的每年總工時卻比2008年已減少了122個小時。 調查也表示差不多70%的台灣人對他們的工作很滿足。
 
 
 ### III. 房價的狀況
-跟世界各國一樣，近年來台灣的房價也在[飆漲](http://www.econ.sinica.edu.tw/UpFiles/2013090214141704234/Periodicals_Pdf2013090215154369017/EC452-3.pdf)。 根據我們上面的分析方法，用各種住房負擔能力的指摽來了解台灣的住房市場，結果還是一樣：在2002年到2019年之間，台灣幾乎每一年都是『極度負擔不起』的等級。
+跟世界各國一樣，近年來台灣的房價也在[飆漲](http://www.econ.sinica.edu.tw/UpFiles/2013090214141704234/Periodicals_Pdf2013090215154369017/EC452-3.pdf) ^[@hu_15]。 根據我們上面的分析方法，用各種住房負擔能力的指摽來了解台灣的住房市場，結果還是一樣：在2002年到2019年之間，台灣幾乎每一年都是『極度負擔不起』的等級。
 
 ![圖 12: 台灣全國以及台北市的季度房價中位數倍數](/zh/2020-04-02-_files/Quarterly Housing Median Multiple for Taiwan_zh.jpg)
 
-用[別種的指標](http://www.econ.sinica.edu.tw/UpFiles/2013090214141704234/Periodicals_Pdf2013090215154369017/EC452-3.pdf)，比如房價所得比或貸款負擔率，結果還是一樣。
+用[別種的指標](http://www.econ.sinica.edu.tw/UpFiles/2013090214141704234/Periodicals_Pdf2013090215154369017/EC452-3.pdf) ^[@hu_15]，比如房價所得比或貸款負擔率，結果還是一樣。
 
 ![圖 13: 台灣房價負擔不起的危機指標](/zh/2020-04-02-_files/Taiwan Housing Ratios_zh.jpg)
 
-隨然台灣的低利率可以抵銷一點房價的負擔不起情況，但是負擔能力危機嚴重打擊了年輕人。 [民調表示](https://www.storm.mg/article/45838)快一半的25至40歲的人還是住父母家，而擁有自己住宅不到30%。再說，為了省夠錢自己買房，這個年齡段的受訪者中約有44％想申請社會住宅。 
+隨然台灣的低利率可以抵銷一點房價的負擔不起情況，但是負擔能力危機嚴重打擊了年輕人。 [民調表示](https://www.storm.mg/article/45838) ^[@storm]快一半的25至40歲的人還是住父母家，而擁有自己住宅不到30%。再說，為了省夠錢自己買房，這個年齡段的受訪者中約有44％想申請社會住宅。 
 
 台灣的住宅市場到底是如何亂七八糟的？ 在他出色而深入的分析中，胡勝正顯示最大的因素之一是超額儲蓄過多，引起資金流到海外，其他的部分留在台灣囤屋和炒房 。
 其實在2003至2012年之間台灣的家庭儲蓄率卻從24.42%下降到20.62%，所以超額儲蓄過多有兩個因素：企業儲蓄 (或保留盈餘) 上升和台商的資金流到台灣。
 
 2009年時候財政部修了遺產及贈與稅法，邊際稅率從最高50%降到10%，引起了不少的台商返台。不過，因為世界金融海嘯的影響，股市等投資方式變得太危險了，所以這些資金就流到房市。 這麼多囤屋和炒房的行爲不只引起了房價飆漲，還有害薪資跟不上通貨膨脹。
 
-除了房價飆漲的現象之外，炒房和囤屋還有增加了台灣的空屋率。2019年低，台灣有[86萬](https://www.thenewslens.com/article/103951)的空屋，而這個問題不僅限於台北市。 隨然住宅庫存這麼多，可是2018年四季新建餘屋(待售)住宅有[超過75,000](https://pip.moi.gov.tw/V3/E/SCRE0104.aspx)。
+除了房價飆漲的現象之外，炒房和囤屋還有增加了台灣的空屋率。2019年低，台灣有[86萬](https://www.thenewslens.com/article/103951) ^[@yang_18]的空屋，而這個問題不僅限於台北市。 隨然住宅庫存這麼多，可是2018年四季新建餘屋(待售)住宅有[超過75,000](https://pip.moi.gov.tw/V3/E/SCRE0104.aspx) ^[@doi_data]。
 
 ***
 
 ## 台灣的媒體環境
 
-民主運動成功解除戒嚴之後， 台灣的政治和社會呈現了很多的變化。 在2003年，因為台灣的第一個非國民黨的總統陳水扁進行的『黨政軍退出媒體條款』，所以台灣的媒體變得更多樣化了也增加了競爭力。因此，從1988年至2011年，台灣的合法報紙從31家暴漲到2,210。到了2006年，台灣的有線電視普及率高達86%。隨然媒體公司增加了這麼多，但是傳統媒體，如報紙和電視台，仍然僅由[少數媒體主導](https://www.jstor.org/stable/10.1525/as.2014.54.3.515)。
+民主運動成功解除戒嚴之後， 台灣的政治和社會呈現了很多的變化。 在2003年，因為台灣的第一個非國民黨的總統陳水扁進行的『黨政軍退出媒體條款』，所以台灣的媒體變得更多樣化了也增加了競爭力。因此，從1988年至2011年，台灣的合法報紙從31家暴漲到2,210。到了2006年，台灣的有線電視普及率高達86%。隨然媒體公司增加了這麼多，但是傳統媒體，如報紙和電視台，仍然僅由[少數媒體主導](https://www.jstor.org/stable/10.1525/as.2014.54.3.515) ^[@hsu_14]。
 
 ### II. 中國對台灣傳統媒體的影響
 
-如果觀眾朋友想要更了解中國對台灣媒體施加影響的計劃，我全力推薦*Asian Survey* (2014) 的[這篇](https://www.jstor.org/stable/10.1525/as.2014.54.3.515)。簡而言之，在2000年代尾，中國開始採取一致行動，鼓勵親中的大亨購買媒體，目的為轉向親中報導，給投資在中國的媒體老闆壓力，以及利用嵌入式廣告來影響台灣。最近還有中國間諜王立強案列，該間諜揭露了他親身參與中國統戰滲透台灣的過程，還說明了中國，為了讓他們支持韓國瑜及其他親中候選人向台灣的[各媒體公司，黑社會，宮廟，以及大學校長](https://www.thestandnews.com/politics/%E9%9C%87%E6%92%BC%E9%A6%99%E6%B8%AF%E5%8F%B0%E7%81%A3-%E4%B8%AD%E5%9C%8B%E7%95%AB%E5%AE%B6%E9%96%93%E8%AB%9C%E7%8E%8B%E7%AB%8B%E5%BC%B7/) 提供金錢。根據這位間諜的說法，中國甚至還[給了韓國瑜錢](https://www.taiwannews.com.tw/en/news/3823247)。^[[民調表示](https://www.taipeitimes.com/News/taiwan/archives/2019/08/26/2003721153)，快90%的受訪者認為台灣的媒體需要加強核實新聞能力，而超過65%的受訪者表示反對『台灣的媒體很專業』這句。近58%的受訪者認為新聞的質量是社會問題的主要根源，而72.9%的受訪者擔心由於政客和企業的影響而產生的偏見。]
+如果觀眾朋友想要更了解中國對台灣媒體施加影響的計劃，我全力推薦*Asian Survey* (2014) 的[這篇](https://www.jstor.org/stable/10.1525/as.2014.54.3.515) ^[@hsu_14]。簡而言之，在2000年代尾，中國開始採取一致行動，鼓勵親中的大亨購買媒體，目的為轉向親中報導，給投資在中國的媒體老闆壓力，以及利用嵌入式廣告來影響台灣。最近還有中國間諜王立強案列，該間諜揭露了他親身參與中國統戰滲透台灣的過程，還說明了中國，為了讓他們支持韓國瑜及其他親中候選人向台灣的[各媒體公司，黑社會，宮廟，以及大學校長](https://www.thestandnews.com/politics/%E9%9C%87%E6%92%BC%E9%A6%99%E6%B8%AF%E5%8F%B0%E7%81%A3-%E4%B8%AD%E5%9C%8B%E7%95%AB%E5%AE%B6%E9%96%93%E8%AB%9C%E7%8E%8B%E7%AB%8B%E5%BC%B7/) ^[@stand]提供金錢。根據這位間諜的說法，中國甚至還 ^[@tw_news_def]  [給了韓國瑜錢](https://www.taiwannews.com.tw/en/news/3823247)。^[[民調表示](https://www.taipeitimes.com/News/taiwan/archives/2019/08/26/2003721153)，快90%的受訪者認為台灣的媒體需要加強核實新聞能力，而超過65%的受訪者表示反對『台灣的媒體很專業』這句。近58%的受訪者認為新聞的質量是社會問題的主要根源，而72.9%的受訪者擔心由於政客和企業的影響而產生的偏見。 (@tpe_media)]
 
-為了增加觀眾以及加強說服力，親中媒體還進行了一個付收視費的計畫：答應只看親中電台的小吃店就可以跟親中媒體拿[500元付收視費](https://news.ltn.com.tw/news/politics/breakingnews/2654079)。
+為了增加觀眾以及加強說服力，親中媒體還進行了一個付收視費的計畫：答應只看親中電台的小吃店就可以跟親中媒體拿[500元付收視費](https://news.ltn.com.tw/news/politics/breakingnews/2654079) ^[@ltn_cable]。
 
-在2020年的總統選舉前，很多媒體，尤其是親中的，[一直不斷](https://thediplomat.com/2020/03/the-rise-and-rapid-fall-of-han-kuo-yu/)地播放關於民粹主義候選人韓國瑜[的新聞](https://thediplomat.com/2019/06/taiwans-democracy-is-utterly-confounded-by-populist-mayor-han-kuo-yu/)。連一班的媒體也都一直在講韓國瑜的事，可是不管有什麼啟示，甚至他[曾經跟黑社會的人有關係](https://www.taiwannews.com.tw/en/news/3577292)，[厭女症](http://www.taipeitimes.com/News/feat/archives/2018/12/08/2003705705)到[種族主義](http://www.taipeitimes.com/News/taiwan/archives/2019/03/09/2003711147)，好像沒有任何事可以影響到[他的支持率](https://popula.com/2019/03/05/all-hail-the-korean-fish/)。
+在2020年的總統選舉前，很多媒體，尤其是親中的，[一直不斷](https://thediplomat.com/2020/03/the-rise-and-rapid-fall-of-han-kuo-yu/) ^[@dip_reichenbach]地播放關於民粹主義候選人韓國瑜[的新聞](https://thediplomat.com/2019/06/taiwans-democracy-is-utterly-confounded-by-populist-mayor-han-kuo-yu/) ^[@dip_aspinwall]。連一班的媒體也都一直在講韓國瑜的事，可是不管有什麼啟示，甚至他[曾經跟黑社會的人有關係](https://www.taiwannews.com.tw/en/news/3577292) ^[@tw_news_spencer] ，[厭女症](http://www.taipeitimes.com/News/feat/archives/2018/12/08/2003705705) ^[@tpe_misog]到[種族主義](http://www.taipeitimes.com/News/taiwan/archives/2019/03/09/2003711147) ^[@tpe_race]，好像沒有任何事可以影響到[他的支持率](https://popula.com/2019/03/05/all-hail-the-korean-fish/) ^[@pop_korea_fish]。
 
 
 ### III. 社交媒體上的誤傳
-和世界其他地方一樣，社交媒體上的誤傳和[造謠](https://g0v.news/killing-fake-news-dead-on-taiwans-most-popular-messaging-app-c99d93582cbe)的問題在台灣也是越來越誇張，尤其在選舉的[前幾個月](https://www.reuters.com/article/us-taiwan-election-media/chinese-rumors-and-cyber-armies-taiwan-fights-election-fake-news-idUSKBN1YL2MF)。在中國的誤傳計畫下，這些問題也更加了惡化。
+和世界其他地方一樣，社交媒體上的誤傳和[造謠](https://g0v.news/killing-fake-news-dead-on-taiwans-most-popular-messaging-app-c99d93582cbe) ^[@g0v_news]的問題在台灣也是越來越誇張，尤其在選舉的[前幾個月](https://www.reuters.com/article/us-taiwan-election-media/chinese-rumors-and-cyber-armies-taiwan-fights-election-fake-news-idUSKBN1YL2MF) ^[@reuters_wumao]。在中國的誤傳計畫下，這些問題也更加了惡化。
 
-因為社交媒體越來越[普偏](https://focustaiwan.tw/society/201907090020)，所以誤傳和造謠有更多的傳播和復制途徑了，因此導致對抗比較難的狀況。 在台灣2020年的總統大選前，Facebook在台北開了一間專注對抗假消息的[作戰室](https://focustaiwan.tw/sci-tech/201912300015)，卻在一天之內以違反行為準則為由關閉了[118頁，99個社團，以及51個帳號](https://www.taiwannews.com.tw/en/news/3836533)，其中一個支持韓國瑜的社團有15萬個粉絲。 
+因為社交媒體越來越[普偏](https://focustaiwan.tw/society/201907090020) ^[@ftw_soc_med]，所以誤傳和造謠有更多的傳播和復制途徑了，因此導致對抗比較難的狀況。 在台灣2020年的總統大選前，Facebook在台北開了一間專注對抗假消息的[作戰室](https://focustaiwan.tw/sci-tech/201912300015) ^[@ftw_war_room]，卻在一天之內以違反行為準則為由關閉了[118頁，99個社團，以及51個帳號](https://www.taiwannews.com.tw/en/news/3836533) ^[@tw_news_fb]，其中一個支持韓國瑜的社團有15萬個粉絲。 
 
-幾乎每個台灣人都會用LINE。隨然很方便，但是LINE跟其他社交媒體一樣假新聞很快就猖獗。 在台灣大部分的假新聞和造搖是專注於[說服老人](https://www.taiwannews.com.tw/en/news/3577292)，因爲台灣的老人隨然常用社交媒體可是比較不會[自己去檢查](https://g0v.news/killing-fake-news-dead-on-taiwans-most-popular-messaging-app-c99d93582cbe)是不是真的還假的。不少學家認為團體簡訊也會引起所謂的『媒體泡沫』：只會選想法一樣的新聞來看的現象，而這些媒體泡沫會加強社會上的分裂。
+幾乎每個台灣人都會用LINE。隨然很方便，但是LINE跟其他社交媒體一樣假新聞很快就猖獗。 在台灣大部分的假新聞和造搖是專注於[說服老人](https://www.taiwannews.com.tw/en/news/3577292) ^[@tw_news_spencer]，因爲台灣的老人隨然常用社交媒體可是比較不會[自己去檢查](https://g0v.news/killing-fake-news-dead-on-taiwans-most-popular-messaging-app-c99d93582cbe) ^[@g0v_news]是不是真的還假的。不少學家認為團體簡訊也會引起所謂的『媒體泡沫』：只會選想法一樣的新聞來看的現象，而這些媒體泡沫會加強社會上的分裂。
 
-除了來自中國的假消息之外，還有很會造謠和騷擾的[五毛網軍](https://www.aljazeera.com/news/2018/11/news-rattles-taiwan-elections-181123005140173.html)（看過臉書或YouTube留言區的朋友應該都很熟悉的）。 
+除了來自中國的假消息之外，還有很會造謠和騷擾的[五毛網軍](https://www.aljazeera.com/news/2018/11/news-rattles-taiwan-elections-181123005140173.html) ^[@alj_wumao]（看過臉書或YouTube留言區的朋友應該都很熟悉的）。 
 
-大部分的2020年大選舉的誤傳泛濫不是罵蔡英文就是讚美韓國瑜。 韓國瑜從默默無聞和失業的狀況迅速崛起，一舉成為高雄現任市長的一職，主要是靠社交媒體和網軍。 可是有專家認為，根據證據，他社交媒體上的支持度和網軍的[起源是中國](https://foreignpolicy.com/2019/06/26/chinese-cyber-operatives-boosted-taiwans-insurgent-candidate/)。
+大部分的2020年大選舉的誤傳泛濫不是罵蔡英文就是讚美韓國瑜。 韓國瑜從默默無聞和失業的狀況迅速崛起，一舉成為高雄現任市長的一職，主要是靠社交媒體和網軍。 可是有專家認為，根據證據，他社交媒體上的支持度和網軍的[起源是中國](https://foreignpolicy.com/2019/06/26/chinese-cyber-operatives-boosted-taiwans-insurgent-candidate/) ^[@fp_cyber_ops]。
 
 ***
 
 # 下ㄧ集的預言...
 在下一集我們會探討有哪些變化和政策導致了激增的民粹主義候選人韓國瑜大敗選。
+
+***
+
+# 參考文獻
