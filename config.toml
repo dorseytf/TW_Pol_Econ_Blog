@@ -4,6 +4,7 @@ copyright = "&copy; {year} Travis Dorsey"
 theme = "hugo-lithium"
 disqusShortname = ""
 ignoreFiles = ["\\.Rmd$", "\\.Rmarkdown$", "_files$", "_cache$"]
+pluralizeListTitles = false
 
 defaultContentLanguage = "en"
 defaultContentLanguageInSubdir = true
@@ -12,7 +13,7 @@ hasCJKLanguage = true
 [permalinks]
     zh = "/zh/:year/:slug/"
     tw = "/tw/:year/:slug/"
-    en = "/en/:year/:slug/"
+    en = "/English/:year/:slug/"
 
 [[menu.main]] 
     name = "About"
@@ -20,15 +21,15 @@ hasCJKLanguage = true
     weight = 1
 [[menu.main]]
     name = "Posts"
-    url = "/en/"
+    url = "/English/"
     weight = 2
 [[menu.main]]
-    name = "中文篇"
-    url = "/zh/"
+    name = "中文版"
+    url = "/中文版/"
     weight = 3
 [[menu.main]]
-    name = "台語篇"
-    url = "/tw/"
+    name = "台語版"
+    url = "/台語版/"
     weight = 4
 [[menu.main]]
     name = "GitHub"
