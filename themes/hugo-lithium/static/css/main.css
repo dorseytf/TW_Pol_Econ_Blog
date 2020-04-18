@@ -284,16 +284,27 @@ code {
   .archive-title {
     font-size: 38px;
   }
+  
+  .archive-item {
+    display: flex;
+    align-items: center;
+  }
+  
+  .archive-item h1 {
+    width: 100%;
+    margin: 0 !important;
+  }
 
   .archive-item-date {
     font-size: 19px;
     text-align: right;
     float: right;
+    width: 100%;
   }
 
   .archive-item-link {
     text-overflow: ellipsis;
-    max-width: calc(100% - 120px);
+    max-width: 100%;
     white-space: nowrap;
     overflow: hidden;
   }
