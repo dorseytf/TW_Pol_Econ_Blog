@@ -5,7 +5,7 @@ date: '2020-04-15'
 weight: 5
 hidden: true
 slug: tsik-ki-k-hû-tshî-bîn-tsú-ê-tsìng-tshik-tsiân-lūn
-category:
+categories:
   - Tsik-ki̍k hû-tshî bîn-tsú --ê tsìng-tshik
 tags:
   - king-tsè

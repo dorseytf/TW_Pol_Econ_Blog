@@ -10,7 +10,7 @@ output:
     toc: true
     toc_depth: 2
     number_sections: false
-category:
+categories:
   - Proactive Policies for Safeguarding Democracy
 tags:
   - economics
