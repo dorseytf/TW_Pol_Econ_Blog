@@ -11,7 +11,7 @@ output:
     toc: true
     toc_depth: 2
     number_sections: false
-category:
+categories:
   - 積極保護民主的政策
 tags:
   - 資料
