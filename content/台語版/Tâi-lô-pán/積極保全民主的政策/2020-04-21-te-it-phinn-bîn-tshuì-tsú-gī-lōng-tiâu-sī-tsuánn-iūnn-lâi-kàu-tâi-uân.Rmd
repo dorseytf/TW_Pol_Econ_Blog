@@ -1,0 +1,25 @@
+---
+title: 'Te-it-phinn: Bîn-tshuì tsú-gī lōng-tiâu sī tsuánn-iūnn lâi kàu Tâi-uân'
+author: Tōo Him-tshuan
+date: '2020-04-21'
+weight: 4
+slug: te-it-phinn-bîn-tshuì-tsú-gī-lōng-tiâu-sī-tsuánn-iūnn-lâi-kàu-tâi-uân
+bibliography: part1_bib.bib
+output:
+  blogdown::html_page:
+    toc: true
+    toc_depth: 2
+    number_sections: false
+categories:
+  - Tsik-ki̍k hû-tshî bîn-tsú --ê tsìng-tshik
+tags:
+  - bîn-tshuì tsú-gī
+  - king-tsè
+  - tsìng-tī
+  - tsu-liāu
+  - muî-thé
+---
+
+
+
+
