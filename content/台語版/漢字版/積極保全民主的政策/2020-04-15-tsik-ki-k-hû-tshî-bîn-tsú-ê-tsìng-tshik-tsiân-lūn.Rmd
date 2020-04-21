@@ -1,5 +1,5 @@
 ---
-title: 積極保全民主的政策 – 前論 Tsik-ki̍k pó-tsuân bîn-tsú --ê tsìng-tshik – Tsiân-lūn
+title: 積極保全民主的政策 – 前論
 author: Tōo Him-tshuan
 date: '2020-04-15'
 weight: 5
@@ -8,15 +8,21 @@ slug: tsik-ki-k-hû-tshî-bîn-tsú-ê-tsìng-tshik-tsiân-lūn
 categories:
   - Tsik-ki̍k hû-tshî bîn-tsú --ê tsìng-tshik
 tags:
-  - king-tsè
-  - tsìng-tī
-  - bîn-tshuì tsú-gī
+  - 經濟
+  - 政治
+  - 民粹主義
 ---
 
-# 近年民粹主義浪潮的來源 - 前論 Kīn-nî bîn-tshuì tsú-gī lōng-tiâu --ê lâi-guân - Tsiân-lūn
-Tuā-pōo-hun --ê Tâi-uân suán-kí kuan-tshat-tsiá lóng jīn-uî 2020 nî--ê tsóng-thóng suán-kí kiat-kio̍k piáu-sī Tâi-uân-lâng tsin-tsiànn kuan-sim koh siūnn-beh pó-tsuân in tsit-má ū --ê tsū-iû kah bîn-tsú, sīm-tsì hōo Tshuà Ing-bûn tsóng-thóng iânn Hân Kok-jû --ê phiò-sòo phuà-kì-lo̍k. Sui-liân suán-kí liáu-āu kám-kak an-sim --ê lâng tsiok-tsé, tān-sī tshiau-kuè gōo-pah-gōo-tsa̍p-bān--ê lâng thīn Hân Kok-jû, Kok-bîn-tóng tsit-pái--ê [hāu-suán-jîn](https://www.bloomberg.com/graphics/2020-taiwan-election-results/). Jî-tshiánn hia--ê hōo lâng thīn Hân Kok-jû --ê in-sòo iáu-bē bô-khì. Ná-sī lán siūnn-beh hōo Tâi-uân--ê bîn-tsú-huà pìnn khah kiông, lán sóo-ū kuan-sim Tâi-uân bîn-tsú --ê lâng it-tīng ài liáu-kái sann-ê būn-tê:
+# 近年民粹主義浪潮的來源 - 前論
+大部分的台灣選舉觀察者攏認為2020年的總統選舉結局表示台灣人真正關心閣想欲保全怹這馬有的自由佮民主， 甚至予蔡英文總統贏韓國瑜的票數破記錄。 隨然選舉了後感覺安心的人足濟， 但是超過五百五十萬的人伨韓國瑜, 國民黨這擺的[後選人](https://www.bloomberg.com/graphics/2020-taiwan-election-results/)。 而且彼些予人伨韓國瑜的因素猶未無去。 若是咱想欲予台灣的民主化變較強， 咱所有關心台灣民主的人一定愛了解三个問題：
 
-1.	Sè-kài kok bîn-tsú--ê kok-ka lóng ū iū-phài bîn-tshuì-tóng tsi-tshî-lu̍t hiông-hiông phuà-kì-lo̍k --ê hîng-tsōng tàu-té sī tuì tó-uī lâi?
-2.	Tâi-uân-lâng sī an-tsuánn pī-bián tsit-ê iū-phài bîn-tshuì-tsú-gī--ê lōng-tiâu?
-3.	Liáu-kái bîn-tshuì-tsú-gī--ê in-sòo liáu-āu, ū tó-tsi̍t-tsíng--ê tsìng-tshik ē-sái pó-tsuân Tâi-uân--ê bîn-tsú?
+1.	世界各民主的國家攏有右派民粹黨支持率雄雄破記錄的形狀到底是對佗位來？
+2.	台灣人是安怎避免這的右派民粹主義的浪潮？
+3.	了解民粹主義的因素了後，有佗一款的政策會使保全台灣的民主？
+
+因為政治變化佮右派民粹主義的來源足濟，我佇這的佮民粹主義有關係的係列會專門討論經濟佮媒體形壯的影響。我想欲另工閣來討論別的因素，因為政黨認同， 國家認同, 等等因素的變化嘛會影響著民粹主義的支持率。
+
+我blog 的目的是利用政治佮經濟學的文獻閣有我家己予各種的資料分拆去來一个仔一个回答頂懸的問題。 我全部的資料佮code攏是保存到我的GitHub內底。
+
+雖然民粹主義的學家認為民粹主義著是一種政治概念佮政策，左派佮右派攏會使用，但是左派佮右派的民粹政客差別足濟。 上大的差別著是怹推薦的政策佮怹對民主的意見。 就按呢左派 （比如希臘的Syriza黨，西班牙的Podemos黨）佮右派（比如波蘭的Law and Order黨，意大利的Five Star黨，匈牙利的KDNP黨）攏有會當叫民粹黨的政黨。 但是對壢史來講，民主較會受右派民粹黨的傷害，就按呢我主要想欲了解右派的民粹主義。我討論的時陣若是講著民粹政客抑是民粹主義攏是咧講右派的。
 
