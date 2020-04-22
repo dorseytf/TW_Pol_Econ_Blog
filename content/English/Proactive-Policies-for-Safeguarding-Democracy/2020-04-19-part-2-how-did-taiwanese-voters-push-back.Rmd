@@ -20,3 +20,16 @@ tags:
   - populism
 ---
 
+# The Rise of a Populist Candidate in Taiwan
+
+As we saw in [Part 1](/English/2020/part-1-how-the-populist-wave-came-to-taiwan/) of this series, Taiwan shared many of the same factors as the US and European countries that set the stage for a right-wing populist candidate to rise to prominence. In addition to these shaky foundations, a concentrated effort to sway public opinion by the opposition KMT party resulted in a [steadily decreasing approval rating](https://www.tpof.org/%e5%8f%b0%e7%81%a3%e6%94%bf%e6%b2%bb/%e7%b8%bd%e7%b5%b1%e8%81%b2%e6%9c%9b/%e7%b8%bd%e7%b5%b1%e8%81%b2%e6%9c%9b%e8%b6%a8%e5%8b%a2%e5%9c%96%ef%bc%8820165101911/) ^[@tpof_tsai_approval] for President Tsai Ing-wen in the lead up to the 2018 midterm elections. 
+
+![Fig 1: President Tsai Ing-wen Approval Ratings (May 2016 - November 2019) - Green line is Percentage of Respondents Approving, Red line is Percentage of Respondents Not Approving, Gray Line is Unknown/No Opinion](/English/Proactive-Policies-for-Safeguarding-Democracy/2020-04-19-part-2-how-did-taiwanese-voters-push-back_files/總統聲望.jpg)
+
+Against this backdrop, Han Kuo-yu, a member of the KMT with relatively little name recognition (up to this point his previous experience included a stint as a legislator during the 90s and as president of the Taipei Agricultural Products Marketing Corporation), began a meteoric rise to prominence on the Taiwanese political scene, first as a candidate for chairman of the KMT (he came in 4th with less than 6% of the vote), and then as populist candidate for mayor of Taiwan's 2nd-largest city, Kaoshiung. From its status as a second-class industrial city under KMT rule, Kaoshiung was the home of many pro-democracy groups and newspapers during the Martial Law period, and had been a stronghold of the Democratic Progressive Party (DPP) for decades.^[@dip_reichenbach] However, Han successfully leveraged lingering discontent over uneven development and lower incomes compared to the capital Taipei, and combined it with [(very) lofty promises](https://www.taipeitimes.com/News/taiwan/archives/2019/01/18/2003708150) of casinos, a Disney theme park, Formula 1 racing, and making Kaoshiung the richest city in Taiwan, among others.^[@tpe_times_han_promises] 
+
+While initially seen as a longshot against the DPP's incumbent mayor of Kaoshiung, Han followed much the same trajectory as Donald Trump and quickly climbed in the polls thanks to his "outsider" image and social media presence. 
+
+
+***
+# References
