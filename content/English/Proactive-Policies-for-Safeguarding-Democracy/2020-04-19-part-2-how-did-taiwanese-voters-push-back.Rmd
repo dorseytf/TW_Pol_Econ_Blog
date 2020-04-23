@@ -22,7 +22,7 @@ tags:
 
 # The Rise of a Populist Candidate in Taiwan
 
-As we saw in [Part 1](/english/proactive-policies-for-safeguarding-democracy/part-1-how-the-populist-wave-came-to-taiwan/) of this series, Taiwan shared many of the same factors as the US and European countries that set the stage for a right-wing populist candidate to rise to prominence. In addition to these shaky foundations, a concentrated effort to sway public opinion by the opposition KMT party resulted in a [steadily decreasing approval rating](https://www.tpof.org/%e5%8f%b0%e7%81%a3%e6%94%bf%e6%b2%bb/%e7%b8%bd%e7%b5%b1%e8%81%b2%e6%9c%9b/%e7%b8%bd%e7%b5%b1%e8%81%b2%e6%9c%9b%e8%b6%a8%e5%8b%a2%e5%9c%96%ef%bc%8820165101911/) ^[@tpof_tsai_approval] for President Tsai Ing-wen in the lead up to the 2018 midterm elections. 
+As we saw in [Part 1](/english/proactive-policies-for-safeguarding-democracy/part-1-how-the-populist-wave-came-to-taiwan/) of this series, Taiwan shared many of the same factors as the US and European countries that set the stage for a right-wing populist candidate to rise to prominence. In addition to these shaky foundations, the opposition KMT party initiated a concentrated effort to sway public opinion by stoking resentment to pension reform, same-sex marriage, and labor law reforms. This campaign resulted in a [steadily decreasing approval rating](https://www.tpof.org/%e5%8f%b0%e7%81%a3%e6%94%bf%e6%b2%bb/%e7%b8%bd%e7%b5%b1%e8%81%b2%e6%9c%9b/%e7%b8%bd%e7%b5%b1%e8%81%b2%e6%9c%9b%e8%b6%a8%e5%8b%a2%e5%9c%96%ef%bc%8820165101911/) ^[@tpof_tsai_approval] for President Tsai Ing-wen in the lead up to the 2018 midterm elections. 
 
 ![Fig 1: President Tsai Ing-wen Approval Ratings (May 2016 - November 2019) - Green line is Percentage of Respondents Approving, Red line is Percentage of Respondents Not Approving, Gray Line is Unknown/No Opinion](/English/Proactive-Policies-for-Safeguarding-Democracy/2020-04-19-part-2-how-did-taiwanese-voters-push-back_files/總統聲望.jpg)
 
@@ -32,9 +32,35 @@ While initially seen as a longshot against the DPP's incumbent mayor of Kaoshiun
 
 However, Han's supporters were not satisfied with a mere mayorship and almost immediately began calling for him to run for President in the 2020 election. Apparently in full agreement, Han agreed to run for President only 6 months after his inauguration as Kaoshiung mayor. 
 
+***
+
 # The Major Issues Leading Up to the 2020 Presidential Election
+While the situation looked bleak for the incumbent Tsai in the early stages of campaigning, several major issues, both within and outside of Taiwan, led to massive shifts in public opinion in Tsai's favor. 
+
+## External Issues
+
+### 1. Hong Kong Protests and China's Crackdown
+
+### 2. Chinese Media Interference
+
+## Internal Issues
+
+### 1. Han Kuo-yu's Poor Performance in Kaoshiung
+
+### 2. Young Voters and 3rd Parties
+
+### 3. Combatting Fake News
+
+***
+# Analysis of the 2020 Election Results
 
 
+***
+# Most Important Factors Affecting Voter Preferences
+
+
+***
+# In the Final Installment...
 
 
 ***
