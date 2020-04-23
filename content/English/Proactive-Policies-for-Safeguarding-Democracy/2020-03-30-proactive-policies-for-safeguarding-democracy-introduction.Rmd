@@ -22,8 +22,8 @@ Most observers of Taiwan’s 2020 general election agree that the results show v
 
 Each post in this series will be devoted to one of these questions, building on existing scholarly work as well as presenting new analyses to improve our understanding of these pressing issues. All data and R code for the analyses I performed are available through my GitHub. 
 
-- [Part 1: How the Populist Wave Came to Taiwan](/English/2020/part-1-how-the-populist-wave-came-to-taiwan/)
-- [Part 2: How Taiwanese Voters Pushed Back](/English/2020/part-2-how-did-taiwanese-voters-push-back/)
+- [Part 1: How the Populist Wave Came to Taiwan](/english/proactive-policies-for-safeguarding-democracy/part-1-how-the-populist-wave-came-to-taiwan/)
+- [Part 2: How Taiwanese Voters Pushed Back](/english/proactive-policies-for-safeguarding-democracy/part-2-how-did-taiwanese-voters-push-back/)
 - Part 3: Policies to Prevent Future Attacks on Taiwan's Democracy
 
 # Three important points to keep in mind for this series:
