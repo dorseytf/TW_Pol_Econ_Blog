@@ -86,7 +86,9 @@ While the situation looked bleak for the incumbent Tsai in the early stages of c
 ## External Issues
 
 ### 1. Hong Kong Protests and China's Crackdown
+Beginning in June of 2019, [protests against a new extradition bill](https://www.bbc.com/news/world-asia-china-49317695)^[@bbc_hk_protest] broke out in Hong Kong, flooding the streets with hundreds of thousands of protestors. After China cracked down hard, the protests escalated and continued, leading to pro-democracy candidates sweeping the local elections. In Taiwan, the constant media coverage and discussions on social media [galvanized public opinion](https://www.bbc.com/zhongwen/trad/chinese-news-48580187) ^[@bbc_hk_tw] in favor of protecting Taiwanese sovereignty^[@tpof_ind] and moving futher [away from Chinese influence](https://www.watchinese.com/article/2019/24491).^[@watch_hk]
 
+![Fig 3: Support for Taiwanese Independence vs Unification, 1991-2019/6. Green line shows Support for Independence, Red line shows support for Unification with China, and Yellow line shows Support for Maintaining the Status Quo](/English/Proactive-Policies-for-Safeguarding-Democracy/2020-04-19-part-2-how-did-taiwanese-voters-push-back_files/台灣人統獨傾向趨勢圖.jpg)
 
 ### 2. Chinese Media Interference
 
