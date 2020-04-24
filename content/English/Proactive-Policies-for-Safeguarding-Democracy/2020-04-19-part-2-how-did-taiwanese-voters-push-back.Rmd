@@ -28,7 +28,53 @@ As we saw in [Part 1](/english/proactive-policies-for-safeguarding-democracy/par
 
 Against this backdrop, Han Kuo-yu, a member of the KMT with relatively little name recognition (up to this point his previous experience included a stint as a legislator during the 90s and as president of the Taipei Agricultural Products Marketing Corporation), began a meteoric rise to prominence on the Taiwanese political scene, first as a candidate for chairman of the KMT (he came in 4th with less than 6% of the vote), and then as populist candidate for mayor of Taiwan's 2nd-largest city, Kaoshiung. From its status as a second-class industrial city under KMT rule, Kaoshiung was the home of many pro-democracy groups and newspapers during the Martial Law period, and had been a stronghold of the Democratic Progressive Party (DPP) for decades.^[@dip_reichenbach] However, Han successfully leveraged lingering discontent over uneven development and lower incomes compared to the capital Taipei, and combined it with [(very) lofty promises](https://www.taipeitimes.com/News/taiwan/archives/2019/01/18/2003708150) of casinos, a Disney theme park, Formula 1 racing, and making Kaoshiung the richest city in Taiwan, among others.^[@tpe_times_han_promises] 
 
-While initially seen as a longshot against the DPP's incumbent mayor of Kaoshiung, Han followed much the same trajectory as Donald Trump and quickly climbed in the polls thanks to his "outsider" image and social media presence. Han's rising popularity also lifted several of his fellow KMT challengers, leading to the KMT winning several powerful mayorships and 9 additional seats in the legislature.^[@morris_18]
+While initially seen as a longshot against the DPP's incumbent mayor of Kaoshiung, Han followed much the same trajectory as Donald Trump and quickly climbed in the polls thanks to his "outsider" image and social media presence. Han's rising popularity also lifted the fortunes of the [KMT as a whole](http://www.taipeitimes.com/News/taiwan/archives/2018/11/26/2003704948)^[@tpe_times_han_18], winning over independent voters^[@tpof_party_id] and leading to the KMT winning several powerful mayorships and 9 additional seats in the legislature.^[@morris_18]
+
+```{r tw_party_id, echo=FALSE, message = FALSE, warning=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(message = FALSE)
+
+## Load required libraries
+library(readr)
+library(janitor)
+library(tidyverse)
+library(scales)
+library(lubridate)
+library(tsbox)
+library(knitr)
+library(kableExtra)
+library(ggrepel)
+library(showtext)
+font_install(source_han_serif())
+
+tw_party_id_url <- "https://raw.githubusercontent.com/dorseytf/Blog-Replication-Scripts/master/Taiwan%20Party%20Identification%20Data%202016-2019.csv"
+
+read_csv(url(tw_party_id_url)) %>%
+  gather("metric", "value", -Date) %>%
+  mutate(value = gsub("%", "", value)) %>%
+  mutate(value = as.numeric(value),
+         Date  = mdy(Date)) %>%
+  ggplot(aes(x = Date, y = value, color = metric)) +
+  geom_line() +
+  geom_vline(xintercept = mdy("11/24/2018")) +
+  annotate("text", x = mdy("12/15/2018"), y = 58, label = "2018 Midterm\nElection", hjust = 0) +
+  geom_vline(xintercept = mdy("5/21/2018")) +
+  annotate("text", x = mdy("5/15/2018"), y = 55, label = str_wrap("Han Kuo-yu Wins KMT Primary for Kaoshiung Mayor", 20), hjust = 1) +
+  geom_point(shape = 1) +
+  coord_cartesian(ylim = c(0,60)) +
+  scale_x_date(date_breaks = "4 months", date_labels = "%Y/%m") +
+  scale_color_manual(values = c("green", "blue", "darkgrey"), 
+                     limits = c("Identify as DPP", "Identify as KMT", "Identify as Neutral/Independent"),
+                     name = "") +
+  theme(legend.position = "top",
+        plot.title = element_text(face = "bold", size = 16)) +
+  labs(title = "Party Identification Trends in Taiwan - 2016/05 - 2019/11",
+       x = " ",
+       y = "Percentage Identifying with Party",
+       caption = "Adapted from Taiwanese Public Opinion Foundation")
+
+```
+Fig 2: Party Identification Trends in Taiwan - 2016/05 to 2019/11. Han's rise in popularity leading up to the 2018 Mayoral election (held on 2018-11-24) coincided with a large shift of independent/neutral voters to identifying with the KMT.
 
 However, Han's supporters were not satisfied with a mere mayorship and almost immediately began calling for him to run for President in the 2020 election. Apparently in full agreement, Han agreed to run for President only 6 months after his inauguration as Kaoshiung mayor. 
 
@@ -41,7 +87,10 @@ While the situation looked bleak for the incumbent Tsai in the early stages of c
 
 ### 1. Hong Kong Protests and China's Crackdown
 
+
 ### 2. Chinese Media Interference
+
+
 
 ## Internal Issues
 
