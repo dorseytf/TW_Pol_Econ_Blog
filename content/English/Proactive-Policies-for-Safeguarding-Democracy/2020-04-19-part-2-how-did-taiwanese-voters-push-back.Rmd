@@ -112,7 +112,9 @@ The DPP noticed these generational gaps in opinion as well as the proactive mobi
 
 ***
 # What Really Drove the 2020 Election Results
-In order to analyze this question in a robust way, here I utilize a relatively new approach known as [Specification Curve Analysis](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=2694998), or SCA.^[@sca_ssrn] At a high level, SCA seeks to avoid arbitrary and potentially motivated model/variable specifications by running all theoretically justified analytic specifications and testing the results as a whole to determine significance; or as Julia Rohrer put it, ["Run all the models!"](https://www.psychologicalscience.org/observer/run-all-the-models-dealing-with-data-analytic-flexibility) ^[@apa_sca]
+In order to analyze this question in a robust way, I utilize a relatively new approach known as [Specification Curve Analysis](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=2694998), or SCA.^[@sca_ssrn] At a high level, SCA seeks to avoid arbitrary and potentially motivated model/variable specifications by running all theoretically justified analytic specifications and testing the results as a whole to determine significance; or as Julia Rohrer put it, ["Run all the models!"](https://www.psychologicalscience.org/observer/run-all-the-models-dealing-with-data-analytic-flexibility) ^[@apa_sca] 
+
+In the interest of brevity, I will only present a short overview of the variables and models used, along with a discussion of the main findings. For a full walk-through, as well as the code and data, see the [SCA replication file](https://github.com/dorseytf/Blog-Replication-Scripts) on my GitHub.
 
 
 ***
