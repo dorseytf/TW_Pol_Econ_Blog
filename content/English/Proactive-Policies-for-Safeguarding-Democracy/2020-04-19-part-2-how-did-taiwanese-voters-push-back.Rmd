@@ -76,7 +76,7 @@ read_csv(url(tw_party_id_url)) %>%
 ```
 Fig 2: Party Identification Trends in Taiwan - 2016/05 to 2019/11. Han's rise in popularity leading up to the 2018 Mayoral election (held on 2018-11-24) coincided with a large shift of independent/neutral voters to identifying with the KMT.
 
-However, Han's supporters were not satisfied with a mere mayorship and almost immediately began calling for him to run for President in the 2020 election. Apparently in full agreement, Han agreed to run for President only 6 months after his inauguration as Kaoshiung mayor. 
+However, Han's supporters were not satisfied with a mere mayorship and almost immediately began calling for him to run for President in the 2020 election. Apparently in full agreement, Han announced his bid for President only 6 months after his inauguration as Kaoshiung mayor. His campaign focused on building significantly closer political as well as economic ties with China, (more) lofty promises, and often misogynistic attacks on his rival Tsai Ing-wen.
 
 ***
 
@@ -98,11 +98,10 @@ Despite China's efforts to manipulate Taiwan's media and spread disinformation o
 ### 1. Han Kuo-yu's Poor Performance in Kaoshiung
 Despite his lofty campaign promises, Han was apparently always more interested in running for president than being mayor of Kaoshiung. So much so, in fact, that in the time between his inauguration and beginning his presidential campaign, he [accomplished little](https://thediplomat.com/2019/06/taiwans-democracy-is-utterly-confounded-by-populist-mayor-han-kuo-yu/) ^[@dip_aspinwall] and had [disastrous city council appearances](http://www.taipeitimes.com/News/front/archives/2019/05/10/2003714876)^[@tpe_times_han_city_council]. Kaoshiung residents grew so dissatisfied that [large protests](https://www.scmp.com/news/china/politics/article/3043074/kaohsiung-braced-rival-political-rallies-and-against-taiwan)^[@scmp_han] took place against the ["runaway mayor"](https://www.storm.mg/article/2060606)^[@storm_laopao] (which has since evolved into a recall movement that is slated to go before voters in June 2020).
 
+### 2. The Youth Vote
+In an election focused largely on what Taiwan's relationship with China should look like, it should come as no surprise that the youth vote would play a large role given the fact that over 80% of Taiwanese aged 20-29 [identify as Taiwanese](https://www.bbc.com/zhongwen/trad/chinese-news-51031941)^[@bbc_tw_youth_vote] and not Chinese. While there were initially fears about turnout among young voters, Taiwan's youth [mobilized in force](https://international.thenewslens.com/feature/taiwan2020/129897)^[@news_lens_youth] leading up to the 2020 election, organizing as online fact-checkers, street canvassers, and working to convince Han-supporting elderly friends and relatives to "wake up" from the Han-craze. 
 
-### 2. Young Voters and 3rd Parties
-
-
-
+The DPP realized that, given the KMT's voter base is older and more likely to vote, working with young people to ensure turnout would be crucial to winning the election. So in addition to running ad campaigns urging young people to return home to vote^[Taiwan's household registration-based voting system creates hurdles for young voters, since you must vote in-person in the district in which you are registered (typically your parent's house). A large proportion of young Taiwanese live away from their registered household, whether to attend college or for work, and do not want the hassle of changing their household registration every time they move. Therefore, when election time rolls around, they must take time off work and fight through long lines to purchase train and bus tickets back home in order to cast their ballot. ] (see footnote for explanation on how voting works in Taiwan), the DPP also threw their support behind several young legislative candidates looking to [shakeup Taiwanese politics](https://www.theguardian.com/world/2020/jan/10/taiwan-election-squad-youth-china-tsai-ing-wen) (a ragtag group straight out of an 80s movie, they included a cosplayer, a death metal singer, a former special forces officer, and a former movie producer running as a member of a pro-Independence third party). ^[@guardian_tw_squad]
 
 
 ***
