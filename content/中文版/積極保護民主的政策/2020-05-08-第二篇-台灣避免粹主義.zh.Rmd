@@ -1,0 +1,21 @@
+---
+title: 第二篇： 台灣人是怎麼避免近年民粹主義浪潮的
+author: Travis Dorsey
+date: '2020-05-08'
+slug: 第二篇-台灣避免粹主義
+bibliography: part1_bib.bib
+output:
+  blogdown::html_page:
+    toc: true
+    toc_depth: 2
+    number_sections: false
+categories:
+  - 積極保護民主的政策
+tags:
+  - 民粹主義
+  - 經濟
+  - 資料
+  - 政治
+  - 媒體
+---
+
