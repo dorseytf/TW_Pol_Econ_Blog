@@ -1,7 +1,7 @@
 ---
 title: 'Part 2: How Did Taiwanese Voters Push Back?'
 author: Travis Dorsey
-date: '2020-04-30'
+date: '2020-05-08'
 weight: 3
 slug: part-2-how-did-taiwanese-voters-push-back
 bibliography: part1_bib.bib
@@ -26,7 +26,7 @@ As we saw in [Part 1](/english/proactive-policies-for-safeguarding-democracy/par
 
 ![Fig 1: President Tsai Ing-wen Approval Ratings (May 2016 - November 2019) - Green line is Percentage of Respondents Approving, Red line is Percentage of Respondents Not Approving, Gray Line is Unknown/No Opinion](/English/Proactive-Policies-for-Safeguarding-Democracy/2020-04-19-part-2-how-did-taiwanese-voters-push-back_files/總統聲望.jpg)
 
-Against this backdrop, Han Kuo-yu, a member of the KMT with relatively little name recognition (up to this point his previous experience included a stint as a legislator during the 90s and as president of the Taipei Agricultural Products Marketing Corporation), began a meteoric rise to prominence on the Taiwanese political scene, first as a candidate for chairman of the KMT (he came in 4th with less than 6% of the vote), and then as populist candidate for mayor of Taiwan's 2nd-largest city, Kaoshiung. From its status as a second-class industrial city under KMT rule, Kaoshiung was the home of many pro-democracy groups and newspapers during the Martial Law period, and had been a stronghold of the Democratic Progressive Party (DPP) for decades.^[@dip_reichenbach] However, Han successfully leveraged lingering discontent over uneven development and lower incomes compared to the capital Taipei, and combined it with [(very) lofty promises](https://www.taipeitimes.com/News/taiwan/archives/2019/01/18/2003708150) of casinos, a Disney theme park, Formula 1 racing, and making Kaoshiung the richest city in Taiwan, among others.^[@tpe_times_han_promises] 
+Against this backdrop, Han Kuo-yu, a member of the KMT with relatively little name recognition (up to this point his previous experience included a stint as a legislator during the 90s and as president of the Taipei Agricultural Products Marketing Corporation), began a meteoric rise to prominence on the Taiwanese political scene, first as a candidate for chairman of the KMT (he came in 4th with less than 6% of the vote), and then as populist candidate for mayor of Taiwan's 3rd-largest city, Kaoshiung. From its status as a second-class industrial city under KMT rule, Kaoshiung was the home of many pro-democracy groups and newspapers during the Martial Law period, and had been a stronghold of the Democratic Progressive Party (DPP) for decades.^[@dip_reichenbach] However, Han successfully leveraged lingering discontent over uneven development and lower incomes compared to the capital Taipei, and combined it with [(very) lofty promises](https://www.taipeitimes.com/News/taiwan/archives/2019/01/18/2003708150) of casinos, a Disney theme park, Formula 1 racing, and making Kaoshiung the richest city in Taiwan, among others.^[@tpe_times_han_promises] 
 
 While initially [seen as a longshot](https://www.taipeitimes.com/News/taiwan/archives/2018/07/28/2003697529)^[@tpe_times_han_survey_18] against the DPP's incumbent mayor of Kaoshiung, Han followed much the same trajectory as Donald Trump and quickly climbed in the polls thanks to his "outsider" image and social media presence. Han's rising popularity also lifted the fortunes of the [KMT as a whole](http://www.taipeitimes.com/News/taiwan/archives/2018/11/26/2003704948)^[@tpe_times_han_18], winning over independent voters^[@tpof_party_id] and leading to the KMT winning several powerful mayorships and 9 additional seats in the legislature.^[@morris_18]
 
@@ -76,11 +76,11 @@ read_csv(url(tw_party_id_url)) %>%
 ```
 Fig 2: Party Identification Trends in Taiwan - 2016/05 to 2019/11. Han's rise in popularity leading up to the 2018 Mayoral election (held on 2018-11-24) coincided with a large shift of independent/neutral voters to identifying with the KMT.
 
-However, Han's supporters were not satisfied with a mere mayorship and almost immediately began calling for him to run for President in the 2020 election. Apparently in full agreement, Han announced his bid for President only 6 months after his inauguration as Kaoshiung mayor. His campaign focused on building significantly closer political as well as economic ties with China, lofty (an often impossible) promises, [laughably obvious fabrications](https://sentinel.tw/the-han-kuo-yu-craze-threatens-democracy/) ^[@tw_sentinel_han_danger_dem] , and often misogynistic attacks on his opponent, Tsai Ing-wen.
+However, Han's supporters were not satisfied with a mere mayorship and almost immediately began calling for him to run for President in the 2020 election. Apparently in full agreement, Han announced his bid for President only 6 months after his inauguration as Kaoshiung mayor. His campaign focused on building significantly closer political as well as economic ties with China, lofty (and frequently impossible) promises, [laughably obvious fabrications](https://sentinel.tw/the-han-kuo-yu-craze-threatens-democracy/) ^[@tw_sentinel_han_danger_dem] , and often misogynistic attacks on his opponent, Tsai Ing-wen.
 
 ***
 
-# The Major Issues Leading Up to the 2020 Presidential Election
+# What Drove the 2020 Presidential Election Results?
 While the situation looked bleak for the incumbent Tsai in the early stages of campaigning, several major issues, both within and outside of Taiwan, led to massive shifts in public opinion in Tsai's favor. 
 
 ## External Issues
@@ -92,6 +92,8 @@ Beginning in June of 2019, [protests against a new extradition bill](https://www
 
 Despite China's efforts to manipulate Taiwan's media and spread disinformation online in the lead up to the 2020 election (see my [previous post](/english/proactive-policies-for-safeguarding-democracy/part-1-how-the-populist-wave-came-to-taiwan/)), the Hong Kong protests [significantly weakened China's effectiveness](https://www.storm.mg/article/2130944) at swaying public opinion in Taiwan.^[@storm_media_cn_tw] In fact, Han Kuo-yu's support for the 1992 Consensus and the "One Country, Two Systems" model as practiced in Hong Kong became a [major liability](https://www.bbc.com/zhongwen/trad/chinese-news-50939354) ^[@bbc_onts_hk] as the protests and crackdown dragged on.
 
+### US-China Trade War
+While the impact of the US-China Trade War on [Taiwan's economy has been mixed](https://www.eastasiaforum.org/2020/01/11/taiwans-economic-resilience/) ^[@eaf_trade_war], the country has fared much better than many of its neighbors. Exports to the US, for instance, increased over 17% in 2019 while exports to China and ASEAN countries dropped by 5% and 7.6%, respectively. Perhaps most importantly, the government adopted several proactive policies to [encourage companies to return from abroad (mostly China) to invest in Taiwan](https://www.ndc.gov.tw/en/Content_List.aspx?n=286FD0E985C0EA44) ^[@ndc_tw]. By December 2019, Taiwan had recorded US\$28 billion in domestic investment and foreign direct investment (FDI) in Taiwan reached its highest level since 2008. The [government also forecasts](https://www.bloomberg.com/news/articles/2019-11-18/taiwan-sees-chance-to-reclaim-high-end-industries-lost-to-china) an additional NT\$300 to NT\$400 billion of investment annually for the next 2-3 years thanks to this influx of firms.^[@bloom_tw_fdi] All this new investment has led to an increase in high-end manufacturing jobs in Taiwan, leading to an improved approval rating for incumbent Tsai Ying-wen. 
 
 ## Internal Issues
 
@@ -111,15 +113,21 @@ The DPP noticed these generational gaps in opinion as well as the proactive mobi
 
 
 ***
-# What Really Drove the 2020 Election Results
-In order to analyze this question in a robust way, I utilize a relatively new approach known as [Specification Curve Analysis](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=2694998), or SCA.^[@sca_ssrn] At a high level, SCA seeks to avoid arbitrary and potentially motivated model/variable specifications by running all theoretically justified analytic specifications and testing the results as a whole to determine significance; or as Julia Rohrer put it, ["Run all the models!"](https://www.psychologicalscience.org/observer/run-all-the-models-dealing-with-data-analytic-flexibility) ^[@apa_sca] 
+# What Can the 2020 Election Results Teach Us About Fighting Populism?
+Even though Taiwan appeared ready to follow Europe and the US in electing a right-wing populist president during the early stages of the campaign, the confluence of external and internal factors led to strong turnout among voters in favor of democracy. However, how many of these factors are replicable and how many arose from specific circumstances?
 
-In the interest of brevity, I will only present a short overview of the variables and models used, along with a discussion of the main findings. For a full walk-through, as well as the code and data, see the [SCA replication file](https://github.com/dorseytf/Blog-Replication-Scripts) on my GitHub.
+While it is true that several of the important factors leading to Han Kuo-yu's loss in the election are specific to either Taiwan (backlash against China's crackdown on Hong Kong protesters) or this election cycle (voters got a preview of the populist's governing style with his brief tenure as a mayor), there are several that can be used as blueprints for crafting proactive policies moving forward. 
+
+## Proactive Economic Policies
+Though initially in response to a specific circumstance (US-China Trade War), Taiwan's policies of encouraging investment and expanding manufacturing jobs that have dissapeared in recent decades have not only shown success, but they can also be easily adopted by other countries.
+
+## Mobilizing Youth Voters
+Often overlooked and ignored by politicians, young voters in Taiwan showed that they can be a significant force in the fight against misinformation and democratic backsliding. Many of the policies that Taiwan adopted to encourage turnout among younger voters, such as ad campaigns, supporting young candidates, and adopting policies to support younger people, are also easily adapted to other countries.
 
 
 ***
 # In the Final Installment...
-
+We will expand on these replicable policies and discuss how they could help bolster democracy across the globe. 
 
 ***
 # References
