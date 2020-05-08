@@ -2,6 +2,7 @@
 title: 第二篇： 台灣人是怎麼避免近年民粹主義浪潮的
 author: Travis Dorsey
 date: '2020-05-08'
+weight: 3
 slug: 第二篇-台灣避免粹主義
 bibliography: part1_bib.bib
 output:
@@ -19,3 +20,89 @@ tags:
   - 媒體
 ---
 
+# 民粹政客如何在台灣爆紅
+
+根據[第一篇](/中文版/積極保護民主的政策/第一篇民粹主義浪潮如何來台/)的解釋，台灣與美國和歐洲國家有著許多相同的因素，這些因素為右派民粹政客脫穎而出奠定了基礎。 除此之外，在野的國民黨為了影響公眾輿論而發起了集中力量來通過引起對養老金改革，同性婚姻，和勞動法改革的不滿。 這個運動導致在2018年選舉之前蔡英文總統的[支持率穩步下降](https://www.tpof.org/%e5%8f%b0%e7%81%a3%e6%94%bf%e6%b2%bb/%e7%b8%bd%e7%b5%b1%e8%81%b2%e6%9c%9b/%e7%b8%bd%e7%b5%b1%e8%81%b2%e6%9c%9b%e8%b6%a8%e5%8b%a2%e5%9c%96%ef%bc%8820165101911/) ^[@tpof_tsai_approval] 。
+
+![圖1：蔡英文總統聲望趨勢。 綠色線為贊同，紅色線為不贊同，灰色線為不知道](/中文版/積極保護民主的政策/2020-05-08-第二篇-台灣避免粹主義.zh_files/總統聲望.jpg)
+
+在這種背景下，韓國瑜從一位相對未知的國民黨黨員（之前他最著名的經驗為90年代當過立委員和當過北農總經理）變到一位爆紅的政客，第一當國民黨主席候選人（排第四名，得票率不到6%），再來當高雄市長民粹候選人。 在戒嚴時期高雄是許多民主團體和報紙的所在地，民主化之後也一直都是民進黨的據點。^[@dip_reichenbach] 不過，韓國瑜成功地利用了高雄人對比台北較低收入和發展不平均的持續不滿，並將這種不滿與[崇高的承諾](https://www.taipeitimes.com/News/taiwan/archives/2019/01/18/2003708150) 結合在一起，甚至承諾蓋賭場，迪士尼遊樂園，賽車場，和讓高雄成為台灣首富。^[@tpe_times_han_promises]
+
+雖然一開始大家認為他贏陳其邁的[機率很低](https://www.taipeitimes.com/News/taiwan/archives/2018/07/28/2003697529)  ^[@tpe_times_han_survey_18] ，但是韓國瑜遵循與川普相同的軌跡，靠者局外人形象和社交媒體他的支持率很快就提高了。 此“韓流”也對其他的國民黨的候選人[有幫助](http://www.taipeitimes.com/News/taiwan/archives/2018/11/26/2003704948)^[@tpe_times_han_18] ，吸引了許多無黨款的公民^[@tpof_party_id] ，也導致國民黨在2018年選舉勝利。^[@morris_18]
+
+```{r tw_party_id, echo=FALSE, message = FALSE, warning=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(message = FALSE)
+
+## Load required libraries
+library(readr)
+library(janitor)
+library(tidyverse)
+library(scales)
+library(lubridate)
+library(tsbox)
+library(knitr)
+library(kableExtra)
+library(ggrepel)
+library(showtext)
+font_install(source_han_serif())
+
+tw_party_id_url <- "https://raw.githubusercontent.com/dorseytf/Blog-Replication-Scripts/master/Taiwan%20Party%20Identification%20Data%202016-2019.csv"
+
+zh_theme <- theme_get()
+zh_theme$text$family <- "PingFang TC"
+theme_set(zh_theme)
+
+read_csv(url(tw_party_id_url)) %>%
+  gather("metric", "value", -Date) %>%
+  mutate(value = gsub("%", "", value)) %>%
+  mutate(value = as.numeric(value),
+         Date  = mdy(Date)) %>%
+  ggplot(aes(x = Date, y = value, color = metric)) +
+  geom_line() +
+  geom_vline(xintercept = mdy("11/24/2018")) +
+  annotate("text", x = mdy("12/15/2018"), y = 58, label = "2018年選舉", hjust = 0, family = "PingFang TC") +
+  geom_vline(xintercept = mdy("5/21/2018")) +
+  annotate("text", x = mdy("5/15/2018"), y = 55, label = str_wrap("韓國瑜贏了國民黨高雄市長提名選舉", 20), hjust = 1, family = "PingFang TC") +
+  geom_point(shape = 1) +
+  coord_cartesian(ylim = c(0,60)) +
+  scale_x_date(date_breaks = "4 months", date_labels = "%Y/%m") +
+  scale_color_manual(values = c("green", "blue", "darkgrey"), 
+                     limits = c("Identify as DPP", "Identify as KMT", "Identify as Neutral/Independent"),
+                     labels = c("民進黨認同者", "國民黨認同者", "中性選民"),
+                     name = "") +
+  theme(legend.position = "top",
+        plot.title = element_text(face = "bold", size = 16)) +
+  labs(title = "台灣政黨認同趨勢 - 2016/05 - 2019/11",
+       x = " ",
+       y = "政黨認同百分比",
+       caption = "改編自台灣民意基金會")
+```
+圖2：台灣政黨認同趨勢 - 2016/05 to 2019/11。在2018年高雄市長選舉之前，韓國瑜的聲望上升，恰逢獨立選民的轉變到國民黨認同者
+
+不過，韓粉覺得選上市長不夠，幾乎立即叫韓國瑜在2020年總統選舉參選。顯然完全同意，韓國瑜在就職不到六的月就宣布競選總統。 他的競選活動著重於與中國的打造緊密政治和經濟的聯繫，崇高(又不可能)的承諾，[可笑的明顯捏造](https://sentinel.tw/the-han-kuo-yu-craze-threatens-democracy/) ^[@tw_sentinel_han_danger_dem]，以及對蔡英文發厭女性的攻擊。
+
+***
+
+# 韓國瑜如何大敗選？
+雖然在2019年初蔡英文的連任機率感覺非常低，在國內外都發生了不少影響到民意的事情。
+
+
+## 國外的因素
+
+### 1. 香港抗議與中國的鎮壓
+
+
+### 2. 中美貿易戰
+
+
+## 國內的因素
+
+### 1. 表現不佳的高雄市長
+
+
+### 2. 青年投票
+
+
+***
+# 參考文獻
