@@ -26,7 +26,7 @@ As we saw in [Part 1](/english/proactive-policies-for-safeguarding-democracy/par
 
 ![Fig 1: President Tsai Ing-wen Approval Ratings (May 2016 - November 2019) - Green line is Percentage of Respondents Approving, Red line is Percentage of Respondents Not Approving, Gray Line is Unknown/No Opinion](/English/Proactive-Policies-for-Safeguarding-Democracy/2020-04-19-part-2-how-did-taiwanese-voters-push-back_files/總統聲望.jpg)
 
-Against this backdrop, Han Kuo-yu, a member of the KMT with relatively little name recognition (up to this point his previous experience included a stint as a legislator during the 90s and as president of the Taipei Agricultural Products Marketing Corporation), began a meteoric rise to prominence on the Taiwanese political scene, first as a candidate for chairman of the KMT (he came in 4th with less than 6% of the vote), and then as populist candidate for mayor of Taiwan's 3rd-largest city, Kaoshiung. From its status as a second-class industrial city under KMT rule, Kaoshiung was the home of many pro-democracy groups and newspapers during the Martial Law period, and had been a stronghold of the Democratic Progressive Party (DPP) for decades.^[@dip_reichenbach] However, Han successfully leveraged lingering discontent over uneven development and lower incomes compared to the capital Taipei, and combined it with [(very) lofty promises](https://www.taipeitimes.com/News/taiwan/archives/2019/01/18/2003708150) of casinos, a Disney theme park, Formula 1 racing, and making Kaoshiung the richest city in Taiwan, among others.^[@tpe_times_han_promises] 
+Against this backdrop, Han Kuo-yu, a member of the KMT with relatively little name recognition (up to this point his most notable previous experiences included a stint as a legislator during the 90s and as president of the Taipei Agricultural Products Marketing Corporation), began a meteoric rise to prominence on the Taiwanese political scene, first as a candidate for chairman of the KMT (he came in 4th with less than 6% of the vote), and then as populist candidate for mayor of Taiwan's 3rd-largest city, Kaoshiung. From its status as a second-class industrial city under KMT rule, Kaoshiung was the home of many pro-democracy groups and newspapers during the Martial Law period, and had been a stronghold of the Democratic Progressive Party (DPP) for decades.^[@dip_reichenbach] However, Han successfully leveraged lingering discontent over uneven development and lower incomes compared to the capital Taipei, and combined it with [(very) lofty promises](https://www.taipeitimes.com/News/taiwan/archives/2019/01/18/2003708150) of casinos, a Disney theme park, Formula 1 racing, and making Kaoshiung the richest city in Taiwan, among others.^[@tpe_times_han_promises] 
 
 While initially [seen as a longshot](https://www.taipeitimes.com/News/taiwan/archives/2018/07/28/2003697529)^[@tpe_times_han_survey_18] against the DPP's incumbent mayor of Kaoshiung, Han followed much the same trajectory as Donald Trump and quickly climbed in the polls thanks to his "outsider" image and social media presence. Han's rising popularity also lifted the fortunes of the [KMT as a whole](http://www.taipeitimes.com/News/taiwan/archives/2018/11/26/2003704948)^[@tpe_times_han_18], winning over independent voters^[@tpof_party_id] and leading to the KMT winning several powerful mayorships and 9 additional seats in the legislature.^[@morris_18]
 
@@ -113,6 +113,7 @@ The DPP noticed these generational gaps in opinion as well as the proactive mobi
 
 
 ***
+
 # What Can the 2020 Election Results Teach Us About Fighting Populism?
 Even though Taiwan appeared ready to follow Europe and the US in electing a right-wing populist president during the early stages of the campaign, the confluence of external and internal factors led to strong turnout among voters in favor of democracy. However, how many of these factors are replicable and how many arose from specific circumstances?
 
@@ -121,7 +122,7 @@ While it is true that several of the important factors leading to Han Kuo-yu's l
 ## Proactive Economic Policies
 Though initially in response to a specific circumstance (US-China Trade War), Taiwan's policies of encouraging investment and expanding manufacturing jobs that have dissapeared in recent decades have not only shown success, but they can also be easily adopted by other countries.
 
-## Mobilizing Youth Voters
+## Mobilizing Young Voters
 Often overlooked and ignored by politicians, young voters in Taiwan showed that they can be a significant force in the fight against misinformation and democratic backsliding. Many of the policies that Taiwan adopted to encourage turnout among younger voters, such as ad campaigns, supporting young candidates, and adopting policies to support younger people, are also easily adapted to other countries.
 
 
