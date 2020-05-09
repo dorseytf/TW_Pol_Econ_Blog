@@ -97,15 +97,34 @@ read_csv(url(tw_party_id_url)) %>%
 
 儘管在2020大選之前中國努力操縱台灣媒體並在社交媒體上傳播虛假信息（如[上一篇](/中文版/積極保護民主的政策/第一篇民粹主義浪潮如何來台/)）， 香港的反送中抗議減少了中國對台灣事務的[影響力](https://www.storm.mg/article/2130944)。^[@storm_media_cn_tw] 實際上，韓國瑜對1992年共識和香港實行的“一國兩制”模式的支持成為他[最大的缺點之一](https://www.bbc.com/zhongwen/trad/chinese-news-50939354)。 ^[@bbc_onts_hk] 
 
+
 ### 2. 中美貿易戰
+雖然中美貿易戰對台灣的[影響喜憂參半](https://www.eastasiaforum.org/2020/01/11/taiwans-economic-resilience/)^[@eaf_trade_war] ， 但是台灣的經濟狀況好於鄰國。 在2019年，雖然台灣對中國和東盟國家的出口分別下降了5％和7.6％，不過對美國的出口增長了超過17％。 也許最重要的是，政府採取了一些積極的政策來鼓勵台商從國外（主要是中國）返回[台灣投資](https://www.ndc.gov.tw/en/Content_List.aspx?n=286FD0E985C0EA44)^[@ndc_tw] 。 至2019年12月，台灣的國內投資達到美金280億元，台灣的外國直接投資（FDI）也達到2008年以來的最高水平。 政府[還預測](https://www.bloomberg.com/news/articles/2019-11-18/taiwan-sees-chance-to-reclaim-high-end-industries-lost-to-china) ，由於台商返回，未來2-3年每年將再增加新台幣300至4000億元的投資。^[@bloom_tw_fdi] 這些新的投資也導致公司增加了當地的高端製造業職位數，引起了蔡英文的支持率提高。
 
 
 ## 國內的因素
 
 ### 1. 表現不佳的高雄市長
+儘管他崇高的承諾， 但韓國瑜似乎一直對競選總統比當市長感興趣。 實際上，以至於在就職到開始總統競選之間的這段時間裡，韓國瑜不只幾乎[沒有成就](https://thediplomat.com/2019/06/taiwans-democracy-is-utterly-confounded-by-populist-mayor-han-kuo-yu/) ^[@dip_aspinwall] ， 而他市議會中的出場卻是[災難性的](http://www.taipeitimes.com/News/front/archives/2019/05/10/2003714876)^[@tpe_times_han_city_council] 。 高雄市民變得不滿意，以至於發生了大遊行抗議“[落跑市長](https://www.storm.mg/article/2060606)”^[@storm_laopao] 。（此抗議已變成2020年6月的罷免選舉）
 
 
 ### 2. 青年投票
+[民意調查顯示](http://www.tfd.org.tw/export/sites/tfd/files/download/democracy_in_Taiwan_20180323_rev_Hsu3_04032018-1.pdf)， 台灣的年輕人比長輩更有可能對民主主義的看法是好的， 對威權政府的懷疑度也比台灣長輩們明顯更高，甚至比美國和歐洲的青年還要高。 ^[@tfd_dem_op_youth] 
+
+![圖 4：對“民主雖然有些問題，但是還是最好的政治體系”同意的百分比](/中文版/積極保護民主的政策/2020-05-08-第二篇-台灣避免粹主義.zh_files/TFD Support for Democracy.png)
+
+![圖 5： 支持威權政府的年齡分別](/中文版/積極保護民主的政策/2020-05-08-第二篇-台灣避免粹主義.zh_files/TFD Authoritarian Regime Support.png)
+
+再說，超過80%的20-29歲的台灣人[自認是台灣人](https://www.bbc.com/zhongwen/trad/chinese-news-51031941)。^[@bbc_tw_youth_vote] 儘管一開始許多人怕年輕人不會投票， 但是台灣的年輕人按照這個概念行事並[動員起來了](https://international.thenewslens.com/feature/taiwan2020/129897)^[@news_lens_youth] ，卻成為選舉的主要力量之一。 台灣青年自動開始組織網上事實檢查員和街頭推銷員，也很努力地說服支持韓國瑜的老年朋友和親戚脫離這次的“韓流”。
+
+民進黨也注意到這些代溝和青年的積極動員行為， 也因為國民黨的選民基本上比較老，所以民進黨就決定與年輕人合作以確保投票率將是選舉的關鍵的策略。 因此，除了投放敦促年輕人回家投票的廣告活動之外， 民進黨也支持了幾位[希望撼動台灣政治](https://www.theguardian.com/world/2020/jan/10/taiwan-election-squad-youth-china-tsai-ing-wen)的年輕人。^[@guardian_tw_squad]
+
+***
+
+# 2020年的選舉結果能向我們傳授哪些與民粹主義作鬥爭的信息？
+雖然在競選剛開始台灣好像會跟隨歐洲和美國選一個右派民粹主義的總統，但是國外和國內因素的融合導致選民強烈支持民主。 不過，這些因素中有哪些是可複制的，哪些是由特定情況引起的？
+
+
 
 
 ***
