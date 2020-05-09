@@ -99,7 +99,7 @@ read_csv(url(tw_party_id_url)) %>%
 
 
 ### 2. 中美貿易戰
-雖然中美貿易戰對台灣的[影響喜憂參半](https://www.eastasiaforum.org/2020/01/11/taiwans-economic-resilience/)^[@eaf_trade_war] ， 但是台灣的經濟狀況好於鄰國。 在2019年，雖然台灣對中國和東盟國家的出口分別下降了5％和7.6％，不過對美國的出口增長了超過17％。 也許最重要的是，政府採取了一些積極的政策來鼓勵台商從國外（主要是中國）返回[台灣投資](https://www.ndc.gov.tw/en/Content_List.aspx?n=286FD0E985C0EA44)^[@ndc_tw] 。 至2019年12月，台灣的國內投資達到美金280億元，台灣的外國直接投資（FDI）也達到2008年以來的最高水平。 政府[還預測](https://www.bloomberg.com/news/articles/2019-11-18/taiwan-sees-chance-to-reclaim-high-end-industries-lost-to-china) ，由於台商返回，未來2-3年每年將再增加新台幣300至4000億元的投資。^[@bloom_tw_fdi] 這些新的投資也導致公司增加了當地的高端製造業職位數，引起了蔡英文的支持率提高。
+雖然中美貿易戰對台灣的[影響喜憂參半](https://www.eastasiaforum.org/2020/01/11/taiwans-economic-resilience/)^[@eaf_trade_war] ， 但是台灣的經濟狀況好於鄰國。 在2019年，雖然台灣對中國和東盟國家的出口分別下降了5％和7.6％，不過對美國的出口增長了超過17％。 也許最重要的是，政府採取了一些積極的政策來鼓勵台商從國外（主要是中國）返回[台灣投資](https://www.ndc.gov.tw/en/Content_List.aspx?n=286FD0E985C0EA44)^[@ndc_tw] 。 至2019年12月，台灣的國內投資達到美金280億元，台灣的外國直接投資（FDI）也達到2008年以來的最高水平。 政府[還預測](https://www.bloomberg.com/news/articles/2019-11-18/taiwan-sees-chance-to-reclaim-high-end-industries-lost-to-china) ，由於台商返回，未來2-3年每年將再增加新台幣300至4000億元的投資。^[@bloom_tw_fdi] 這些新的投資也導致公司增加了當地的高端製造業工作數，引起了蔡英文的支持率提高。
 
 
 ## 國內的因素
