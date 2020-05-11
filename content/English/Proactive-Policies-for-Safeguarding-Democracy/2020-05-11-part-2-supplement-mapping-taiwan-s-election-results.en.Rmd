@@ -1,0 +1,291 @@
+---
+title: 'Part 2 Supplement: Mapping Taiwan''s Election Results'
+author: Travis Dorsey
+date: '2020-05-11'
+slug: part-2-supplement-mapping-taiwan-s-election-results
+weight: 2.5
+categories:
+  - Proactive Policies for Safeguarding Democracy
+tags:
+  - data
+  - politics
+  - populism
+---
+
+```{r setup, include=FALSE, echo=FALSE, message=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(message = FALSE)
+
+#################
+##  Libraries  ##
+#################
+# Load the required libraries
+library(flexdashboard)
+library(knitr)
+library(sp)
+library(maptools)
+library(mapproj)
+library(rgeos)
+library(rgdal)
+library(broom)
+library(purrr)
+library(tidyverse)
+library(ggrepel)
+library(janitor)
+library(repmis)
+
+#######################
+##  Load Data Files  ##
+#######################
+#Vote Data
+load("/Users/sharedcomputer/MMT in Taiwan/Analysis Replication Files/tw_town_votes.RData")
+load("/Users/sharedcomputer/MMT in Taiwan/Analysis Replication Files/tw_county_votes.RData")
+
+#County-level Map
+load("/Users/sharedcomputer/MMT in Taiwan/Analysis Replication Files/SCA Data Files/TWshp_county_df.RData")
+
+#Town-level Map
+load("/Users/sharedcomputer/MMT in Taiwan/Analysis Replication Files/SCA Data Files/TWshp_town_df.RData")
+
+
+##########################
+##  Setup Mapping Data  ##
+##########################
+northern_tw <- tibble(county_name = c("臺北市", "新北市", "基隆市", "桃園市", "新竹市", "新竹縣", "宜蘭縣"),
+                      county_eng  = c("Taipei City", "New Taipei City", "Keelung City", "Taoyuan City", "Hsinchu City",
+                                      "Hsinchu County", "Yilan County"))
+
+central_tw <- tibble(county_name = c("彰化縣", "苗栗縣", "臺中市", "南投縣", "雲林縣"),
+                     county_eng  = c("Changhua County", "Miaoli County", "Taichung City", "Nantou County", "Yunlin County"))
+
+southern_tw <- tibble(county_name = c("嘉義縣", "嘉義市", "高雄市", "臺南市", "澎湖縣", "屏東縣"),
+                      county_eng  = c("Chiayi County", "Chiayi City", "Kaohsiung City", "Tainan City", "Penghu County", "Pingtung County"))
+
+eastern_tw <- tibble(county_name = c("臺東縣", "花蓮縣"),
+                     county_eng  = c("Taitung County", "Hualien County"))
+
+outlying_tw <- tibble(county_name = c("金門縣", "連江縣"),
+                      county_eng  = c("Kinmen County", "Lienchiang County"))
+
+tw_town_map_df <- TWshp_town_df %>%
+  left_join(tw_town_votes, by = c("county_name"="縣市", "town_name"="鄉鎮市區"))
+
+theme_bare <- theme(
+  axis.line = element_blank(),
+  panel.grid.major.x = element_blank(),
+  panel.grid.major.y = element_blank(),
+  axis.text.x = element_blank(), 
+  axis.text.y = element_blank(),
+  axis.ticks = element_blank(), 
+  axis.title.x = element_blank(), 
+  axis.title.y = element_blank(),
+  legend.text=element_text(size=7),
+  legend.title=element_text(size=16),
+  panel.background = element_blank(),
+  panel.border = element_rect(colour = "gray", fill=NA, size=0),
+  title = element_text(size = 18, face = "bold")
+)
+
+TWshp_county <- readOGR(dsn = "/Users/sharedcomputer/MMT in Taiwan/Analysis Replication Files/county map",
+                        layer="COUNTY_MOI_1081121",
+                        stringsAsFactors = F)
+tw_county_labs <- as_tibble(gCentroid(TWshp_county, byid = TRUE)@coords)
+tw_county_labs$county_eng <- TWshp_county@data$COUNTYENG
+tw_county_labs$y[which(tw_county_labs$county_eng == "New Taipei City")] <- tw_county_labs$y[which(tw_county_labs$county_eng == "New Taipei City")] - 0.05
+
+
+```
+
+# Nationwide Election Results
+The clearest trend we see from the nationwide results is that the incumbent Tsai Ying-wen won more urban areas, and especially those traditionally associated with a stronger sense of Taiwanese identity (i.e. Tainan and Kaohsiung), by a larger margin. More rural areas, particularly those with larger aboriginal populations and the outlying islands closer to China, voted more heavily for the KMT challenger, Han Kuo-yu.
+
+```{r nation_votes}
+ggplot() +
+  geom_polygon(aes(x = long, y = lat, group = group), data = TWshp_county_df, color = "#d0e8f2",fill = NA, lwd = .3) +
+  geom_polygon(aes(x = long, y = lat, group = group, fill = 蔡英文_得票率), 
+               data = tw_town_map_df, 
+               color = "#d0e8f2", 
+               lwd = .01) +
+  scale_fill_viridis_c(name = "Tsai Ying-wen\nVote Share") +
+  coord_map(xlim = c(118.4, 122.2), ylim = c(21.7, 25.4)) +
+  theme_bare +
+  labs(title = str_wrap("Tsai Ying-Wen Vote Share by Township/City District", 35))
+```
+
+# Regional Breakdown
+
+## Northern Taiwan
+```{r north_tw}
+north_tw_map <- tw_town_map_df %>%
+  filter(county_name %in% northern_tw$county_name) 
+
+north_tw_county <- TWshp_county_df %>%
+  mutate_if(is.factor, as.character) %>%
+  filter(county_name %in% northern_tw$county_eng)
+
+northern_tw_county_labs <- tw_county_labs %>%
+  filter(county_eng %in% northern_tw$county_eng)
+
+north_tw_coord <- north_tw_map %>%
+  summarize(min_long = min(long),
+            max_long = max(long),
+            min_lat  = min(lat),
+            max_lat  = max(lat))
+
+north_tw_map %>%
+  ggplot() +
+  geom_polygon(aes(x = long, y = lat, group = group, fill = 蔡英文_得票率), 
+               color = "#d0e8f2", 
+               lwd = .01) +
+  geom_polygon(aes(x = long, y = lat, group = group), fill = NA, color = "black", data = north_tw_county) +
+  geom_label_repel(data = northern_tw_county_labs, 
+                   aes(x = x, y = y, label = county_eng),
+                   box.padding   = 0.55, 
+                   point.padding = 0.6) +
+  scale_fill_viridis_c(name = "Tsai Ying-wen\nVote Share") +
+  coord_map(xlim = c(north_tw_coord$min_long-0.2, 123), 
+            ylim = c(north_tw_coord$min_lat, 25.4)) +
+  theme_bare +
+  labs(title = str_wrap("Tsai Ying-Wen Vote Share in Northern Taiwan", 35))
+```
+
+## Central Taiwan
+```{r central_tw}
+central_tw_map <- tw_town_map_df %>%
+  filter(county_name %in% central_tw$county_name) 
+
+central_tw_county <- TWshp_county_df %>%
+  mutate_if(is.factor, as.character) %>%
+  filter(county_name %in% central_tw$county_eng)
+
+central_tw_county_labs <- tw_county_labs %>%
+  filter(county_eng %in% central_tw$county_eng)
+
+central_tw_coord <- central_tw_map %>%
+  summarize(min_long = min(long),
+            max_long = max(long),
+            min_lat  = min(lat),
+            max_lat  = max(lat))
+
+central_tw_map %>%
+  ggplot() +
+  geom_polygon(aes(x = long, y = lat, group = group, fill = 蔡英文_得票率), 
+               color = "#d0e8f2", 
+               lwd = .01) +
+  geom_polygon(aes(x = long, y = lat, group = group), fill = NA, color = "black", data = central_tw_county) +
+  geom_label_repel(data = central_tw_county_labs, 
+                   aes(x = x, y = y, label = county_eng),
+                   box.padding   = 0.55, 
+                   point.padding = 0.6) +
+  scale_fill_viridis_c(name = "Tsai Ying-wen\nVote Share") +
+  coord_map(xlim = c(central_tw_coord$min_long-0.2, central_tw_coord$max_long), 
+            ylim = c(central_tw_coord$min_lat, central_tw_coord$max_lat)) +
+  theme_bare +
+  labs(title = str_wrap("Tsai Ying-Wen Vote Share in Central Taiwan", 35))
+```
+
+## Southern Taiwan
+```{r south_tw}
+southern_tw_map <- tw_town_map_df %>%
+  filter(county_name %in% southern_tw$county_name) 
+
+southern_tw_county <- TWshp_county_df %>%
+  mutate_if(is.factor, as.character) %>%
+  filter(county_name %in% southern_tw$county_eng)
+
+southern_tw_county_labs <- tw_county_labs %>%
+  filter(county_eng %in% southern_tw$county_eng)
+
+southern_tw_coord <- southern_tw_map %>%
+  summarize(min_long = min(long),
+            max_long = max(long),
+            min_lat  = min(lat),
+            max_lat  = max(lat))
+
+southern_tw_map %>%
+  ggplot() +
+  geom_polygon(aes(x = long, y = lat, group = group, fill = 蔡英文_得票率), 
+               color = "#d0e8f2", 
+               lwd = .01) +
+  geom_polygon(aes(x = long, y = lat, group = group), fill = NA, color = "black", data = southern_tw_county) +
+  geom_label_repel(data = southern_tw_county_labs, 
+                   aes(x = x, y = y, label = county_eng),
+                   box.padding   = 0.55, 
+                   point.padding = 0.6) +
+  scale_fill_viridis_c(name = "Tsai Ying-wen\nVote Share") +
+  coord_map(xlim = c(119, southern_tw_coord$max_long), 
+            ylim = c(21.7, southern_tw_coord$max_lat)) +
+  theme_bare +
+  labs(title = str_wrap("Tsai Ying-Wen Vote Share in Southern Taiwan", 35))
+```
+
+
+## Eastern Taiwan
+```{r east_tw}
+eastern_tw_map <- tw_town_map_df %>%
+  filter(county_name %in% eastern_tw$county_name) 
+
+eastern_tw_county <- TWshp_county_df %>%
+  mutate_if(is.factor, as.character) %>%
+  filter(county_name %in% eastern_tw$county_eng)
+
+eastern_tw_county_labs <- tw_county_labs %>%
+  filter(county_eng %in% eastern_tw$county_eng)
+
+eastern_tw_coord <- eastern_tw_map %>%
+  summarize(min_long = min(long),
+            max_long = max(long),
+            min_lat  = min(lat),
+            max_lat  = max(lat))
+
+eastern_tw_map %>%
+  ggplot() +
+  geom_polygon(aes(x = long, y = lat, group = group, fill = 蔡英文_得票率), 
+               color = "#d0e8f2", 
+               lwd = .01) +
+  geom_polygon(aes(x = long, y = lat, group = group), fill = NA, color = "black", data = eastern_tw_county) +
+  geom_label_repel(data = eastern_tw_county_labs, 
+                   aes(x = x, y = y, label = county_eng),
+                   box.padding   = 0.55, 
+                   point.padding = 0.6) +
+  scale_fill_viridis_c(name = "Tsai Ying-wen\nVote Share") +
+  coord_map(xlim = c(eastern_tw_coord$min_long, eastern_tw_coord$max_long), 
+            ylim = c(eastern_tw_coord$min_lat, eastern_tw_coord$max_lat)) +
+  theme_bare +
+  labs(title = str_wrap("Tsai Ying-Wen Vote Share in Eastern Taiwan", 35))
+```
+
+## Outlying Islands
+```{r lidao_tw}
+outlying_tw_map <- tw_town_map_df %>%
+  filter(county_name %in% outlying_tw$county_name) 
+
+outlying_tw_county <- TWshp_county_df %>%
+  mutate_if(is.factor, as.character) %>%
+  filter(county_name %in% outlying_tw$county_eng)
+
+outlying_tw_county_labs <- tw_county_labs %>%
+  filter(county_eng %in% outlying_tw$county_eng)
+
+outlying_tw_coord <- outlying_tw_map %>%
+  summarize(min_long = min(long),
+            max_long = max(long),
+            min_lat  = min(lat),
+            max_lat  = max(lat))
+
+outlying_tw_map %>%
+  ggplot() +
+  geom_polygon(aes(x = long, y = lat, group = group, fill = 蔡英文_得票率), 
+               color = "#d0e8f2", 
+               lwd = .01) +
+  geom_polygon(aes(x = long, y = lat, group = group), fill = NA, color = "black", data = outlying_tw_county) +
+  geom_label_repel(data = outlying_tw_county_labs, 
+                   aes(x = x, y = y, label = county_eng),
+                   box.padding   = 0.55, 
+                   point.padding = 0.6) +
+  scale_fill_viridis_c(name = "Tsai Ying-wen\nVote Share") +
+  coord_map(xlim = c(outlying_tw_coord$min_long, outlying_tw_coord$max_long), 
+            ylim = c(outlying_tw_coord$min_lat, outlying_tw_coord$max_lat)) +
+  theme_bare +
+  labs(title = str_wrap("Tsai Ying-Wen Vote Share in Outlying Islands of Taiwan", 35))
+```
