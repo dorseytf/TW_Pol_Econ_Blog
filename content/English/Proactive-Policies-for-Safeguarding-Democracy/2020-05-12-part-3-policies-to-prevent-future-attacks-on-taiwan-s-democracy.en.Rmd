@@ -1,0 +1,61 @@
+---
+title: 'Part 3: Policies to Prevent Future Attacks on Taiwan’s Democracy'
+author: Travis Dorsey
+date: '2020-05-12'
+slug: part-3-policies-to-prevent-future-attacks-on-taiwan-s-democracy
+weight: 1
+bibliography: part1_bib.bib
+output:
+  blogdown::html_page:
+    toc: true
+    toc_depth: 2
+    number_sections: true
+categories:
+  - Proactive Policies for Safeguarding Democracy
+tags:
+  - economics
+  - media
+  - politics
+  - populism
+  - data
+---
+
+[Previously](/english/proactive-policies-for-safeguarding-democracy/part-1-how-the-populist-wave-came-to-taiwan/), we covered how trends in the economy and media over the last several decades laid the groundwork for growing discontent that right-wing populists have been able to leverage to gain political power. However, in [Part 2](/english/proactive-policies-for-safeguarding-democracy/part-2-how-did-taiwanese-voters-push-back/), we also saw how Taiwan was able to avoid this same fate by 1) leveraging external factors that worked against the populist candidate, and 2) taking a proactive stance toward some of the underlying economic and media factors. Here, I will expand on the replicable policies that other countries can adopt, as well as lay out additional policies that Taiwan and others should consider to strengthen their democracies. 
+
+***
+
+# Recap on the Causes of Populism
+Here, I present a quick recap of the underlying economic and media factors that can lead to populist surges in democracies.
+
+## Economic Factors
+
+### Inequality
+
+
+### Stagnant Earnings and Unemployment
+
+
+### Housing Prices
+
+
+## Media Factors
+
+### Partisanship in the Media
+
+
+### Greater Audiences
+
+***
+
+# Policies to Address Economic Factors
+
+
+***
+
+# Policies to Address Media Factors
+
+
+
+***
+# References
+
