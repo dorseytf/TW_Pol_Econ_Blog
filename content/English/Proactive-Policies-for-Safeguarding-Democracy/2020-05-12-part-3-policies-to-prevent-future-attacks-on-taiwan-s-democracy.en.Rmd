@@ -1,7 +1,7 @@
 ---
 title: 'Part 3: Policies to Prevent Future Attacks on Taiwan’s Democracy'
 author: Travis Dorsey
-date: '2020-05-12'
+date: '2020-05-15'
 slug: part-3-policies-to-prevent-future-attacks-on-taiwan-s-democracy
 weight: 1
 bibliography: part1_bib.bib
@@ -30,30 +30,44 @@ Here, I present a quick recap of the underlying economic and media factors that 
 ## Economic Factors
 
 ### Inequality
+Taiwan, as with most democracies throughout the world, has seen income and wealth inequality increase dramatically over the past several decades, leading to growing discontent aimed at those at the top. 
 
+![Figure 1: Wealth Distribution and Average Net Worth in Taiwan](/post/2020-03-30-part-1-how-the-populist-wave-came-to-taiwan_files/Taiwan Wealth Pyramid English.png)
 
 ### Stagnant Earnings and Unemployment
+Earnings for most workers in democracies around the world have largely been stagnant for quite some time, making price increases more painful for most people.
 
+![Figure 2: Real Monthly Earnings in Taiwan have stagnated](/post/2020-03-30-part-1-how-the-populist-wave-came-to-taiwan_files/Real Monthly Earnings in Taiwan.jpg)
 
 ### Housing Prices
+Home prices in nearly every major metropolitan area have risen significantly, creating housing crises in many countries. 
 
+![Figure 3: Quarterly Housing Median Multiple for Taiwan and Taipei. A value above 5.1 is considered Extremely Unaffordable](/post/2020-03-30-part-1-how-the-populist-wave-came-to-taiwan_files/Quarterly Housing Median Multiple for Taiwan.jpg)
 
 ## Media Factors
 
 ### Partisanship in the Media
-
+Not only can highly partisan media outlets, both in traditional media and on social media, spread populist viewpoints and talking points, but even in mainstream media the discourse has shifted toward populist talking points, lending credibility and shifting the framing of debate.
 
 ### Greater Audiences
+The proliferation of social media and the willingness of traditional media to give attention to populist candidates have allowed populist talking points and fake news to reach ever-larger audiences. 
 
 ***
 
 # Policies to Address Economic Factors
+
+## Tax Policy
+A great deal of research has been done on the topic of [tax policy](https://www.cbpp.org/sites/default/files/atoms/files/12-15-16sfp.pdf)^[@cbpp_tax] to [reduce](http://www.oecd.org/economy/labour/49421421.pdf)^[@oecd_tax] [income](https://www.nber.org/papers/w17616.pdf)^[@piketty_tax] and wealth inequality, 
+
+## Job Guarantee
+
 
 
 ***
 
 # Policies to Address Media Factors
 
+## Combatting Fake News
 
 
 ***
