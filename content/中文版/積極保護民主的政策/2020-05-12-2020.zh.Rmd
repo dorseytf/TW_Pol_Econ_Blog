@@ -1,0 +1,345 @@
+---
+title: 第二篇副刊：台灣2020年選舉地圖
+author: 杜欣川
+date: '2020-05-12'
+slug: '第二篇副刊-地圖'
+weight: 2.5
+output:
+  blogdown::html_page:
+    toc: true
+    toc_depth: 2
+    number_sections: TRUE
+categories:
+  - 積極保護民主的政策
+tags:
+  - 資料
+  - 政治
+---
+
+```{r setup, include=FALSE, echo=FALSE, message=FALSE, warning=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(message = FALSE)
+knitr::opts_chunk$set(warning = FALSE)
+
+#################
+##  Libraries  ##
+#################
+# Load the required libraries
+library(flexdashboard)
+library(knitr)
+library(sp)
+library(maptools)
+library(mapproj)
+library(rgeos)
+library(rgdal)
+library(broom)
+library(purrr)
+library(tidyverse)
+library(ggrepel)
+library(janitor)
+library(repmis)
+library(showtext)
+showtext_auto()
+
+#######################
+##  Load Data Files  ##
+#######################
+#Vote Data
+load("/Users/sharedcomputer/MMT in Taiwan/Analysis Replication Files/tw_town_votes.RData")
+load("/Users/sharedcomputer/MMT in Taiwan/Analysis Replication Files/tw_county_votes.RData")
+
+#County-level Map
+load("/Users/sharedcomputer/MMT in Taiwan/Analysis Replication Files/SCA Data Files/TWshp_county_df.RData")
+
+#Town-level Map
+load("/Users/sharedcomputer/MMT in Taiwan/Analysis Replication Files/SCA Data Files/TWshp_town_df.RData")
+
+
+##########################
+##  Setup Mapping Data  ##
+##########################
+northern_tw <- tibble(county_name = c("臺北市", "新北市", "基隆市", "桃園市", "新竹市", "新竹縣", "宜蘭縣"),
+                      county_eng  = c("Taipei City", "New Taipei City", "Keelung City", "Taoyuan City", "Hsinchu City",
+                                      "Hsinchu County", "Yilan County"))
+
+central_tw <- tibble(county_name = c("彰化縣", "苗栗縣", "臺中市", "南投縣", "雲林縣"),
+                     county_eng  = c("Changhua County", "Miaoli County", "Taichung City", "Nantou County", "Yunlin County"))
+
+southern_tw <- tibble(county_name = c("嘉義縣", "嘉義市", "高雄市", "臺南市", "澎湖縣", "屏東縣"),
+                      county_eng  = c("Chiayi County", "Chiayi City", "Kaohsiung City", "Tainan City", "Penghu County", "Pingtung County"))
+
+eastern_tw <- tibble(county_name = c("臺東縣", "花蓮縣"),
+                     county_eng  = c("Taitung County", "Hualien County"))
+
+outlying_tw <- tibble(county_name = c("金門縣", "連江縣"),
+                      county_eng  = c("Kinmen County", "Lienchiang County"))
+
+county_translation <- bind_rows(northern_tw, central_tw, southern_tw, eastern_tw, outlying_tw)
+
+outlying_inset <- TWshp_town_df %>%
+  filter(county_name %in% outlying_tw$county_name) %>%
+  mutate(long = ifelse(county_name == "金門縣", long+1, long),
+         lat  = ifelse(county_name == "金門縣", lat, lat-1))
+
+outlying_inset_county <- TWshp_county_df %>%
+  filter(county_name %in% outlying_tw$county_eng) %>%
+  mutate(long = ifelse(county_name == "Kinmen County", long+1, long),
+         lat  = ifelse(county_name == "Kinmen County", lat, lat-1))
+
+outlying_inset_box <- outlying_inset_county %>%
+  group_by(county_name) %>%
+  summarize(min_x = min(long) - 0.1,
+            min_y = min(lat) - 0.1,
+            max_x = max(long) + 0.1,
+            max_y = max(lat)) 
+outlying_inset_box$max_x[which(outlying_inset_box$county_name == "Kinmen County")] <- 119.7
+outlying_inset_box$max_y[which(outlying_inset_box$county_name == "Kinmen County")] <- 24.7
+outlying_inset_box$max_y[which(outlying_inset_box$county_name == "Lienchiang County")] <- 25.45
+
+tw_town_map_df <- TWshp_town_df %>%
+  filter(!county_name %in% outlying_tw$county_name) %>%
+  bind_rows(outlying_inset) %>%
+  left_join(tw_town_votes, by = c("county_name"="縣市", "town_name"="鄉鎮市區")) 
+
+tw_county_map_df <- TWshp_county_df %>%
+  filter(!county_name %in% outlying_tw$county_eng) %>%
+  bind_rows(outlying_inset_county) 
+
+theme_bare <- theme(
+  axis.line = element_blank(),
+  panel.grid.major.x = element_blank(),
+  panel.grid.major.y = element_blank(),
+  axis.text.x = element_blank(), 
+  axis.text.y = element_blank(),
+  axis.ticks = element_blank(), 
+  axis.title.x = element_blank(), 
+  axis.title.y = element_blank(),
+  legend.text=element_text(size=7),
+  legend.title=element_text(size=16),
+  panel.background = element_blank(),
+  panel.border = element_rect(colour = "gray", fill=NA, size=0),
+  title = element_text(size = 18, face = "bold"),
+  text = element_text(family = "PingFang TC")
+)
+
+
+TWshp_county <- readOGR(dsn = "/Users/sharedcomputer/MMT in Taiwan/Analysis Replication Files/county map",
+                        layer="COUNTY_MOI_1081121",
+                        stringsAsFactors = F)
+tw_county_labs <- as_tibble(gCentroid(TWshp_county, byid = TRUE)@coords)
+tw_county_labs$county_eng <- TWshp_county@data$COUNTYENG
+
+tw_county_labs$y[which(tw_county_labs$county_eng == "New Taipei City")] <- tw_county_labs$y[which(tw_county_labs$county_eng == "New Taipei City")] - 0.05
+
+tw_county_labs$x[which(tw_county_labs$county_eng == "Kinmen County")] <- tw_county_labs$y[which(tw_county_labs$county_eng == "Kinmen County")] + 1
+
+tw_county_labs$x[which(tw_county_labs$county_eng == "Lienchiang County")] <- tw_county_labs$x[which(tw_county_labs$county_eng == "Lienchiang County")] + 1
+
+tw_county_labs$y[which(tw_county_labs$county_eng == "Lienchiang County")] <- tw_county_labs$y[which(tw_county_labs$county_eng == "Lienchiang County")] - 1
+```
+
+# 全國選舉結果
+從全國範圍來看，最明顯的趨勢就是蔡英文總統贏得了更多的城市地區，尤其是比較會自認同為台灣人的地區（如台南市和高雄市）。 蔡英文的得票率在那些離市區較遠的地區低很多，尤其是離島和原住民較多的地區。
+
+```{r nation_votes}
+ggplot() +
+  geom_polygon(aes(x = long, y = lat, group = group, fill = 蔡英文_得票率), 
+               data = tw_town_map_df, 
+               color = "#d0e8f2", 
+               lwd = .01) +
+  geom_polygon(aes(x = long, y = lat, group = group), data = tw_county_map_df, color = "black",fill = NA, lwd = .07) +
+  geom_rect(data = outlying_inset_box, 
+            aes(xmin = min_x, ymin = min_y, xmax = max_x, ymax = max_y), 
+            color = "black", 
+            fill = NA) +
+  scale_fill_viridis_c(name = "蔡英文\n得票率", limits = c(0.1, 0.8)) +
+  coord_map(xlim = c(118.4, 122.2), ylim = c(21.7, 25.7)) +
+  theme_bare
+```
+
+# 各地分析
+
+## 北部
+```{r north_tw}
+north_tw_map <- tw_town_map_df %>%
+  filter(county_name %in% northern_tw$county_name) 
+
+north_tw_county <- TWshp_county_df %>%
+  mutate_if(is.factor, as.character) %>%
+  filter(county_name %in% northern_tw$county_eng)
+
+northern_tw_county_labs <- tw_county_labs %>%
+  filter(county_eng %in% northern_tw$county_eng) %>%
+  left_join(county_translation, by = c("county_eng"))
+
+north_tw_coord <- north_tw_map %>%
+  summarize(min_long = min(long),
+            max_long = max(long),
+            min_lat  = min(lat),
+            max_lat  = max(lat))
+
+north_tw_map %>%
+  ggplot() +
+  geom_polygon(aes(x = long, y = lat, group = group, fill = 蔡英文_得票率), 
+               color = "#d0e8f2", 
+               lwd = .01) +
+  geom_polygon(aes(x = long, y = lat, group = group), fill = NA, color = "black", data = north_tw_county) +
+  geom_label_repel(data = northern_tw_county_labs, 
+                   aes(x = x, y = y, label = county_name),
+                   family = "PingFang TC",
+                   size = 8,
+                   box.padding   = 0.55, 
+                   point.padding = 0.6) +
+  scale_fill_viridis_c(name = "蔡英文\n得票率", limits = c(0.1, 0.8)) +
+  coord_map(xlim = c(north_tw_coord$min_long-0.2, 122.35), 
+            ylim = c(north_tw_coord$min_lat, 25.4)) +
+  theme_bare
+```
+
+## 中部
+```{r central_tw}
+central_tw_map <- tw_town_map_df %>%
+  filter(county_name %in% central_tw$county_name) 
+
+central_tw_county <- TWshp_county_df %>%
+  mutate_if(is.factor, as.character) %>%
+  filter(county_name %in% central_tw$county_eng)
+
+central_tw_county_labs <- tw_county_labs %>%
+  filter(county_eng %in% central_tw$county_eng) %>%
+  left_join(county_translation, by = c("county_eng"))
+
+central_tw_coord <- central_tw_map %>%
+  summarize(min_long = min(long),
+            max_long = max(long),
+            min_lat  = min(lat),
+            max_lat  = max(lat))
+
+central_tw_map %>%
+  ggplot() +
+  geom_polygon(aes(x = long, y = lat, group = group, fill = 蔡英文_得票率), 
+               color = "#d0e8f2", 
+               lwd = .01) +
+  geom_polygon(aes(x = long, y = lat, group = group), fill = NA, color = "black", data = central_tw_county) +
+  geom_label_repel(data = central_tw_county_labs, 
+                   aes(x = x, y = y, label = county_name),
+                   family = "PingFang TC",
+                   size = 8,
+                   box.padding   = 0.55, 
+                   point.padding = 0.6) +
+  scale_fill_viridis_c(name = "蔡英文\n得票率", limits = c(0.1, 0.8)) +
+  coord_map(xlim = c(central_tw_coord$min_long-0.2, central_tw_coord$max_long), 
+            ylim = c(central_tw_coord$min_lat, central_tw_coord$max_lat)) +
+  theme_bare
+```
+
+## 南部
+```{r south_tw}
+southern_tw_map <- tw_town_map_df %>%
+  filter(county_name %in% southern_tw$county_name) 
+
+southern_tw_county <- TWshp_county_df %>%
+  mutate_if(is.factor, as.character) %>%
+  filter(county_name %in% southern_tw$county_eng)
+
+southern_tw_county_labs <- tw_county_labs %>%
+  filter(county_eng %in% southern_tw$county_eng) %>%
+  left_join(county_translation, by = c("county_eng"))
+
+southern_tw_coord <- southern_tw_map %>%
+  summarize(min_long = min(long),
+            max_long = max(long),
+            min_lat  = min(lat),
+            max_lat  = max(lat))
+
+southern_tw_map %>%
+  ggplot() +
+  geom_polygon(aes(x = long, y = lat, group = group, fill = 蔡英文_得票率), 
+               color = "#d0e8f2", 
+               lwd = .01) +
+  geom_polygon(aes(x = long, y = lat, group = group), fill = NA, color = "black", data = southern_tw_county) +
+  geom_label_repel(data = southern_tw_county_labs, 
+                   aes(x = x, y = y, label = county_name),
+                   family = "PingFang TC",
+                   size = 8,
+                   box.padding   = 0.55, 
+                   point.padding = 0.6) +
+  scale_fill_viridis_c(name = "蔡英文\n得票率", limits = c(0.1, 0.8)) +
+  coord_map(xlim = c(119, southern_tw_coord$max_long), 
+            ylim = c(21.7, southern_tw_coord$max_lat)) +
+  theme_bare 
+```
+
+
+## 東部
+```{r east_tw}
+eastern_tw_map <- tw_town_map_df %>%
+  filter(county_name %in% eastern_tw$county_name) 
+
+eastern_tw_county <- TWshp_county_df %>%
+  mutate_if(is.factor, as.character) %>%
+  filter(county_name %in% eastern_tw$county_eng)
+
+eastern_tw_county_labs <- tw_county_labs %>%
+  filter(county_eng %in% eastern_tw$county_eng) %>%
+  left_join(county_translation, by = c("county_eng"))
+
+eastern_tw_coord <- eastern_tw_map %>%
+  summarize(min_long = min(long),
+            max_long = max(long),
+            min_lat  = min(lat),
+            max_lat  = max(lat))
+
+eastern_tw_map %>%
+  ggplot() +
+  geom_polygon(aes(x = long, y = lat, group = group, fill = 蔡英文_得票率), 
+               color = "#d0e8f2", 
+               lwd = .01) +
+  geom_polygon(aes(x = long, y = lat, group = group), fill = NA, color = "black", data = eastern_tw_county) +
+  geom_label_repel(data = eastern_tw_county_labs, 
+                   aes(x = x, y = y, label = county_name),
+                   family = "PingFang TC",
+                   size = 8,
+                   box.padding   = 0.55, 
+                   point.padding = 0.6) +
+  scale_fill_viridis_c(name = "蔡英文\n得票率", limits = c(0.1, 0.8)) +
+  coord_map(xlim = c(eastern_tw_coord$min_long, eastern_tw_coord$max_long), 
+            ylim = c(eastern_tw_coord$min_lat, eastern_tw_coord$max_lat)) +
+  theme_bare
+```
+
+## 離島
+```{r lidao_tw}
+outlying_tw_map <- tw_town_map_df %>%
+  filter(county_name %in% outlying_tw$county_name) 
+
+outlying_tw_county <- tw_county_map_df %>%
+  mutate_if(is.factor, as.character) %>%
+  filter(county_name %in% outlying_tw$county_eng)
+
+outlying_tw_county_labs <- outlying_inset_box %>%
+  select(county_name, min_x, max_x, max_y) %>%
+  gather("metric", "value", -county_name) %>%
+  mutate(coord = ifelse(str_detect(metric, "_x"), "long", "lat")) %>%
+  group_by(county_name, coord) %>%
+  summarize(value = mean(value)) %>%
+  spread(coord, value) %>%
+  mutate(lat = lat + 0.06) %>%
+  rename(county_eng = county_name) %>%
+  left_join(county_translation, by = c("county_eng"))
+
+outlying_tw_map %>%
+  ggplot() +
+  geom_polygon(aes(x = long, y = lat, group = group, fill = 蔡英文_得票率), 
+               color = "#d0e8f2", 
+               lwd = .01) +
+  geom_polygon(aes(x = long, y = lat, group = group), fill = NA, color = "black", data = outlying_tw_county) +
+  geom_rect(data = outlying_inset_box, aes(xmin = min_x, ymin = min_y, xmax = max_x, ymax = max_y), color = "black", fill = NA) +
+  geom_label(data = outlying_tw_county_labs, 
+             aes(x = long, y = lat, label = county_name),
+             family = "PingFang TC",
+             size = 8) +
+  scale_fill_viridis_c(name = "蔡英文\n得票率", limits = c(0.1, 0.8)) +
+  coord_map(xlim = c(118.8, 121), ylim = c(24, 25.7)) +
+  theme_bare
+```
