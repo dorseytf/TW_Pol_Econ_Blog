@@ -4,6 +4,11 @@ author: Travis Dorsey
 date: '2020-05-11'
 slug: part-2-supplement-mapping-taiwan-s-election-results
 weight: 2.5
+output:
+  blogdown::html_page:
+    toc: true
+    toc_depth: 2
+    number_sections: TRUE
 categories:
   - Proactive Policies for Safeguarding Democracy
 tags:
@@ -67,8 +72,34 @@ eastern_tw <- tibble(county_name = c("臺東縣", "花蓮縣"),
 outlying_tw <- tibble(county_name = c("金門縣", "連江縣"),
                       county_eng  = c("Kinmen County", "Lienchiang County"))
 
+outlying_inset <- TWshp_town_df %>%
+  filter(county_name %in% outlying_tw$county_name) %>%
+  mutate(long = ifelse(county_name == "金門縣", long+1, long),
+         lat  = ifelse(county_name == "金門縣", lat, lat-1))
+
+outlying_inset_county <- TWshp_county_df %>%
+  filter(county_name %in% outlying_tw$county_eng) %>%
+  mutate(long = ifelse(county_name == "Kinmen County", long+1, long),
+         lat  = ifelse(county_name == "Kinmen County", lat, lat-1))
+
+outlying_inset_box <- outlying_inset_county %>%
+  group_by(county_name) %>%
+  summarize(min_x = min(long) - 0.1,
+            min_y = min(lat) - 0.1,
+            max_x = max(long) + 0.1,
+            max_y = max(lat)) 
+outlying_inset_box$max_x[which(outlying_inset_box$county_name == "Kinmen County")] <- 119.7
+outlying_inset_box$max_y[which(outlying_inset_box$county_name == "Kinmen County")] <- 24.7
+outlying_inset_box$max_y[which(outlying_inset_box$county_name == "Lienchiang County")] <- 25.45
+
 tw_town_map_df <- TWshp_town_df %>%
-  left_join(tw_town_votes, by = c("county_name"="縣市", "town_name"="鄉鎮市區"))
+  filter(!county_name %in% outlying_tw$county_name) %>%
+  bind_rows(outlying_inset) %>%
+  left_join(tw_town_votes, by = c("county_name"="縣市", "town_name"="鄉鎮市區")) 
+
+tw_county_map_df <- TWshp_county_df %>%
+  filter(!county_name %in% outlying_tw$county_eng) %>%
+  bind_rows(outlying_inset_county) 
 
 theme_bare <- theme(
   axis.line = element_blank(),
@@ -91,9 +122,14 @@ TWshp_county <- readOGR(dsn = "/Users/sharedcomputer/MMT in Taiwan/Analysis Repl
                         stringsAsFactors = F)
 tw_county_labs <- as_tibble(gCentroid(TWshp_county, byid = TRUE)@coords)
 tw_county_labs$county_eng <- TWshp_county@data$COUNTYENG
+
 tw_county_labs$y[which(tw_county_labs$county_eng == "New Taipei City")] <- tw_county_labs$y[which(tw_county_labs$county_eng == "New Taipei City")] - 0.05
 
+tw_county_labs$x[which(tw_county_labs$county_eng == "Kinmen County")] <- tw_county_labs$y[which(tw_county_labs$county_eng == "Kinmen County")] + 1
 
+tw_county_labs$x[which(tw_county_labs$county_eng == "Lienchiang County")] <- tw_county_labs$x[which(tw_county_labs$county_eng == "Lienchiang County")] + 1
+
+tw_county_labs$y[which(tw_county_labs$county_eng == "Lienchiang County")] <- tw_county_labs$y[which(tw_county_labs$county_eng == "Lienchiang County")] - 1
 ```
 
 # Nationwide Election Results
@@ -101,15 +137,15 @@ The clearest trend we see from the nationwide results is that the incumbent Tsai
 
 ```{r nation_votes}
 ggplot() +
-  geom_polygon(aes(x = long, y = lat, group = group), data = TWshp_county_df, color = "#d0e8f2",fill = NA, lwd = .3) +
   geom_polygon(aes(x = long, y = lat, group = group, fill = 蔡英文_得票率), 
                data = tw_town_map_df, 
                color = "#d0e8f2", 
                lwd = .01) +
-  scale_fill_viridis_c(name = "Tsai Ying-wen\nVote Share") +
-  coord_map(xlim = c(118.4, 122.2), ylim = c(21.7, 25.4)) +
-  theme_bare +
-  labs(title = str_wrap("Tsai Ying-Wen Vote Share by Township/City District", 35))
+  geom_polygon(aes(x = long, y = lat, group = group), data = tw_county_map_df, color = "black",fill = NA, lwd = .07) +
+  geom_rect(data = outlying_inset_box, aes(xmin = min_x, ymin = min_y, xmax = max_x, ymax = max_y), color = "black", fill = NA) +
+  scale_fill_viridis_c(name = "Tsai Ying-wen\nVote Share", limits = c(0.1, 0.8)) +
+  coord_map(xlim = c(118.4, 122.2), ylim = c(21.7, 25.7)) +
+  theme_bare
 ```
 
 # Regional Breakdown
@@ -142,11 +178,10 @@ north_tw_map %>%
                    aes(x = x, y = y, label = county_eng),
                    box.padding   = 0.55, 
                    point.padding = 0.6) +
-  scale_fill_viridis_c(name = "Tsai Ying-wen\nVote Share") +
-  coord_map(xlim = c(north_tw_coord$min_long-0.2, 123), 
+  scale_fill_viridis_c(name = "Tsai Ying-wen\nVote Share", limits = c(0.1, 0.8)) +
+  coord_map(xlim = c(north_tw_coord$min_long-0.2, 122.35), 
             ylim = c(north_tw_coord$min_lat, 25.4)) +
-  theme_bare +
-  labs(title = str_wrap("Tsai Ying-Wen Vote Share in Northern Taiwan", 35))
+  theme_bare 
 ```
 
 ## Central Taiwan
@@ -177,11 +212,10 @@ central_tw_map %>%
                    aes(x = x, y = y, label = county_eng),
                    box.padding   = 0.55, 
                    point.padding = 0.6) +
-  scale_fill_viridis_c(name = "Tsai Ying-wen\nVote Share") +
+  scale_fill_viridis_c(name = "Tsai Ying-wen\nVote Share", limits = c(0.1, 0.8)) +
   coord_map(xlim = c(central_tw_coord$min_long-0.2, central_tw_coord$max_long), 
             ylim = c(central_tw_coord$min_lat, central_tw_coord$max_lat)) +
-  theme_bare +
-  labs(title = str_wrap("Tsai Ying-Wen Vote Share in Central Taiwan", 35))
+  theme_bare 
 ```
 
 ## Southern Taiwan
@@ -212,11 +246,10 @@ southern_tw_map %>%
                    aes(x = x, y = y, label = county_eng),
                    box.padding   = 0.55, 
                    point.padding = 0.6) +
-  scale_fill_viridis_c(name = "Tsai Ying-wen\nVote Share") +
+  scale_fill_viridis_c(name = "Tsai Ying-wen\nVote Share", limits = c(0.1, 0.8)) +
   coord_map(xlim = c(119, southern_tw_coord$max_long), 
             ylim = c(21.7, southern_tw_coord$max_lat)) +
-  theme_bare +
-  labs(title = str_wrap("Tsai Ying-Wen Vote Share in Southern Taiwan", 35))
+  theme_bare 
 ```
 
 
@@ -248,11 +281,10 @@ eastern_tw_map %>%
                    aes(x = x, y = y, label = county_eng),
                    box.padding   = 0.55, 
                    point.padding = 0.6) +
-  scale_fill_viridis_c(name = "Tsai Ying-wen\nVote Share") +
+  scale_fill_viridis_c(name = "Tsai Ying-wen\nVote Share", limits = c(0.1, 0.8)) +
   coord_map(xlim = c(eastern_tw_coord$min_long, eastern_tw_coord$max_long), 
             ylim = c(eastern_tw_coord$min_lat, eastern_tw_coord$max_lat)) +
-  theme_bare +
-  labs(title = str_wrap("Tsai Ying-Wen Vote Share in Eastern Taiwan", 35))
+  theme_bare 
 ```
 
 ## Outlying Islands
@@ -260,18 +292,18 @@ eastern_tw_map %>%
 outlying_tw_map <- tw_town_map_df %>%
   filter(county_name %in% outlying_tw$county_name) 
 
-outlying_tw_county <- TWshp_county_df %>%
+outlying_tw_county <- tw_county_map_df %>%
   mutate_if(is.factor, as.character) %>%
   filter(county_name %in% outlying_tw$county_eng)
 
-outlying_tw_county_labs <- tw_county_labs %>%
-  filter(county_eng %in% outlying_tw$county_eng)
-
-outlying_tw_coord <- outlying_tw_map %>%
-  summarize(min_long = min(long),
-            max_long = max(long),
-            min_lat  = min(lat),
-            max_lat  = max(lat))
+outlying_tw_county_labs <- outlying_inset_box %>%
+  select(county_name, min_x, max_x, max_y) %>%
+  gather("metric", "value", -county_name) %>%
+  mutate(coord = ifelse(str_detect(metric, "_x"), "long", "lat")) %>%
+  group_by(county_name, coord) %>%
+  summarize(value = mean(value)) %>%
+  spread(coord, value) %>%
+  mutate(lat = lat + 0.06)
 
 outlying_tw_map %>%
   ggplot() +
@@ -279,13 +311,9 @@ outlying_tw_map %>%
                color = "#d0e8f2", 
                lwd = .01) +
   geom_polygon(aes(x = long, y = lat, group = group), fill = NA, color = "black", data = outlying_tw_county) +
-  geom_label_repel(data = outlying_tw_county_labs, 
-                   aes(x = x, y = y, label = county_eng),
-                   box.padding   = 0.55, 
-                   point.padding = 0.6) +
-  scale_fill_viridis_c(name = "Tsai Ying-wen\nVote Share") +
-  coord_map(xlim = c(outlying_tw_coord$min_long, outlying_tw_coord$max_long), 
-            ylim = c(outlying_tw_coord$min_lat, outlying_tw_coord$max_lat)) +
-  theme_bare +
-  labs(title = str_wrap("Tsai Ying-Wen Vote Share in Outlying Islands of Taiwan", 35))
+  geom_rect(data = outlying_inset_box, aes(xmin = min_x, ymin = min_y, xmax = max_x, ymax = max_y), color = "black", fill = NA) +
+  geom_label(data = outlying_tw_county_labs, aes(x = long, y = lat, label = county_name)) +
+  scale_fill_viridis_c(name = "Tsai Ying-wen\nVote Share", limits = c(0.1, 0.8)) +
+  coord_map(xlim = c(118.8, 121), ylim = c(24, 25.7)) +
+  theme_bare
 ```
