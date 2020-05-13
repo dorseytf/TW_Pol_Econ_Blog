@@ -319,3 +319,5 @@ outlying_tw_map %>%
   coord_map(xlim = c(118.8, 121), ylim = c(24, 25.7)) +
   theme_bare
 ```
+***
+# References
