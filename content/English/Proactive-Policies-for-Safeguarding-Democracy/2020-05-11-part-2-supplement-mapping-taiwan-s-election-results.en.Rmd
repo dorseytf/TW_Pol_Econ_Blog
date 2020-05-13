@@ -133,7 +133,9 @@ tw_county_labs$y[which(tw_county_labs$county_eng == "Lienchiang County")] <- tw_
 ```
 
 # Nationwide Election Results
-The clearest trend we see from the nationwide results is that the incumbent Tsai Ying-wen won more urban areas, and especially those traditionally associated with a stronger sense of Taiwanese identity (i.e. Tainan and Kaohsiung), by a larger margin. More rural areas, particularly those with larger aboriginal populations and the outlying islands closer to China, voted more heavily for the KMT challenger, Han Kuo-yu.
+The clearest trend we see from the nationwide results is that the incumbent Tsai Ying-wen won more urban areas, and especially those traditionally associated with a stronger sense of Taiwanese identity (i.e. Tainan and Kaohsiung), by a larger margin. In contrast, more rural areas, particularly those with larger aboriginal populations and the outlying islands closer to China, voted more heavily for the KMT challenger, Han Kuo-yu. 
+
+KMT support among farmers and fishermen is largely the result of the [KMT controlling irrigation, farmer, and fisherman organizations](https://newbloommag.net/2020/04/17/irrigation-agency-dpp-kmt/), a holdover from the authoritarian era.^[@newbloom_kmt_irrigation] Due to the sway they hold over these workers' livelihoods, these organizations have been used by the KMT to [leverage support](https://michaelturton.blogspot.com/2007/05/farmers-associations-and-rural-politics.html)^[@turton_farmer_assoc] from rural residents, institutionalize their [clientelist networks](https://newbloommag.net/2018/01/18/irrigation-nationalization-kmt/), and hoard resources.^[@newbloom_kmt_clientelist] 
 
 ```{r nation_votes}
 ggplot() +

@@ -56,8 +56,7 @@ The proliferation of social media and the willingness of traditional media to gi
 
 # Policies to Address Economic Factors
 
-## Tax Policy
-A great deal of research has been done on the topic of [tax policy](https://www.cbpp.org/sites/default/files/atoms/files/12-15-16sfp.pdf)^[@cbpp_tax] to [reduce](http://www.oecd.org/economy/labour/49421421.pdf)^[@oecd_tax] [income](https://www.nber.org/papers/w17616.pdf)^[@piketty_tax] and wealth inequality, 
+A great deal of research has already been done on the topic of crafting [tax policy](https://www.cbpp.org/sites/default/files/atoms/files/12-15-16sfp.pdf)^[@cbpp_tax] to [reduce](http://www.oecd.org/economy/labour/49421421.pdf)^[@oecd_tax] [income](https://www.nber.org/papers/w17616.pdf)^[@piketty_tax] and wealth inequality, so here I will instead focus on how to tackle the issues of stagnant wages, unemployment, and rising housing prices. 
 
 ## Job Guarantee
 
