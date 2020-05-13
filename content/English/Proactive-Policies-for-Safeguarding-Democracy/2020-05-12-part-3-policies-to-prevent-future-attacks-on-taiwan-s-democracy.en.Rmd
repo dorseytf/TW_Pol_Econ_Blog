@@ -20,48 +20,49 @@ tags:
   - data
 ---
 
-[Previously](/english/proactive-policies-for-safeguarding-democracy/part-1-how-the-populist-wave-came-to-taiwan/), we covered how trends in the economy and media over the last several decades laid the groundwork for growing discontent that right-wing populists have been able to leverage to gain political power. However, in [Part 2](/english/proactive-policies-for-safeguarding-democracy/part-2-how-did-taiwanese-voters-push-back/), we also saw how Taiwan was able to avoid this same fate by 1) leveraging external factors that worked against the populist candidate, and 2) taking a proactive stance toward some of the underlying economic and media factors. Here, I will expand on the replicable policies that other countries can adopt, as well as lay out additional policies that Taiwan and others should consider to strengthen their democracies. 
+[Previously](/english/proactive-policies-for-safeguarding-democracy/part-1-how-the-populist-wave-came-to-taiwan/), we covered how trends in the economy and media over the last several decades laid the groundwork for growing discontent that right-wing populists have been able to leverage to gain political power. However, in [Part 2](/english/proactive-policies-for-safeguarding-democracy/part-2-how-did-taiwanese-voters-push-back/), we also saw how Taiwan was able to avoid this same fate by 1) leveraging external factors that worked against the populist candidate, and 2) taking a proactive stance toward some of the underlying economic and media factors. Here, I will expand on economic policies that Taiwan (and others) should consider to strengthen support for democracy. 
 
 ***
 
-# Recap on the Causes of Populism
-Here, I present a quick recap of the underlying economic and media factors that can lead to populist surges in democracies.
+# Recap on Populism's Economic Factors
+Here, I present a quick recap of the underlying economic factors that can lead to surges in popularity for populist candidates. 
 
-## Economic Factors
-
-### Inequality
+## Inequality
 Taiwan, as with most democracies throughout the world, has seen income and wealth inequality increase dramatically over the past several decades, leading to growing discontent aimed at those at the top. 
 
-![Figure 1: Wealth Distribution and Average Net Worth in Taiwan](/post/2020-03-30-part-1-how-the-populist-wave-came-to-taiwan_files/Taiwan Wealth Pyramid English.png)
+![*Figure 1: Wealth Distribution and Average Net Worth in Taiwan*](/post/2020-03-30-part-1-how-the-populist-wave-came-to-taiwan_files/Taiwan Wealth Pyramid English.png)
 
-### Stagnant Earnings and Unemployment
-Earnings for most workers in democracies around the world have largely been stagnant for quite some time, making price increases more painful for most people.
+There is already a large body of research focusing on [tax policy](https://www.cbpp.org/sites/default/files/atoms/files/12-15-16sfp.pdf)^[@cbpp_tax] for [reducing](http://www.oecd.org/economy/labour/49421421.pdf)^[@oecd_tax] [income](https://www.nber.org/papers/w17616.pdf)^[@piketty_tax] and wealth inequality. Given that this topic is not my expertise, I will refer interested readers to this existing body of work. 
 
-![Figure 2: Real Monthly Earnings in Taiwan have stagnated](/post/2020-03-30-part-1-how-the-populist-wave-came-to-taiwan_files/Real Monthly Earnings in Taiwan.jpg)
 
-### Housing Prices
-Home prices in nearly every major metropolitan area have risen significantly, creating housing crises in many countries. 
+## Housing Prices
+Home prices in nearly every major metropolitan area have risen significantly, creating housing affordability crises in many countries around the world. 
 
-![Figure 3: Quarterly Housing Median Multiple for Taiwan and Taipei. A value above 5.1 is considered Extremely Unaffordable](/post/2020-03-30-part-1-how-the-populist-wave-came-to-taiwan_files/Quarterly Housing Median Multiple for Taiwan.jpg)
+![*Figure 2: Quarterly Housing Median Multiple for Taiwan and Taipei. A value above 5.1 is considered Extremely Unaffordable*](/post/2020-03-30-part-1-how-the-populist-wave-came-to-taiwan_files/Quarterly Housing Median Multiple for Taiwan.jpg)
 
-## Media Factors
+While we see from the evidence in Figure 2 that Taiwan is also battling a housing affordability crisis, work by Hu (2015) and others has already laid out housing policy to [reduce speculation and control housing affordability](http://www.econ.sinica.edu.tw/UpFiles/2013090214141704234/Periodicals_Pdf2013090215154369017/EC452-3.pdf) that is specific to the case of Taiwan, so I will defer to their expertise on this subject.^[@hu_15]
 
-### Partisanship in the Media
-Not only can highly partisan media outlets, both in traditional media and on social media, spread populist viewpoints and talking points, but even in mainstream media the discourse has shifted toward populist talking points, lending credibility and shifting the framing of debate.
 
-### Greater Audiences
-The proliferation of social media and the willingness of traditional media to give attention to populist candidates have allowed populist talking points and fake news to reach ever-larger audiences. 
+## Stagnant Earnings and Unemployment
+Earnings for most workers in countries around the world have largely been stagnant for quite some time, making price increases more painful for most people.
+
+![*Figure 3: Real Monthly Earnings in Taiwan have stagnated*](/post/2020-03-30-part-1-how-the-populist-wave-came-to-taiwan_files/Real Monthly Earnings in Taiwan.jpg)
+
+This issue has proven to be multi-faceted and difficult, especially given the relative dearth of research on the topic. Therefore, I will focus my efforts in this post on providing a solution to the interrelated issues of wage stagnation and under/unemployment: a Job Guarantee Program. In addition to providing a theoretical justification, I will also describe what a Job Guarantee (JG) might look like in Taiwan, and provide estimates of its effects on Taiwan's economy.
 
 ***
 
-# Economic Policies to Strengthen Support for Democracy
-
-A great deal of research has already been done on the topic of crafting [tax policy](https://www.cbpp.org/sites/default/files/atoms/files/12-15-16sfp.pdf)^[@cbpp_tax] to [reduce](http://www.oecd.org/economy/labour/49421421.pdf)^[@oecd_tax] [income](https://www.nber.org/papers/w17616.pdf)^[@piketty_tax] and wealth inequality, so I will instead focus on how to tackle the other core economic issues of stagnant wages, unemployment, and rising housing prices. 
-
-## Controlling House Prices
+# What is a Job Guarantee?
 
 
-## Job Guarantee
+***
+
+# What Would a Taiwanese JG Look Like?
+
+
+***
+
+# How Successful Would a JG be in Taiwan?
 
 
 
