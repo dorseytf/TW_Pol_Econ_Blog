@@ -4,6 +4,7 @@ author: 杜欣川
 date: '2020-05-12'
 slug: '第二篇副刊-地圖'
 weight: 2.5
+bibliography: part1_bib.bib
 output:
   blogdown::html_page:
     toc: true
@@ -141,7 +142,7 @@ tw_county_labs$y[which(tw_county_labs$county_eng == "Lienchiang County")] <- tw_
 # 全國選舉結果
 從全國範圍來看，最明顯的趨勢就是蔡英文總統贏得了更多的城市地區，尤其是比較會自認同為台灣人的地區（如台南市和高雄市）。 蔡英文的得票率在那些離市區較遠的地區低很多，尤其是離島和原住民較多的地區。
 
-支持國民黨的農漁民很大程度上是[國民黨控制灌溉，農民和漁民會](https://newbloommag.net/2020/04/17/irrigation-agency-dpp-kmt/) 的結果，也是戒嚴時代的遺留。^[@newbloom_kmt_irrigation] 由於這些組織對農漁民收入來源的影響力，國民黨曾利用它們來[建立農漁民的支持](https://michaelturton.blogspot.com/2007/05/farmers-associations-and-rural-politics.html)^[@turton_farmer_assoc]，制度化他們的[侍從網絡](https://newbloommag.net/2018/01/18/irrigation-nationalization-kmt/)，以及囤資源。^[@newbloom_kmt_clientelist]
+支持國民黨的農漁民很大程度上是[國民黨控制灌溉，農民和漁民會](https://newbloommag.net/2020/04/17/irrigation-agency-dpp-kmt/) 的結果，也是戒嚴時代的遺留。^[@newbloom_kmt_irrigation] 由於這些組織對農漁民收入來源的影響力，國民黨曾利用它們來[建立農漁民的支持](https://michaelturton.blogspot.com/2007/05/farmers-associations-and-rural-politics.html)^[@turton_farmer_assoc] ，制度化他們的[侍從網絡](https://newbloommag.net/2018/01/18/irrigation-nationalization-kmt/)，以及囤資源。 ^[@newbloom_kmt_clientelist]
 
 ```{r nation_votes}
 ggplot() +
@@ -345,3 +346,6 @@ outlying_tw_map %>%
   coord_map(xlim = c(118.8, 121), ylim = c(24, 25.7)) +
   theme_bare
 ```
+
+***
+# References
