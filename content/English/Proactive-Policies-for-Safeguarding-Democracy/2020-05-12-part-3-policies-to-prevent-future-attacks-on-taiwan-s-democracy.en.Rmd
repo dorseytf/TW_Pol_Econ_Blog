@@ -1,8 +1,8 @@
 ---
-title: 'Part 3: Policies to Prevent Future Attacks on Taiwan’s Democracy'
+title: 'Part 3: Economic Policies to Strengthen Taiwan’s Democracy'
 author: Travis Dorsey
 date: '2020-05-15'
-slug: part-3-policies-to-prevent-future-attacks-on-taiwan-s-democracy
+slug: part-3-policies-to-strengthen-taiwan-s-democracy
 weight: 1
 bibliography: part1_bib.bib
 output:
@@ -54,19 +54,15 @@ The proliferation of social media and the willingness of traditional media to gi
 
 ***
 
-# Policies to Address Economic Factors
+# Economic Policies to Strengthen Support for Democracy
 
-A great deal of research has already been done on the topic of crafting [tax policy](https://www.cbpp.org/sites/default/files/atoms/files/12-15-16sfp.pdf)^[@cbpp_tax] to [reduce](http://www.oecd.org/economy/labour/49421421.pdf)^[@oecd_tax] [income](https://www.nber.org/papers/w17616.pdf)^[@piketty_tax] and wealth inequality, so here I will instead focus on how to tackle the issues of stagnant wages, unemployment, and rising housing prices. 
+A great deal of research has already been done on the topic of crafting [tax policy](https://www.cbpp.org/sites/default/files/atoms/files/12-15-16sfp.pdf)^[@cbpp_tax] to [reduce](http://www.oecd.org/economy/labour/49421421.pdf)^[@oecd_tax] [income](https://www.nber.org/papers/w17616.pdf)^[@piketty_tax] and wealth inequality, so I will instead focus on how to tackle the other core economic issues of stagnant wages, unemployment, and rising housing prices. 
+
+## Controlling House Prices
+
 
 ## Job Guarantee
 
-
-
-***
-
-# Policies to Address Media Factors
-
-## Combatting Fake News
 
 
 ***
