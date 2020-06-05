@@ -1,0 +1,880 @@
+---
+title: Building a Macroeconomic Model of Taiwan
+author: Travis Dorsey
+date: '2020-05-26'
+slug: macroeconomic-model-of-taiwan
+bibliography: econ_models_bib.bib
+biblio-style: "apalike"
+nocite: |
+  @jp_gnp
+  @tfp_dat
+output:
+  blogdown::html_page:
+    toc: true
+    toc_depth: 2
+    number_sections: true
+categories: [Econometric Models]
+tags:
+  - economics
+  - data
+---
+
+<script src="/rmarkdown-libs/kePrint/kePrint.js"></script>
+
+<div id="TOC">
+<ul>
+<li><a href="#variables-and-equations"><span class="toc-section-number">1</span> Variables and Equations</a><ul>
+<li><a href="#variables"><span class="toc-section-number">1.1</span> Variables</a></li>
+<li><a href="#equations"><span class="toc-section-number">1.2</span> Equations</a></li>
+</ul></li>
+<li><a href="#results"><span class="toc-section-number">2</span> Results</a><ul>
+<li><a href="#estimated-coefficients"><span class="toc-section-number">2.1</span> Estimated Coefficients</a></li>
+<li><a href="#rmse"><span class="toc-section-number">2.2</span> RMSE</a></li>
+</ul></li>
+<li><a href="#references">References</a></li>
+</ul>
+</div>
+
+<p>Following the methodology laid out by the <a href="https://www.stat.gov.tw/public/Attachment/6531914262FZ3FA2L.pdf">Directorate-General of Budget, Accounting, and Statistics</a><a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a>, I build an econometric model of Taiwan’s macroeconomy that I can utilize to test the impact of policy proposals as in <a href="simulating_jg_us">Fullwiler (2006)</a>.<a href="#fn2" class="footnote-ref" id="fnref2"><sup>2</sup></a> This approach is based on the Cowles Commission methodology of simultaneous equations (similar to the well known <a href="https://fairmodel.econ.yale.edu/mmm2/mm2018.pdf">Fairmodel</a><a href="#fn3" class="footnote-ref" id="fnref3"><sup>3</sup></a> used to study the US economy and that of <a href="http://www.econ.ntu.edu.tw/ter/new/data/new/TER38-1/TER381-1.pdf">Lin (2007)</a><a href="#fn4" class="footnote-ref" id="fnref4"><sup>4</sup></a> which models the Taiwanese economy) and has been shown to outperform VAR and other time series approaches for macroeconomic forecasts, while also providing a more useful framework for testing policy options than dynamic stochastic generalized equilibrium models, which have <a href="https://www.federalreserve.gov/econresdata/ifdp/2016/files/ifdp1175.pdf">their own issues</a>.<a href="#fn5" class="footnote-ref" id="fnref5"><sup>5</sup></a></p>
+<hr />
+<div id="variables-and-equations" class="section level1">
+<h1><span class="header-section-number">1</span> Variables and Equations</h1>
+<p>The model will consist of 25 simultaneous equations, with 38 endogenous variables and 24 exogenous variables.</p>
+<div id="variables" class="section level2">
+<h2><span class="header-section-number">1.1</span> Variables</h2>
+<div id="endogenous-variables" class="section level3">
+<h3><span class="header-section-number">1.1.1</span> Endogenous Variables</h3>
+<table class="table table-striped table-condensed" style="font-size: 12px; width: auto !important; margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;font-weight: bold;color: white !important;background-color: grey !important;">
+Variable Name
+</th>
+<th style="text-align:center;font-weight: bold;color: white !important;background-color: grey !important;">
+Description
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+C
+</td>
+<td style="text-align:center;">
+Real Private Consumption
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+YDD$
+</td>
+<td style="text-align:center;">
+Nominal Disposable Income
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+PGDP
+</td>
+<td style="text-align:center;">
+GDP Deflator
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+STKVLE$
+</td>
+<td style="text-align:center;">
+Total market capitalization of listed stocks
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+CPI
+</td>
+<td style="text-align:center;">
+Consumer Price Index
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+IBF
+</td>
+<td style="text-align:center;">
+Real Private Fixed Investment
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+IG
+</td>
+<td style="text-align:center;">
+Real Government Fixed Investment
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+EXG
+</td>
+<td style="text-align:center;">
+Real Exports of Goods, Transportation, and Insurance
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+TDR1Y
+</td>
+<td style="text-align:center;">
+One-year fixed deposit rate
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+PX
+</td>
+<td style="text-align:center;">
+Export Price Index
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+SPIKE2002
+</td>
+<td style="text-align:center;">
+Dummy Variable for 2002
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+STEP2008
+</td>
+<td style="text-align:center;">
+Dummy Variable for 2008 and on
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+EXS
+</td>
+<td style="text-align:center;">
+Real Other Exports
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+IMG
+</td>
+<td style="text-align:center;">
+Real Imports of Goods, Transportation, and Insurance
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+IPC
+</td>
+<td style="text-align:center;">
+Fixed investment in real public enterprises
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+IMS
+</td>
+<td style="text-align:center;">
+Real Other Imports
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+PM
+</td>
+<td style="text-align:center;">
+Import Price Index
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+PD
+</td>
+<td style="text-align:center;">
+Domestic Price Index
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+GDP
+</td>
+<td style="text-align:center;">
+Gross Domestic Product
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+SPIKE2008
+</td>
+<td style="text-align:center;">
+Dummy Variable for 2008
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+PF
+</td>
+<td style="text-align:center;">
+Food Consumption Price Index
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+WG$
+</td>
+<td style="text-align:center;">
+Monthly Wages per Worker in Industry and Service Sectors
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+PO
+</td>
+<td style="text-align:center;">
+Non-Food Consumption Price Index
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+PC
+</td>
+<td style="text-align:center;">
+Private Consumption Deflator
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+PCG
+</td>
+<td style="text-align:center;">
+Government Consumption Deflator
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+PIG
+</td>
+<td style="text-align:center;">
+Government Fixed Investment Deflator
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+PIBF
+</td>
+<td style="text-align:center;">
+Private Fixed Investment Deflator
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+PIPC
+</td>
+<td style="text-align:center;">
+Public Enterprise Fixed Investment Deflator
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+PGCF
+</td>
+<td style="text-align:center;">
+Gross Fixed Capital Formation Deflator
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+PEX
+</td>
+<td style="text-align:center;">
+Exports of Goods and Services Deflator
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+PIM
+</td>
+<td style="text-align:center;">
+Imports of Goods and Services Deflator
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+M1B
+</td>
+<td style="text-align:center;">
+M1B Money Supply
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+SPIKE2009
+</td>
+<td style="text-align:center;">
+Dummy Variable for 2009
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+NE
+</td>
+<td style="text-align:center;">
+Number of Employed
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+GDP$
+</td>
+<td style="text-align:center;">
+Nominal GDP
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+TAX$
+</td>
+<td style="text-align:center;">
+Tax Revenue
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+C$
+</td>
+<td style="text-align:center;">
+Nominal Private Consumption
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+EX$
+</td>
+<td style="text-align:center;">
+Nominal Exports of Goods and Services
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="exogenous-variables" class="section level3">
+<h3><span class="header-section-number">1.1.2</span> Exogenous Variables</h3>
+<table class="table table-striped table-condensed" style="font-size: 12px; width: auto !important; margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;font-weight: bold;color: white !important;background-color: grey !important;">
+Variable Name
+</th>
+<th style="text-align:center;font-weight: bold;color: white !important;background-color: grey !important;">
+Description
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+CAPSTOCK$
+</td>
+<td style="text-align:center;">
+Fixed capital stock of private enterprises
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+GDPMAJOR
+</td>
+<td style="text-align:center;">
+Real GDP Index of Major Economies
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+RX
+</td>
+<td style="text-align:center;">
+NTD/USD Exchange Rate
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+ICSALES$
+</td>
+<td style="text-align:center;">
+Global Semiconductor Sales
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+WPX
+</td>
+<td style="text-align:center;">
+World Export Price Index
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+OVERSEAREV$
+</td>
+<td style="text-align:center;">
+Export Orders
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+VISITORS
+</td>
+<td style="text-align:center;">
+Number of Visitors to Taiwan
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+JJ
+</td>
+<td style="text-align:center;">
+Real Inventory Changes
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+OUTBOUND
+</td>
+<td style="text-align:center;">
+Number of Citizens Going Abroad
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+NONFUEL
+</td>
+<td style="text-align:center;">
+Global Non-Energy Commodity Price Index
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+POIL
+</td>
+<td style="text-align:center;">
+Crude Oil Price
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+JPNRX
+</td>
+<td style="text-align:center;">
+JPY/USD Exchange Rate
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+WTVG
+</td>
+<td style="text-align:center;">
+World Trade Volume Growth Rate
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+FOOD
+</td>
+<td style="text-align:center;">
+Global Food Commodity Price Index
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+TYPH_T
+</td>
+<td style="text-align:center;">
+Number of Typhoons Hitting Taiwan
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+WGP
+</td>
+<td style="text-align:center;">
+Civil service salary adjustment
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+PCON
+</td>
+<td style="text-align:center;">
+Construction Price Index
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+PCA
+</td>
+<td style="text-align:center;">
+Capital goods import price index
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+WGST$
+</td>
+<td style="text-align:center;">
+Monthly Wages per Worker in Professional, Scientific, and Technical Services
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+VSTOCK$
+</td>
+<td style="text-align:center;">
+Total turnover of listed counter stocks
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+NOTERATE
+</td>
+<td style="text-align:center;">
+31-90-day commercial promissory note secondary market interest rate
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+REQ
+</td>
+<td style="text-align:center;">
+Time deposit reserve ratio
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+IR
+</td>
+<td style="text-align:center;">
+Rediscount rate
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+DEP$
+</td>
+<td style="text-align:center;">
+Nominal Fixed Capital Consumption
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div id="equations" class="section level2">
+<h2><span class="header-section-number">1.2</span> Equations</h2>
+<p>Here I show the equations that make up this macroeconometric model of Taiwan.</p>
+<div id="commodity-market" class="section level3">
+<h3><span class="header-section-number">1.2.1</span> Commodity Market</h3>
+<p>Real Private Consumption (C):
+<span class="math display">\[
+C = f(\underset{+}{C_{-1}}, \underset{+}{\frac{YDD^{nominal}}{PGDP}}, \underset{+}{\frac{STKVLE^{nominal}}{CPI}})
+\]</span>
+Real Private Fixed Investment (IBF):
+<span class="math display">\[
+IBF = f(\underset{+}{IBF_{-1}}, \underset{+}{IG_{-1}}, \underset{-}{TDR1Y - @PCHY(CPI)},\\ \underset{+}{EXG_{-1}},
+\underset{+}{\frac{STKVLE^{nominal}}{CAPSTOCK^{nominal}}})
+\]</span></p>
+<p>Real Exports of Goods, Transportation, and Insurance (EXG):
+<span class="math display">\[
+EXG = f(\underset{-}{\frac{PX}{WPX * RX}}, \underset{+}{GDPMAJOR}, \underset{+}{ICSALES^{nominal}},\\
+\underset{+}{SPIKE2002}, \underset{-}{STEP2008})
+\]</span></p>
+<p>Real Other Exports (EXS):
+<span class="math display">\[
+EXS = f(\underset{+}{EXS_{-1}}, \underset{+}{OVERSEAREV^{nominal}},\\ \underset{+}{VISITORS}, \underset{+}{RX})
+\]</span>
+Real Imports of Goods, Transportation, and Insurance (IMG):
+<span class="math display">\[
+IMG = f(\underset{+}{EXG}, \underset{+}{C}, \underset{+}{IPC + IBF + JJ})
+\]</span>
+Real Other Imports (IMS):
+<span class="math display">\[
+IMS = f(\underset{+}{IMS_{-1}}, \underset{+}{OUTBOUND})
+\]</span></p>
+</div>
+<div id="price-indices" class="section level3">
+<h3><span class="header-section-number">1.2.2</span> Price Indices</h3>
+<p>Import Price Index (PM):
+<span class="math display">\[
+PM = f(\underset{+}{RX}, \underset{-}{JPNRX}, \underset{+}{NONFUEL},\\ \underset{+}{POIL}, \underset{+}{WPX})
+\]</span></p>
+<p>Export Price Index (PX):
+<span class="math display">\[
+PX = f(\underset{+}{RX}, \underset{+}{PM}, \underset{+}{WTVG})
+\]</span></p>
+<p>Domestic Production Price Index (PD):
+<span class="math display">\[
+PD = f(\underset{+}{PD_{-1}}, \underset{+}{PM}, \underset{+}{GDP}, \underset{+}{SPIKE2008})
+\]</span></p>
+<p>Food Consumer Price Index (PF):
+<span class="math display">\[
+PF = f(\underset{+}{PF_{-1}}, \underset{+}{FOOD}, \underset{+}{WG^{nominal}_{-1}}, \underset{+}{TYPH_T})
+\]</span>
+Non-Food Consumer Price Index (PO):
+<span class="math display">\[
+PO = f(\underset{+}{PO_{-1}}, \underset{+}{PM_{-1}}, \underset{+}{PM}, \underset{+}{WG^{nominal}})
+\]</span></p>
+<p>Private Consumption Deflator (PC):
+<span class="math display">\[
+PC = f(\underset{+}{PF}, \underset{+}{PO})
+\]</span></p>
+<p>Government Consumption Deflator (PCG):
+<span class="math display">\[
+PCG = f(\underset{+}{PO}, \underset{+}{WGP}, \underset{+}{PIG})
+\]</span>
+Private Fixed Investment Deflator (PIBF):
+<span class="math display">\[
+PIBF = f(\underset{+}{PIBF_{-1}}, \underset{+}{PCON}, \underset{+}{PCA},\\ \underset{+}{WGST^{nominal}}, \underset{-}{SPIKE2008})
+\]</span>
+Government Fixed Investment Deflator (PIG):
+<span class="math display">\[
+PIG = f(\underset{+}{PIG_{-1}}, \underset{+}{PCON}, \underset{+}{WGST^{nominal}}, \underset{-}{SPIKE2008})
+\]</span></p>
+<p>Public Enterprise Fixed Investment Deflator (PIPC)
+<span class="math display">\[
+PIPC = f(\underset{+}{PCON}, \underset{+}{PCA}, \underset{-}{SPIKE2008})
+\]</span></p>
+<p>Gross Capital Formation Deflator (PGCF):
+<span class="math display">\[
+PGCF = f(\underset{+}{PIBF}, \underset{+}{PIG}, \underset{+}{PIPC})
+\]</span>
+Exports of Goods and Services Deflator (PEX):
+<span class="math display">\[
+PEX = f(\underset{+}{PX}, \underset{+}{CPI})
+\]</span></p>
+<p>Imports of Goods and Services Deflator (PIM):
+<span class="math display">\[
+PIM = f(\underset{+}{PM}, \underset{+}{CPI})
+\]</span></p>
+</div>
+<div id="financial-money-market" class="section level3">
+<h3><span class="header-section-number">1.2.3</span> Financial Money Market</h3>
+<p>M1B:
+<span class="math display">\[
+\frac{M1B}{CPI} = f(\underset{-}{CPI}, \underset{+}{GDP}, \underset{+}{\frac{VSTOCK^{nominal}}{CPI}},\\ \underset{-}{TDR1Y - NOTERATE})
+\]</span></p>
+<p>One-year Fixed Deposit Rate (TDR1Y):
+<span class="math display">\[
+TDR1Y = f(\underset{+}{REQ}, \underset{+}{IR}, \underset{+}{GDP_{-1}})
+\]</span></p>
+<p>Total Market Capitalization of Listed Stocks (STKVLE$):
+<span class="math display">\[
+STKVLE$ = f(\underset{+}{M1B}, \underset{+}{VSTOCK^{nominal}}, \underset{-}{SPIKE2009})
+\]</span></p>
+</div>
+<div id="labor-market" class="section level3">
+<h3><span class="header-section-number">1.2.4</span> Labor Market</h3>
+<p>Number of Employed (NE):
+<span class="math display">\[
+NE = f(\underset{+}{NE_{-1}}, \underset{-}{\frac{WG^{nominal}}{CPI}}, \underset{+}{GDP})
+\]</span></p>
+<p>Monthly Wages per Worker in Industry and Service Sectors (WG$):
+<span class="math display">\[
+WG^{nominal} = f(\underset{+}{WG^{nominal}_{-1}}, \underset{+}{GDP^{nominal}_{-1} - DEP^{nominal}_{-1}}, \underset{+}{CPI}, \underset{+}{WGP})
+\]</span></p>
+</div>
+<div id="tax-revenues" class="section level3">
+<h3><span class="header-section-number">1.2.5</span> Tax Revenues</h3>
+<p>Tax Revenues (TAX$):
+<span class="math display">\[
+TAX^{nominal} = f(\underset{+}{GDP^{nominal}_{-1}}, \underset{+}{EX^{nominal}+C^{nominal}},\\ \underset{+}{VSTOCK^{nominal}})
+\]</span></p>
+<hr />
+</div>
+</div>
+</div>
+<div id="results" class="section level1">
+<h1><span class="header-section-number">2</span> Results</h1>
+<div id="estimated-coefficients" class="section level2">
+<h2><span class="header-section-number">2.1</span> Estimated Coefficients</h2>
+<table class="table table-striped table-condensed" style="font-size: 12px; width: auto !important; margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;font-weight: bold;color: white !important;background-color: grey !important;">
+Estimation Results
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+<span class="math inline">\(C = 0.7362 + 0.7719*C_{-1} + 0.1715*YDD^{nominal} + 0.0725*\frac{STKVLE}{CPI}\)</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<span class="math inline">\(IBF = -1.0823 + 0.7726*IBF_{-1} + 0.0109*IG_{-1} + -0.0151*TDR1Y - PCHY_CPI + -0.0045*EXG_{-1} + 4.283*\frac{STKVLE}{CAPSTOCK}\)</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<span class="math inline">\(EXG = 9.6376 + 23.6558*\frac{PX}{WPX * RX} + 0.0416*GDPMAJOR + 0.0007*ICSALES^{nominal} + 0.0114*SPIKE2002 + 0.1701*STEP2008\)</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<span class="math inline">\(EXS = 0.1525 + 0.7005*EXS_{-1} + 0.0187*OVERSEAREV^{nominal} + 0.2073*VISITORS + 0.0004*RX\)</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<span class="math inline">\(IMG = 2.3895 + 0.5215*EXG + 0.2977*C + 0*IPC + IBF + JJ\)</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<span class="math inline">\(IMS = -0.1603 + 0.8221*IMS_{-1} + 0.1504*OUTBOUND\)</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<span class="math inline">\(PM = 31.1133 + 1.1253*RX + -0.0209*JPNRX + 0.3532*NONFUEL + 0.236*POIL + -0.0744*WPX\)</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<span class="math inline">\(PX = 103.6357 + 0.6733*RX + -0.119*PM + 0.4625*WTVG\)</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<span class="math inline">\(PD = -65.1345 + 0.4085*PD_{-1} + 0.3964*PM + 5.5135*GDP + 0.4412*SPIKE2008\)</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<span class="math inline">\(PF = -6.1713 + 1.0209*PF_{-1} + -0.0071*FOOD + 0.0001*WG^{nominal}_{-1} + 1.9816*TYPH_T\)</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<span class="math inline">\(PO = 2.8753 + 0.9727*PO_{-1} + -0.071*PM_{-1} + 0.08*PM + 0*WG^{nominal}\)</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<span class="math inline">\(PC = 32.7709 + 0.1423*PF + 0.5325*PO\)</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<span class="math inline">\(PCG = 221.2602 + -2.3622*PO + -0.7248*WGP + 1.1118*PIG\)</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<span class="math inline">\(PIBF = 12.916 + 0.6872*PIBF_{-1} + 0.1311*PCON + -0.0149*PCA + 0.0001*WGST^{nominal} + -0.4215*SPIKE2008\)</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<span class="math inline">\(PIG = 7.6898 + 0.2833*PIG_{-1} + 0.4989*PCON + 0.0003*WGST^{nominal} + -1.6162*SPIKE2008\)</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<span class="math inline">\(PIPC = 68.2521 + 0.4054*PCON + -0.0934*PCA + -5.935*SPIKE2008\)</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<span class="math inline">\(PGCF = 1.7715 + 0.6835*PIBF + 0.2123*PIG + 0.0857*PIPC\)</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<span class="math inline">\(PEX = 68.4792 + 0.6806*PX + -0.3627*CPI\)</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<span class="math inline">\(PIM = 74.1947 + 0.8045*PM + -0.552*CPI\)</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<span class="math inline">\(\frac{M1B}{CPI} = 0.0083 + -0.0011*CPI + 0.0146*GDP + 0.0003*\frac{VSTOCK}{CPI} + 0.001*TDR1Y - NOTERATE\)</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<span class="math inline">\(TDR1Y = 15.8923 + 0.4513*REQ + 0.82*IR + -1.2067*GDP_{-1}\)</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<span class="math inline">\(STKVLE^{nominal} = 1.2695 + 0.8714*M1B + 0.3789*VSTOCK^{nominal} + -0.2136*SPIKE2009\)</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<span class="math inline">\(NE = -3904.8095 + 0.8861*NE_{-1} + -0.0714*\frac{WG}{CPI} + 342.3248*GDP\)</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<span class="math inline">\(WG^{nominal} = -32514.561 + -0.3745*WG^{nominal}_{-1} + 11855.9505*GDP - DEP + 772.8835*CPI + -678.7492*WGP\)</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<span class="math inline">\(TAX^{nominal} = 23.0423 + -0.4077*GDP^{nominal}_{-1} + 0*EX + C + 0.0706*VSTOCK^{nominal}\)</span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="rmse" class="section level2">
+<h2><span class="header-section-number">2.2</span> RMSE</h2>
+<hr />
+</div>
+</div>
+<div id="references" class="section level1 unnumbered">
+<h1>References</h1>
+<div id="refs" class="references">
+<div id="ref-frb_dsge">
+<p>Daniel O. Beltran, David Draper. 2016. “Estimating Dynamic Macroeconomic Models.” <em>International Finance Discussion Papers</em>, no. 1175.</p>
+</div>
+<div id="ref-fairmodel">
+<p>Fair, Ray C. 2018. <em>Macroeconomic Modeling: 2018</em>. <a href="https://fairmodel.econ.yale.edu/mmm2/mm2018.pdf">https://fairmodel.econ.yale.edu/mmm2/mm2018.pdf</a>.</p>
+</div>
+<div id="ref-simulating_jg_us">
+<p>Fullwiler, Scott T. 2006. “Simulating an Employment Guarantee Policy in the U.s.” Employment Guarantee Policies: Theory; Practice.</p>
+</div>
+<div id="ref-jp_gnp">
+<p>“Japan Gnp 1962-2020.” 2020. macrotrends. <a href="https://www.macrotrends.net/countries/JPN/japan/gnp-gross-national-product">https://www.macrotrends.net/countries/JPN/japan/gnp-gross-national-product</a>.</p>
+</div>
+<div id="ref-tfp_dat">
+<p>Robert C. Feenstra, Marcel P. Timmer, Robert Inklaar. n.d. “The Next Generation of the Penn World Table.” <em>American Economic Review</em> 105 (10): 3150–82. <a href="www.ggdc.net/pwt">www.ggdc.net/pwt</a>.</p>
+</div>
+<div id="ref-lin_2007_tw_macro">
+<p>林建甫. 2010. “總體經濟計量模型的建立與應用.” <em>Taiwan Economic Review</em> 38 (1).</p>
+</div>
+<div id="ref-dgbas_econ">
+<p>“總體經濟計量模型.” n.d. 行政院主計總處 Directorate-General of Budget, Accounting,; Statistics, Executive Yuan. <a href="https://www.stat.gov.tw/public/Attachment/6531914262FZ3FA2L.pdf">https://www.stat.gov.tw/public/Attachment/6531914262FZ3FA2L.pdf</a>.</p>
+</div>
+</div>
+</div>
+<div class="footnotes">
+<hr />
+<ol>
+<li id="fn1"><p><span class="citation">(“總體經濟計量模型,” n.d.)</span><a href="#fnref1" class="footnote-back">↩</a></p></li>
+<li id="fn2"><p><span class="citation">Fullwiler (2006)</span><a href="#fnref2" class="footnote-back">↩</a></p></li>
+<li id="fn3"><p><span class="citation">Fair (2018)</span><a href="#fnref3" class="footnote-back">↩</a></p></li>
+<li id="fn4"><p><span class="citation">林建甫 (2010)</span><a href="#fnref4" class="footnote-back">↩</a></p></li>
+<li id="fn5"><p><span class="citation">Daniel O. Beltran (2016)</span><a href="#fnref5" class="footnote-back">↩</a></p></li>
+</ol>
+</div>

@@ -1,0 +1,408 @@
+---
+title: Building a Macroeconomic Model of Taiwan
+author: Travis Dorsey
+date: '2020-05-26'
+slug: macroeconomic-model-of-taiwan
+bibliography: econ_models_bib.bib
+biblio-style: "apalike"
+nocite: |
+  @jp_gnp
+  @tfp_dat
+output:
+  blogdown::html_page:
+    toc: true
+    toc_depth: 2
+    number_sections: true
+categories: [Econometric Models]
+tags:
+  - economics
+  - data
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(message = FALSE)
+
+library(tidyverse)
+library(kableExtra)
+library(equatiomatic)
+library(systemfit)
+library(lubridate)
+
+options(scipen=999)
+
+econ_vars <- read_csv("/Users/sharedcomputer/MMT in Taiwan/Analysis Replication Files/Macroeconomic Model of Taiwan/New Variable List.csv")
+
+get_model_formula <- function(model_eq) {
+  eq_formula <- deparse(model_eq$terms)
+
+  test_coef <- as.data.frame(model_eq$coefficients) %>%
+    rownames_to_column(var = "variable_name")
+  
+  new_rhs <- test_coef %>%
+    mutate(rn = row_number()) %>%
+    group_by(rn) %>%
+    mutate(variable_name = clean_var_names(variable_name)) %>%
+    ungroup() %>%
+    select(-rn) %>%
+    mutate(rhs = ifelse(variable_name == "(Intercept)", 
+                        round(Estimate, 4), 
+                        paste(round(Estimate, 4), variable_name, sep = "*"))) %>%
+    mutate(rhs = str_remove_all(rhs, "`"))
+  new_rhs <- str_c(new_rhs$rhs, collapse = " + ")
+  new_lhs <- str_replace(str_sub(eq_formula, 1, str_locate(eq_formula, "~")[1]), "~", "=")
+  new_lhs <- str_remove_all(new_lhs, "`")
+  new_lhs <- clean_var_names(new_lhs)
+  
+  new_eq <- paste(new_lhs, new_rhs)
+  return(new_eq)
+}
+
+clean_var_names <- function(eqn_text) {
+  div_detect <- str_detect(eqn_text, "_d_")
+  eq_detect <- str_detect(eqn_text, " =")
+  
+  if(div_detect){
+    if(eq_detect){
+      eqn_text <- str_replace_all(eqn_text, " =", "")
+      eqn_text <- str_split(eqn_text, "_d_")
+      eqn_text <- sprintf("\\frac{%s}{%s}", eqn_text[[1]][1], eqn_text[[1]][2])
+      eqn_text <- paste(eqn_text, "= ")
+    } else{
+      eqn_text <- str_split(eqn_text, "_d_")
+      eqn_text <- sprintf("\\frac{%s}{%s}", eqn_text[[1]][1], eqn_text[[1]][2])
+    }
+  }
+  
+  eqn_text <- str_replace_all(eqn_text, "_x_", " * ")
+  eqn_text <- str_replace_all(eqn_text, "_m_", " - ")
+  eqn_text <- str_replace_all(eqn_text, "_p_", " + ")
+  eqn_text <- str_replace_all(eqn_text, "_1", "_{-1}")
+  
+  return(eqn_text)
+}
+
+```
+
+
+Following the methodology laid out by the [Directorate-General of Budget, Accounting, and Statistics](https://www.stat.gov.tw/public/Attachment/6531914262FZ3FA2L.pdf)^[@dgbas_econ], I build an econometric model of Taiwan's macroeconomy that I can utilize to test the impact of policy proposals as in [Fullwiler (2006)](simulating_jg_us).^[@simulating_jg_us] This approach is based on the Cowles Commission methodology of simultaneous equations (similar to the well known [Fairmodel](https://fairmodel.econ.yale.edu/mmm2/mm2018.pdf)^[@fairmodel] used to study the US economy and that of [Lin (2007)](http://www.econ.ntu.edu.tw/ter/new/data/new/TER38-1/TER381-1.pdf)^[@lin_2007_tw_macro] which models the Taiwanese economy) and has been shown to outperform VAR and other time series approaches for macroeconomic forecasts, while also providing a more useful framework for testing policy options than dynamic stochastic generalized equilibrium models, which have [their own issues](https://www.federalreserve.gov/econresdata/ifdp/2016/files/ifdp1175.pdf).^[@frb_dsge] 
+
+
+***
+# Variables and Equations
+The model will consist of 25 simultaneous equations, with 38 endogenous variables and 24 exogenous variables.
+
+## Variables 
+
+### Endogenous Variables
+```{r endog_vars}
+econ_vars %>%
+  filter(Exogenous == "N") %>%
+  select(-c(Description_zh, Exogenous, `Equations Used`)) %>%
+  kable('html', align = c("l", "c")) %>%
+  kable_styling(bootstrap_options = c("striped", "condensed"), full_width = F, font_size = 12) %>%
+  row_spec(0, bold = TRUE, background = "grey", color = "white") 
+```
+
+### Exogenous Variables
+```{r exog_vars}
+econ_vars %>%
+  filter(Exogenous == "Y") %>%
+  select(-c(Description_zh, Exogenous, `Equations Used`)) %>%
+  kable('html', align = c("l", "c")) %>%
+  kable_styling(bootstrap_options = c("striped", "condensed"), full_width = F, font_size = 12) %>%
+  row_spec(0, bold = TRUE, background = "grey", color = "white") 
+```
+
+
+## Equations
+Here I show the equations that make up this macroeconometric model of Taiwan.
+
+### Commodity Market
+Real Private Consumption (C):
+$$
+C = f(\underset{+}{C_{-1}}, \underset{+}{\frac{YDD^{nominal}}{PGDP}}, \underset{+}{\frac{STKVLE^{nominal}}{CPI}})
+$$
+Real Private Fixed Investment (IBF):
+$$
+IBF = f(\underset{+}{IBF_{-1}}, \underset{+}{IG_{-1}}, \underset{-}{TDR1Y - @PCHY(CPI)},\\ \underset{+}{EXG_{-1}},
+\underset{+}{\frac{STKVLE^{nominal}}{CAPSTOCK^{nominal}}})
+$$
+
+Real Exports of Goods, Transportation, and Insurance (EXG):
+$$
+EXG = f(\underset{-}{\frac{PX}{WPX * RX}}, \underset{+}{GDPMAJOR}, \underset{+}{ICSALES^{nominal}},\\
+\underset{+}{SPIKE2002}, \underset{-}{STEP2008})
+$$
+
+Real Other Exports (EXS):
+$$
+EXS = f(\underset{+}{EXS_{-1}}, \underset{+}{OVERSEAREV^{nominal}},\\ \underset{+}{VISITORS}, \underset{+}{RX})
+$$
+Real Imports of Goods, Transportation, and Insurance (IMG):
+$$
+IMG = f(\underset{+}{EXG}, \underset{+}{C}, \underset{+}{IPC + IBF + JJ})
+$$
+Real Other Imports (IMS):
+$$
+IMS = f(\underset{+}{IMS_{-1}}, \underset{+}{OUTBOUND})
+$$
+
+### Price Indices
+
+Import Price Index (PM):
+$$
+PM = f(\underset{+}{RX}, \underset{-}{JPNRX}, \underset{+}{NONFUEL},\\ \underset{+}{POIL}, \underset{+}{WPX})
+$$
+
+Export Price Index (PX):
+$$
+PX = f(\underset{+}{RX}, \underset{+}{PM}, \underset{+}{WTVG})
+$$
+
+Domestic Production Price Index (PD):
+$$
+PD = f(\underset{+}{PD_{-1}}, \underset{+}{PM}, \underset{+}{GDP}, \underset{+}{SPIKE2008})
+$$
+
+Food Consumer Price Index (PF):
+$$
+PF = f(\underset{+}{PF_{-1}}, \underset{+}{FOOD}, \underset{+}{WG^{nominal}_{-1}}, \underset{+}{TYPH_T})
+$$
+Non-Food Consumer Price Index (PO):
+$$
+PO = f(\underset{+}{PO_{-1}}, \underset{+}{PM_{-1}}, \underset{+}{PM}, \underset{+}{WG^{nominal}})
+$$
+
+Private Consumption Deflator (PC):
+$$
+PC = f(\underset{+}{PF}, \underset{+}{PO})
+$$
+
+Government Consumption Deflator (PCG):
+$$
+PCG = f(\underset{+}{PO}, \underset{+}{WGP}, \underset{+}{PIG})
+$$
+Private Fixed Investment Deflator (PIBF):
+$$
+PIBF = f(\underset{+}{PIBF_{-1}}, \underset{+}{PCON}, \underset{+}{PCA},\\ \underset{+}{WGST^{nominal}}, \underset{-}{SPIKE2008})
+$$
+Government Fixed Investment Deflator (PIG):
+$$
+PIG = f(\underset{+}{PIG_{-1}}, \underset{+}{PCON}, \underset{+}{WGST^{nominal}}, \underset{-}{SPIKE2008})
+$$
+
+Public Enterprise Fixed Investment Deflator (PIPC)
+$$
+PIPC = f(\underset{+}{PCON}, \underset{+}{PCA}, \underset{-}{SPIKE2008})
+$$
+
+Gross Capital Formation Deflator (PGCF):
+$$
+PGCF = f(\underset{+}{PIBF}, \underset{+}{PIG}, \underset{+}{PIPC})
+$$
+Exports of Goods and Services Deflator (PEX):
+$$
+PEX = f(\underset{+}{PX}, \underset{+}{CPI})
+$$
+
+Imports of Goods and Services Deflator (PIM):
+$$
+PIM = f(\underset{+}{PM}, \underset{+}{CPI})
+$$
+
+### Financial Money Market
+M1B:
+$$
+\frac{M1B}{CPI} = f(\underset{-}{CPI}, \underset{+}{GDP}, \underset{+}{\frac{VSTOCK^{nominal}}{CPI}},\\ \underset{-}{TDR1Y - NOTERATE})
+$$
+
+One-year Fixed Deposit Rate (TDR1Y):
+$$
+TDR1Y = f(\underset{+}{REQ}, \underset{+}{IR}, \underset{+}{GDP_{-1}})
+$$
+
+Total Market Capitalization of Listed Stocks (STKVLE$):
+$$
+STKVLE$ = f(\underset{+}{M1B}, \underset{+}{VSTOCK^{nominal}}, \underset{-}{SPIKE2009})
+$$
+
+### Labor Market
+
+Number of Employed (NE):
+$$
+NE = f(\underset{+}{NE_{-1}}, \underset{-}{\frac{WG^{nominal}}{CPI}}, \underset{+}{GDP})
+$$
+
+Monthly Wages per Worker in Industry and Service Sectors (WG$):
+$$
+WG^{nominal} = f(\underset{+}{WG^{nominal}_{-1}}, \underset{+}{GDP^{nominal}_{-1} - DEP^{nominal}_{-1}}, \underset{+}{CPI}, \underset{+}{WGP})
+$$
+
+### Tax Revenues
+Tax Revenues (TAX$):
+$$
+TAX^{nominal} = f(\underset{+}{GDP^{nominal}_{-1}}, \underset{+}{EX^{nominal}+C^{nominal}},\\ \underset{+}{VSTOCK^{nominal}})
+$$
+
+
+```{r load_econ_data}
+lag_1_q <- 1
+
+train_test_cutoff <- as_date("2017-01-01")
+
+vars_to_log <- c("TAX$", "GDP", "GDP$", "C", "C$", "CG", "CG$", "EXG", "EXG$", "EXS", "EXS$", "GCF", "GCF$", 
+                 "IMG", "IMG$", "IMS", "IMS$", "IBF", "IBF$", "IG", "IG$", "DEP$", "YDD$", "CAPSTOCK$", "STKVLE$",
+                 "VSTOCK$", "M1B", "OUTBOUND", "OVERSEAREV$", "TAX$", "VISITORS")
+
+### Load Dataset
+econ_data_url <- "https://raw.githubusercontent.com/dorseytf/Blog-Replication-Scripts/master/Taiwan%20Macro%20Dataset.csv"
+
+econ_data <- read_csv(url(econ_data_url)) %>%
+  mutate(across(one_of(vars_to_log), log)) %>%
+  mutate(C_1               = lag(C, lag_1_q),
+         YDD_d_PGDP        = `YDD$`/PGDP,
+         STKVLE_d_CPI      = `STKVLE$`/CPI,
+         IBF_1             = lag(IBF, lag_1_q),
+         IG_1              = lag(IG, lag_1_q),
+         PCHY_CPI          = (CPI - lag(CPI, lag_1_q))/lag(CPI, lag_1_q),
+         TDR1Y_m_PCHY_CPI  = TDR1Y - PCHY_CPI,
+         EXG_1             = lag(EXG, lag_1_q),
+         STKVLE_d_CAPSTOCK = `STKVLE$`/`CAPSTOCK$`,
+         PX_d_WPX_x_RX     = PX/(WPX*RX),
+         EXS_1             = lag(EXS, lag_1_q),
+         IPC_p_IBF_p_JJ    = IPC + IBF + JJ,
+         IMS_1             = lag(IMS, lag_1_q),
+         PD_1              = lag(PD, lag_1_q),
+         PF_1              = lag(PF, lag_1_q),
+         `WG$_1`           = lag(`WG$`, lag_1_q),
+         PO_1              = lag(PO, lag_1_q), 
+         PM_1              = lag(PM, lag_1_q),
+         PIBF_1            = lag(PIBF, lag_1_q),
+         PIG_1             = lag(PIG, lag_1_q),
+         M1B_d_CPI         = M1B/CPI,
+         VSTOCK_d_CPI      = `VSTOCK$`/CPI,
+         TDR1Y_m_NOTERATE  = TDR1Y - NOTERATE,
+         GDP_1             = lag(GDP, lag_1_q),
+         NE_1              = lag(NE, lag_1_q),
+         WG_d_CPI          = `WG$`/CPI,
+         `GDP$_1`          = lag(`GDP$`, lag_1_q),
+         `DEP$_1`          = lag(`DEP$`, lag_1_q),
+         GDP_m_DEP         = `GDP$_1` - `DEP$_1`,
+         EX_p_C            = `EX$` + `C$`) %>%
+  filter_all(all_vars(!is.na(.)))
+
+# Commodity Market
+c_eqn <- C ~ C_1 + `YDD$` + STKVLE_d_CPI
+ibf_eqn <- IBF ~ IBF_1 + IG_1 + TDR1Y_m_PCHY_CPI + EXG_1 + STKVLE_d_CAPSTOCK
+exg_eqn <- EXG ~ PX_d_WPX_x_RX + GDPMAJOR + `ICSALES$` + SPIKE2002 + STEP2008
+exs_eqn <- EXS ~ EXS_1 + `OVERSEAREV$` + VISITORS + RX
+img_eqn <- IMG ~ EXG + C + IPC_p_IBF_p_JJ
+ims_eqn <- IMS ~ IMS_1 + OUTBOUND
+
+commodity_eqn <- list(c = c_eqn, ibf = ibf_eqn, exg = exg_eqn, exs = exs_eqn, img = img_eqn, ims = ims_eqn)
+
+# Price Indices
+pm_eqn <- PM ~ RX + JPNRX + NONFUEL + POIL + WPX 
+px_eqn <- PX ~ RX + PM + WTVG
+pd_eqn <- PD ~ PD_1 + PM + GDP + SPIKE2008
+pf_eqn <- PF ~ PF_1 + FOOD + `WG$_1` + TYPH_T
+po_eqn <- PO ~ PO_1 + PM_1 + PM + `WG$`
+pc_eqn <- PC ~ PF + PO
+pcg_eqn <- PCG ~ PO + WGP + PIG
+pibf_eqn <- PIBF ~ PIBF_1 + PCON + PCA + `WGST$` + SPIKE2008
+pig_eqn <- PIG ~ PIG_1 + PCON + `WGST$` + SPIKE2008
+pipc_eqn <- PIPC ~ PCON + PCA + SPIKE2008
+pgcf_eqn <- PGCF ~ PIBF + PIG + PIPC
+pex_eqn <- PEX ~ PX + CPI
+pim_eqn <- PIM ~ PM + CPI
+
+price_eqn <- list(pm = pm_eqn, px = px_eqn, pd = pd_eqn, pf = pf_eqn, po = po_eqn, pc = pc_eqn, 
+                  pcg = pcg_eqn, pibf = pibf_eqn, pig = pig_eqn, pipc = pipc_eqn, 
+                  pgcf = pgcf_eqn, pex = pex_eqn, pim = pim_eqn)
+
+# Financial Money Market
+m1b_eqn <- M1B_d_CPI ~ CPI + GDP + VSTOCK_d_CPI + TDR1Y_m_NOTERATE
+tdr1y_eqn <- TDR1Y ~ REQ + IR + GDP_1
+stkvle_eqn <- `STKVLE$` ~ M1B + `VSTOCK$` + SPIKE2009
+
+fin_eqn <- list(m1bcpi = m1b_eqn, tdr1y = tdr1y_eqn, stkvle = stkvle_eqn)
+
+# Labor Market
+ne_eqn <- NE ~ NE_1 + WG_d_CPI + GDP
+wg_eqn <- `WG$` ~ `WG$_1` + GDP_m_DEP + CPI + WGP
+
+labor_eqn <- list(ne = ne_eqn, wg = wg_eqn)
+
+# Tax Revenue
+tax_eqn <- `TAX$` ~ `GDP$_1` + EX_p_C + `VSTOCK$`
+
+```
+
+
+
+```{r fit_models}
+macro_eqn_list <- c(commodity_eqn, price_eqn, fin_eqn, labor_eqn, tax = tax_eqn)
+
+macro_iv_list <- ~ `CAPSTOCK$` + GDPMAJOR + RX + `ICSALES$` + WPX + `OVERSEAREV$` + VISITORS + JJ + OUTBOUND + NONFUEL + POIL + JPNRX + WTVG + FOOD + TYPH_T + WGP + PCON + PCA + `WGST$` + `VSTOCK$` + NOTERATE + REQ + IR + `DEP$`
+
+
+train_data <- econ_data %>%
+  filter(quarterly_date < train_test_cutoff)
+test_data <- econ_data %>%
+  filter(quarterly_date >= train_test_cutoff)
+
+taiwan_macro_model <- systemfit(macro_eqn_list, inst = macro_iv_list, method = "2SLS", data = train_data)
+
+taiwan_macro_model_fit <- summary(taiwan_macro_model)
+
+model_formulas <- tibble(formulas = map_chr(taiwan_macro_model_fit$eq, get_model_formula)) %>%
+  mutate(formulas = str_replace_all(formulas, "\\$", "^{nominal}")) %>%
+  mutate(formulas = paste0("$", formulas, "$")) 
+
+```
+
+
+***
+# Results
+
+## Estimated Coefficients
+```{r result_formulae, results="asis"}
+model_formulas %>%
+  rename(`Estimation Results`=formulas) %>%
+  kable("html", escape = TRUE) %>% 
+  kable_styling(bootstrap_options = c("striped", "condensed"), full_width = F, font_size = 12) %>%
+  row_spec(0, bold = TRUE, background = "grey", color = "white") 
+```
+
+## RMSE
+```{r model_preds}
+long_test_data <- test_data %>%
+  gather("metric", "value", -quarterly_date) %>%
+  mutate(type = "Actual") %>%
+  select(quarterly_date, type, metric, value)
+
+taiwan_macro_preds <- predict(taiwan_macro_model, test_data) %>%
+  mutate(quarterly_date = test_data$quarterly_date) %>%
+  select(quarterly_date, everything()) %>%
+  gather("metric", "value", -quarterly_date) %>%
+  mutate(metric = toupper(str_replace(metric, "\\.pred", "")),
+         type = "Prediction") %>%
+  mutate(metric = case_when(metric == "M1BCPI" ~ "M1B_d_CPI",
+                            metric == "WG" ~ "WG$",
+                            metric == "TAX" ~ "TAX$",
+                            metric == "STKVLE" ~ "STKVLE$",
+                            TRUE ~ metric)) %>%
+  select(quarterly_date, type, metric, value) %>%
+  bind_rows(long_test_data) %>%
+  spread(type, value) %>%
+  filter(!is.na(Prediction)) %>%
+  group_by(quarterly_date, metric) %>%
+  mutate(RMSE = sqrt(mean((Prediction - Actual)^2)))
+
+
+```
+
+
+***
+# References
