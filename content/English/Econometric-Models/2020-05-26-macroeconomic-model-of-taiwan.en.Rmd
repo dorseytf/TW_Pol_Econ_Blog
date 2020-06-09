@@ -23,6 +23,9 @@ tags:
 knitr::opts_chunk$set(echo = FALSE)
 knitr::opts_chunk$set(message = FALSE)
 
+#################
+##  Libraries  ##
+#################
 library(tidyverse)
 library(kableExtra)
 library(equatiomatic)
@@ -33,11 +36,25 @@ options(scipen=999)
 
 econ_vars <- read_csv("/Users/sharedcomputer/MMT in Taiwan/Analysis Replication Files/Macroeconomic Model of Taiwan/New Variable List.csv")
 
+
+#################
+##  Functions  ##
+#################
+
 get_model_formula <- function(model_eq) {
   eq_formula <- deparse(model_eq$terms)
+  if(length(eq_formula) > 1){
+    eq_formula <- str_remove_all(str_c(eq_formula, collapse = " "), "     ")
+  }
 
   test_coef <- as.data.frame(model_eq$coefficients) %>%
-    rownames_to_column(var = "variable_name")
+    rownames_to_column(var = "variable_name") %>%
+    mutate(sig_level = case_when(variable_name == "(Intercept)" ~ "", 
+                                 `Pr(>|t|)` < 0.001 ~ "(****)",
+                                 `Pr(>|t|)` < 0.01 ~ "(***)",
+                                 `Pr(>|t|)` < 0.05 ~ "(**)",
+                                 `Pr(>|t|)` < 0.1 ~ "(*)",
+                                 `Pr(>|t|)` >= 0.1 ~ "(n.s.)"))
   
   new_rhs <- test_coef %>%
     mutate(rn = row_number()) %>%
@@ -48,7 +65,11 @@ get_model_formula <- function(model_eq) {
     mutate(rhs = ifelse(variable_name == "(Intercept)", 
                         round(Estimate, 4), 
                         paste(round(Estimate, 4), variable_name, sep = "*"))) %>%
-    mutate(rhs = str_remove_all(rhs, "`"))
+    mutate(rhs = str_remove_all(rhs, "`")) %>%
+    mutate(rhs = case_when(is.na(sig_level) ~ rhs,
+                           !is.na(sig_level) ~ paste0("\\underset{", sig_level, "}{", rhs, "}"))) %>%
+    mutate(rn_flag = row_number() %% 4) %>%
+    mutate(rhs = ifelse(rn_flag == 0, paste("\\\\", rhs), rhs))
   new_rhs <- str_c(new_rhs$rhs, collapse = " + ")
   new_lhs <- str_replace(str_sub(eq_formula, 1, str_locate(eq_formula, "~")[1]), "~", "=")
   new_lhs <- str_remove_all(new_lhs, "`")
@@ -80,6 +101,12 @@ clean_var_names <- function(eqn_text) {
   eqn_text <- str_replace_all(eqn_text, "_1", "_{-1}")
   
   return(eqn_text)
+}
+
+get_model_r2 <- function(model_eq) {
+  model_r2_df <- tibble(r_squared     = model_eq$r.squared,
+                        adj_r_squared = model_eq$adj.r.squared)
+  return(model_r2_df)
 }
 
 ```
@@ -157,7 +184,7 @@ $$
 
 Export Price Index (PX):
 $$
-PX = f(\underset{+}{RX}, \underset{+}{PM}, \underset{+}{WTVG})
+PX = f(\underset{+}{PX_{-1}}, \underset{+}{RX}, \underset{+}{PM}, \underset{+}{WTVG})
 $$
 
 Domestic Production Price Index (PD):
@@ -274,6 +301,7 @@ econ_data <- read_csv(url(econ_data_url)) %>%
          IPC_p_IBF_p_JJ    = IPC + IBF + JJ,
          IMS_1             = lag(IMS, lag_1_q),
          PD_1              = lag(PD, lag_1_q),
+         PX_1              = lag(PX, lag_1_q),
          PF_1              = lag(PF, lag_1_q),
          `WG$_1`           = lag(`WG$`, lag_1_q),
          PO_1              = lag(PO, lag_1_q), 
@@ -289,14 +317,18 @@ econ_data <- read_csv(url(econ_data_url)) %>%
          `GDP$_1`          = lag(`GDP$`, lag_1_q),
          `DEP$_1`          = lag(`DEP$`, lag_1_q),
          GDP_m_DEP         = `GDP$_1` - `DEP$_1`,
-         EX_p_C            = `EX$` + `C$`) %>%
+         EX_p_C            = `EX$` + `C$`,
+         Q1                = ifelse(quarter(quarterly_date) == 1, 1, 0),
+         Q2                = ifelse(quarter(quarterly_date) == 2, 1, 0),
+         Q3                = ifelse(quarter(quarterly_date) == 3, 1, 0),
+         Q4                = ifelse(quarter(quarterly_date) == 4, 1, 0)) %>%
   filter_all(all_vars(!is.na(.)))
 
 # Commodity Market
-c_eqn <- C ~ C_1 + `YDD$` + STKVLE_d_CPI
+c_eqn   <- C ~ C_1 + `YDD$` + STKVLE_d_CPI + Q1 + Q3
 ibf_eqn <- IBF ~ IBF_1 + IG_1 + TDR1Y_m_PCHY_CPI + EXG_1 + STKVLE_d_CAPSTOCK
-exg_eqn <- EXG ~ PX_d_WPX_x_RX + GDPMAJOR + `ICSALES$` + SPIKE2002 + STEP2008
-exs_eqn <- EXS ~ EXS_1 + `OVERSEAREV$` + VISITORS + RX
+exg_eqn <- EXG ~ PX_d_WPX_x_RX + GDPMAJOR + `ICSALES$` + STEP2008 + Q1 + Q2
+exs_eqn <- EXS ~ EXS_1 + `OVERSEAREV$` + VISITORS + RX + Q1 + Q2 + Q3
 img_eqn <- IMG ~ EXG + C + IPC_p_IBF_p_JJ
 ims_eqn <- IMS ~ IMS_1 + OUTBOUND
 
@@ -304,13 +336,13 @@ commodity_eqn <- list(c = c_eqn, ibf = ibf_eqn, exg = exg_eqn, exs = exs_eqn, im
 
 # Price Indices
 pm_eqn <- PM ~ RX + JPNRX + NONFUEL + POIL + WPX 
-px_eqn <- PX ~ RX + PM + WTVG
+px_eqn <- PX ~ PX_1 + RX + PM + WTVG
 pd_eqn <- PD ~ PD_1 + PM + GDP + SPIKE2008
-pf_eqn <- PF ~ PF_1 + FOOD + `WG$_1` + TYPH_T
-po_eqn <- PO ~ PO_1 + PM_1 + PM + `WG$`
+pf_eqn <- PF ~ PF_1 + FOOD + `WG$_1` + TYPH_T + Q1
+po_eqn <- PO ~ PO_1 + PM_1 + PM + `WG$` + Q1 + Q2 + Q3
 pc_eqn <- PC ~ PF + PO
 pcg_eqn <- PCG ~ PO + WGP + PIG
-pibf_eqn <- PIBF ~ PIBF_1 + PCON + PCA + `WGST$` + SPIKE2008
+pibf_eqn <- PIBF ~ PIBF_1 + PCON + PCA + `WGST$` + SPIKE2008 + Q1 + Q2
 pig_eqn <- PIG ~ PIG_1 + PCON + `WGST$` + SPIKE2008
 pipc_eqn <- PIPC ~ PCON + PCA + SPIKE2008
 pgcf_eqn <- PGCF ~ PIBF + PIG + PIPC
@@ -323,19 +355,19 @@ price_eqn <- list(pm = pm_eqn, px = px_eqn, pd = pd_eqn, pf = pf_eqn, po = po_eq
 
 # Financial Money Market
 m1b_eqn <- M1B_d_CPI ~ CPI + GDP + VSTOCK_d_CPI + TDR1Y_m_NOTERATE
-tdr1y_eqn <- TDR1Y ~ REQ + IR + GDP_1
+tdr1y_eqn <- TDR1Y ~ REQ + IR + GDP_1 + Q3
 stkvle_eqn <- `STKVLE$` ~ M1B + `VSTOCK$` + SPIKE2009
 
 fin_eqn <- list(m1bcpi = m1b_eqn, tdr1y = tdr1y_eqn, stkvle = stkvle_eqn)
 
 # Labor Market
 ne_eqn <- NE ~ NE_1 + WG_d_CPI + GDP
-wg_eqn <- `WG$` ~ `WG$_1` + GDP_m_DEP + CPI + WGP
+wg_eqn <- `WG$` ~ `WG$_1` + GDP_m_DEP + CPI + WGP + Q1 + Q2 + Q3
 
 labor_eqn <- list(ne = ne_eqn, wg = wg_eqn)
 
 # Tax Revenue
-tax_eqn <- `TAX$` ~ `GDP$_1` + EX_p_C + `VSTOCK$`
+tax_eqn <- `TAX$` ~ `GDP$_1` + EX_p_C + `VSTOCK$` + Q1 + Q2 + Q3
 
 ```
 
@@ -358,24 +390,54 @@ taiwan_macro_model_fit <- summary(taiwan_macro_model)
 
 model_formulas <- tibble(formulas = map_chr(taiwan_macro_model_fit$eq, get_model_formula)) %>%
   mutate(formulas = str_replace_all(formulas, "\\$", "^{nominal}")) %>%
-  mutate(formulas = paste0("$", formulas, "$")) 
+  mutate(formulas = paste0("$$", formulas, "$$")) %>%
+  mutate(model_final = str_split(formulas, "=", n = 2)) %>%
+  unnest(model_final) %>%
+  filter(str_sub(model_final, 1, 1) == "$") %>%
+  mutate(model_final = str_trim(str_replace_all(model_final, "\\$", "")))
 
+model_r2 <- map_df(taiwan_macro_model_fit$eq, get_model_r2)
+
+formula_df <- tibble(model_final = model_formulas$model_final,
+                     model_name  = c("Real Private Consumption", "Real Private Fixed Investment",
+                                     "Real Exports of Goods, Transportation, and Insurance",
+                                     "Real Other Exports", "Real Imports of Goods, Transportation, and Insurance",
+                                     "Real Other Imports", "Import Price Index", "Export Price Index", 
+                                     "Domestic Production Price Index", "Food Consumer Price Index", 
+                                     "Non-food Consumer Price Index", "Private Consumption Deflator",
+                                     "Government Consumption Deflator", "Private Fixed Investment Deflator",
+                                     "Government Fixed Investment Deflator", 
+                                     "Public Enterprise Fixed Investment Deflator",
+                                     "Gross Capital Formation Deflator", "Exports of Goods and Services Deflator",
+                                     "Imports of Goods and Services Deflator", "M1B", "One-Year Fixed Deposit Rate",
+                                     "Total Market Capitalization of Listed Stocks", "Number of Employed",
+                                     "Monthly Wages per Worker in Industry and Service Sectors", "Tax Revenue")) %>%
+  mutate(model_name = paste0("**", model_name, "**")) %>%
+  left_join(model_formulas, by = "model_final") %>%
+  bind_cols(model_r2) %>%
+  mutate(r_squared = paste0("$R^{2}: ", round(r_squared, 4), "$"),
+         adj_r_squared = paste0("$Adj. R^{2}: ", round(adj_r_squared, 4), "$"))
 ```
 
 
 ***
 # Results
 
-## Estimated Coefficients
+## Estimation Results
 ```{r result_formulae, results="asis"}
-model_formulas %>%
-  rename(`Estimation Results`=formulas) %>%
-  kable("html", escape = TRUE) %>% 
-  kable_styling(bootstrap_options = c("striped", "condensed"), full_width = F, font_size = 12) %>%
-  row_spec(0, bold = TRUE, background = "grey", color = "white") 
+
+for(i in 1:nrow(formula_df)){
+  cat('\n')  
+  cat(formula_df$model_name[i], ': \n') 
+  cat(formula_df$formulas[i], '\n')
+  cat(formula_df$r_squared[i], ",", formula_df$adj_r_squared[i])
+  cat('\n')
+}
 ```
 
-## RMSE
+## Predicting on Test Data
+Using the holdout sample from Q1 2017 to Q4 2018 we can see that the model performs reasonably well at modeling the various aspects of Taiwan's macroeconomy. 
+
 ```{r model_preds}
 long_test_data <- test_data %>%
   gather("metric", "value", -quarterly_date) %>%
@@ -398,10 +460,22 @@ taiwan_macro_preds <- predict(taiwan_macro_model, test_data) %>%
   spread(type, value) %>%
   filter(!is.na(Prediction)) %>%
   group_by(quarterly_date, metric) %>%
-  mutate(RMSE = sqrt(mean((Prediction - Actual)^2)))
+  mutate(RMSE = sqrt(mean((Prediction - Actual)^2))) %>%
+  gather("type", "value", -c(quarterly_date, metric, RMSE))
 
-
+taiwan_macro_preds %>%
+  filter(metric %in% c("C", "IMG", "WG$", "NE")) %>%
+  ggplot(aes(x = quarterly_date, y = value, color = type)) +
+  geom_line() +
+  facet_grid(metric ~ ., scales = "free") +
+  scale_color_viridis_d(name = " ") +
+  theme(legend.position = "top") +
+  labs(title="Actuals vs Predictions for Selected Variables",
+       x = "",
+       y = "")
 ```
+
+
 
 
 ***
