@@ -1,13 +1,14 @@
 ---
 title: Building a Macroeconomic Model of Taiwan
 author: Travis Dorsey
-date: '2020-06-12'
+date: '2020-06-18'
 slug: macroeconomic-model-of-taiwan
 bibliography: econ_models_bib.bib
 biblio-style: "apalike"
 nocite: |
   @jp_gnp
   @tfp_dat
+  @R-bimets
 output:
   blogdown::html_page:
     toc: true
@@ -44,6 +45,24 @@ econ_vars <- read_csv("/Users/sharedcomputer/MMT in Taiwan/Analysis Replication 
 ##  Functions  ##
 #################
 
+div_replace <- function(model_coef){
+  df <- model_coef %>%
+    mutate(div_flag = ifelse(str_detect(Variable, "_d_"), 1, 0)) %>%
+    mutate(new_Variable = str_split(Variable, "_d_", n = 2)) %>%
+    group_by(Variable, div_flag) %>%
+    unnest(new_Variable) %>%
+    summarize(new_Variable = str_c(new_Variable, collapse = "}{")) %>%
+    mutate(new_Variable = ifelse(div_flag == 1, paste0("\\frac{", new_Variable, "}"), new_Variable)) %>%
+    ungroup() %>%
+    select(Variable, new_Variable)
+  
+  model_coef <- model_coef %>%
+    left_join(df, by = "Variable") %>%
+    mutate(Variable = ifelse(is.na(new_Variable), Variable, new_Variable)) %>%
+    select(-new_Variable)
+  return(model_coef)
+}
+
 get_bimets_formulas <- function(bimet_model_list){
   model_coef <- tibble(Variable      = bimet_model_list$eqRegressorsNames,
                        Coefficient   = round(bimet_model_list$coefficients,3),
@@ -51,12 +70,20 @@ get_bimets_formulas <- function(bimet_model_list){
                        R_squared     = bimet_model_list$statistics$RSquared,
                        Adj_R_squared = bimet_model_list$statistics$AdjustedRSquared,
                        Model         = bimet_model_list$lhsFun$raw) %>%
+    div_replace() %>%
     mutate(sig_symbol = case_when(Variable == "1" ~ "", 
                                   P_values < 0.001 ~ "(****)",
                                   P_values < 0.01 ~ "(***)",
                                   P_values < 0.05 ~ "(**)",
                                   P_values < 0.1 ~ "(*)",
-                                  P_values >= 0.1 ~ "(n.s.)")) %>%
+                                  P_values >= 0.1 ~ "(n.s.)"),
+           Variable = str_replace_all(Variable, "_1", "_{-1}")) %>%
+    mutate(Variable = str_replace_all(Variable, "_nom", "^{nom}"),
+           Model    = str_replace_all(Model, "_nom", "^{nom}")) %>%
+    mutate(Model = ifelse(Model == "M1B_d_CPI", "\\frac{M1B}{CPI}", Model)) %>%
+    mutate(Variable = str_replace_all(Variable, "_p_", "+")) %>%
+    mutate(Variable = str_replace_all(Variable, "_m_", "-")) %>%
+    mutate(Variable = str_replace_all(Variable, "_x_", "\\*")) %>%
     mutate(new_rhs = ifelse(Variable == "1", 
                             Coefficient, 
                             paste0("\\underset{", sig_symbol, "}{",Coefficient, "*", Variable, "}"))) %>%
@@ -78,274 +105,6 @@ get_bimets_preds <- function(fcast_simulation) {
 }
 
 ```
-
-
-Following the methodology laid out by the [Directorate-General of Budget, Accounting, and Statistics](https://www.stat.gov.tw/public/Attachment/6531914262FZ3FA2L.pdf)^[@dgbas_econ], I build an econometric model of Taiwan's macroeconomy that I can utilize to test the impact of policy proposals as in [Fullwiler (2006)](simulating_jg_us).^[@simulating_jg_us] This approach is based on the Cowles Commission methodology of simultaneous equations (similar to the well known [Fairmodel](https://fairmodel.econ.yale.edu/mmm2/mm2018.pdf)^[@fairmodel] used to study the US economy and that of [Lin (2007)](http://www.econ.ntu.edu.tw/ter/new/data/new/TER38-1/TER381-1.pdf)^[@lin_2007_tw_macro] which models the Taiwanese economy) and has been shown to outperform VAR and other time series approaches for macroeconomic forecasts, while also providing a more useful framework for testing policy options than dynamic stochastic generalized equilibrium models, which have [their own issues](https://www.federalreserve.gov/econresdata/ifdp/2016/files/ifdp1175.pdf).^[@frb_dsge] 
-
-
-***
-# Variables and Equations
-The model will consist of 25 simultaneous equations, with 38 endogenous variables and 24 exogenous variables. The data were compiled from various Taiwanese government agencies, including the Central Bank, the Directorate-General of Budget, Accounting, and Statistics, and the Ministry of Economics. This quarterly dataset covers the period 1997Q3-2018Q4 (87 periods), with the final 8 quarters being used as a holdout sample to test the results of the model fit.
-
-## Variables 
-
-### Endogenous Variables
-```{r endog_vars}
-econ_vars %>%
-  filter(Exogenous == "N") %>%
-  select(-c(Description_zh, Exogenous, `Equations Used`)) %>%
-  kable('html', align = c("l", "c")) %>%
-  kable_styling(bootstrap_options = c("striped", "condensed"), full_width = F, font_size = 12) %>%
-  row_spec(0, bold = TRUE, background = "grey", color = "white") 
-```
-
-### Exogenous Variables
-```{r exog_vars}
-econ_vars %>%
-  filter(Exogenous == "Y") %>%
-  select(-c(Description_zh, Exogenous, `Equations Used`)) %>%
-  kable('html', align = c("l", "c")) %>%
-  kable_styling(bootstrap_options = c("striped", "condensed"), full_width = F, font_size = 12) %>%
-  row_spec(0, bold = TRUE, background = "grey", color = "white") 
-```
-
-
-## Equations
-Here I show the equations that make up this macroeconometric model of Taiwan. While the methodology laid out in this note from the [Directorate-General of Budget, Accounting, and Statistics](https://www.stat.gov.tw/public/Attachment/6531914262FZ3FA2L.pdf)^[@dgbas_econ] provided a starting point, I have adapted the equations to better handle a quarterly dataset, as well as adding in the hourly minimum wage rate to the formulation for Nominal Monthly Wages per Worker in Industry and Service Sectors to allow for easier testing of policy options later on. 
-
-### Commodity Market
-Real Private Consumption (C):
-$$
-C = f(\underset{+}{C_{-1}}, \underset{+}{\frac{YDD^{nominal}}{PGDP}}, \underset{+}{\frac{STKVLE^{nominal}}{CPI}})
-$$
-Real Private Fixed Investment (IBF):
-$$
-IBF = f(\underset{+}{IBF_{-1}}, \underset{+}{IG_{-1}}, \underset{-}{TDR1Y - \Delta(CPI)},\\ \underset{+}{EXG_{-1}},
-\underset{+}{\frac{STKVLE^{nominal}}{CAPSTOCK^{nominal}}}, \underset{-}{SPIKE2008})
-$$
-
-Real Exports of Goods, Transportation, and Insurance (EXG):
-$$
-EXG = f(\underset{-}{\frac{PX}{WPX * RX}}, \underset{+}{GDPMAJOR}, \underset{+}{ICSALES^{nominal}},\\
-\underset{+}{SPIKE2002}, \underset{-}{STEP2008})
-$$
-
-Real Other Exports (EXS):
-$$
-EXS = f(\underset{+}{EXS_{-1}}, \underset{+}{OVERSEAREV^{nominal}},\\ \underset{+}{VISITORS}, \underset{+}{RX})
-$$
-Real Imports of Goods, Transportation, and Insurance (IMG):
-$$
-IMG = f(\underset{+}{EXG}, \underset{+}{C}, \underset{+}{IPC + IBF + JJ})
-$$
-Real Other Imports (IMS):
-$$
-IMS = f(\underset{+}{IMS_{-1}}, \underset{+}{OUTBOUND})
-$$
-
-### Price Indices
-
-Import Price Index (PM):
-$$
-PM = f(\underset{+}{RX}, \underset{-}{JPNRX}, \underset{+}{NONFUEL},\\ \underset{+}{POIL}, \underset{+}{WPX})
-$$
-
-Export Price Index (PX):
-$$
-PX = f(\underset{+}{PX_{-1}}, \underset{+}{RX}, \underset{+}{PM}, \underset{+}{WTVG})
-$$
-
-Domestic Production Price Index (PD):
-$$
-PD = f(\underset{+}{PD_{-1}}, \underset{+}{PM}, \underset{+}{GDP}, \underset{+}{SPIKE2008})
-$$
-
-Food Consumer Price Index (PF):
-$$
-PF = f(\underset{+}{PF_{-1}}, \underset{+}{FOOD}, \underset{+}{WG^{nominal}_{-1}}, \underset{+}{TYPH_T})
-$$
-Non-Food Consumer Price Index (PO):
-$$
-PO = f(\underset{+}{PO_{-1}}, \underset{+}{PM_{-1}}, \underset{+}{PM}, \underset{+}{WG^{nominal}})
-$$
-
-Private Consumption Deflator (PC):
-$$
-PC = f(\underset{+}{PF}, \underset{+}{PO})
-$$
-
-Government Consumption Deflator (PCG):
-$$
-PCG = f(\underset{+}{PO}, \underset{+}{WGP}, \underset{+}{PIG})
-$$
-Private Fixed Investment Deflator (PIBF):
-$$
-PIBF = f(\underset{+}{PIBF_{-1}}, \underset{+}{PCON}, \underset{+}{PCA},\\ \underset{+}{WGST^{nominal}}, \underset{-}{SPIKE2008})
-$$
-Government Fixed Investment Deflator (PIG):
-$$
-PIG = f(\underset{+}{PIG_{-1}}, \underset{+}{PCON}, \underset{+}{WGST^{nominal}}, \underset{-}{SPIKE2008})
-$$
-
-Public Enterprise Fixed Investment Deflator (PIPC)
-$$
-PIPC = f(\underset{+}{PCON}, \underset{+}{PCA}, \underset{-}{SPIKE2008})
-$$
-
-Gross Capital Formation Deflator (PGCF):
-$$
-PGCF = f(\underset{+}{PIBF}, \underset{+}{PIG}, \underset{+}{PIPC})
-$$
-Exports of Goods and Services Deflator (PEX):
-$$
-PEX = f(\underset{+}{PX}, \underset{+}{CPI})
-$$
-
-Imports of Goods and Services Deflator (PIM):
-$$
-PIM = f(\underset{+}{PM}, \underset{+}{CPI})
-$$
-
-### Financial Money Market
-M1B:
-$$
-\frac{M1B}{CPI} = f(\underset{-}{CPI}, \underset{+}{GDP}, \underset{+}{\frac{VSTOCK^{nominal}}{CPI}},\\ \underset{-}{TDR1Y - NOTERATE})
-$$
-
-One-year Fixed Deposit Rate (TDR1Y):
-$$
-TDR1Y = f(\underset{+}{REQ}, \underset{+}{IR}, \underset{+}{GDP_{-1}})
-$$
-
-Total Market Capitalization of Listed Stocks (STKVLE$):
-$$
-STKVLE$ = f(\underset{+}{M1B}, \underset{+}{VSTOCK^{nominal}}, \underset{-}{SPIKE2009})
-$$
-
-### Labor Market
-
-Number of Employed (NE):
-$$
-NE = f(\underset{+}{NE_{-1}}, \underset{-}{\frac{WG^{nominal}}{CPI}}, \underset{+}{GDP})
-$$
-
-Monthly Wages per Worker in Industry and Service Sectors (WG$):
-$$
-WG^{nominal} = f(\underset{+}{MINWGM^{nominal}}, \underset{+}{(GDP^{nom}_{-1} - DEP^{nom}_{-1})}, \\  \underset{+}{Q1}, \underset{-}{DIP2007}, \underset{+}{ELBOW2009})
-$$
-
-### Tax Revenues
-Tax Revenues (TAX$):
-$$
-TAX^{nominal} = f(\underset{+}{GDP^{nominal}_{-1}}, \underset{+}{EX^{nominal}+C^{nominal}},\\ \underset{+}{VSTOCK^{nominal}})
-$$
-
-## Definitions
-
-Nominal Private Consumption (C$):
-$$
-C^{nominal} = C * \frac{PC}{100}
-$$
-Nominal Government Consumption (CG$):
-$$
-CG^{nominal} = Community Services + Culture + \\Economic Affairs + Education + \\Environment Protection + Public Affairs +\\ National Health Insurance + National Defense +\\ Public Safety + Social Security
-$$
-
-Real Government Consumption (CG):
-$$
-CG = \frac{CG^{nom}}{PCG}*100
-$$
-
-Real Government Fixed Investment (IG):
-$$
-IG = \frac{IG^{nom}}{PIG}*100
-$$
-Real Fixed Investment in Public Enterprises (IPC):
-$$
-IPC = \frac{IPC^{nom}}{PIPC}*100
-$$
-Nominal Private Fixed Investment (IBF$):
-$$
-IBF^{nominal} = IBF * \frac{PIBF}{100}
-$$
-
-Nominal Gross Capital Formation (GCF$):
-$$
-GCF^{nominal} = IG^{nom} + IPC^{nom} + IBF^{nom} + JJ^{nom}
-$$
-Real Gross Captial Formation (GCF):
-$$
-GCF = \frac{GCF^{nom}}{PGCF}*100
-$$
-
-Real Exports of Goods and Services (EX):
-$$
-EX = EX_{-1} * (1 + (\frac{\frac{EXG^{nom}_{-1}}{GDP^{nom}_{-1}}* \Delta{EXG} + \frac{EXS^{nom}_{-1}}{GDP^{nom}_{-1}}* \Delta{EXS}}{\frac{EX^{nom}_{-1}}{GDP^{nom}_{-1}}*100}))
-$$
-
-Real Imports of Goods and Services (EX):
-$$
-IM = IM_{-1} * (1 + (\frac{\frac{IMG^{nom}_{-1}}{GDP^{nom}_{-1}}* \Delta{IMG} + \frac{IMS^{nom}_{-1}}{GDP^{nom}_{-1}}* \Delta{IMS}}{\frac{IM^{nom}_{-1}}{GDP^{nom}_{-1}}*100}))
-$$
-Nominal Exports of Goods and Services (EX$):
-$$
-EX^{nominal} = EX * \frac{PEX}{100}
-$$
-Nominal Imports of Goods and Services (IM$):
-$$
-IM^{nominal} = IM * \frac{PIM}{100}
-$$
-Nominal Exports of Goods, Transportation, and Insurance (EXG$):
-$$
-EXG^{nominal} = EX^{nom} * WEIGHTEXG^{nom}
-$$
-Nominal Imports of Goods, Transportation, and Insurance (IMG$):
-$$
-IMG^{nominal} = IM^{nom} * WEIGHTIMG^{nom}
-$$
-Nominal Other Exports (EXS$):
-$$
-EXS^{nominal} = EX^{nom} - EXG^{nom}
-$$
-Nominal Other Imports (IMS$):
-$$
-IMS^{nominal} = IM^{nom} - IMG^{nom}
-$$
-GDP Growth Rate (PCH GDP):
-$$
-\Delta{GDP}\% = \frac{C^{nom}_{-1}}{GDP^{nom}_{-1}}*\Delta{C}\% + \frac{CG^{nom}_{-1}}{GDP^{nom}_{-1}}*\Delta{CG}\% + \\
-\frac{EX^{nom}_{-1}}{GDP^{nom}_{-1}}*\Delta{EX}\% - \frac{IM^{nom}_{-1}}{GDP^{nom}_{-1}}*\Delta{IM}\%
-$$
-Real GDP
-$$
-GDP = GDP_{-1} * (1 + \frac{\Delta{GDP}\%}{100})
-$$
-
-Nominal GDP (GDP$):
-$$
-GDP^{nominal} = C^{nom} + CG^{nom} + GCF^{nom} + EX^{nom} - IM^{nom}
-$$
-GDP Deflator (PGDP):
-$$
-PGDP = \frac{GDP^{nom}}{GDP} * 100
-$$
-Nominal Disposable Income (YDD$):
-$$
-YDD^{nominal} = GNI^{nom} - DEP^{nom} - TAX^{nom}
-$$
-Nominal GNI (GNI$):
-$$
-GNI^{nominal} = GDP^{nom} + FIA^{nom}
-$$
-Consumer Price Index (CPI):
-$$
-CPI = CPI_{base} * (0.2972 * \frac{PF}{PF_{base}} + 0.7027 * \frac{PO}{PO_{base}})
-$$
-
-
-
-
-
 
 ```{r load_econ_data}
 lag_1_q <- 1
@@ -555,7 +314,7 @@ econ_data <- econ_data %>%
 
 
 # Commodity Market
-c_eqn   <- C ~ C_1 + `YDD$` + STKVLE_d_CPI + Q1 + Q3
+c_eqn   <- C ~ C_1 + YDD_d_PGDP + STKVLE_d_CPI + Q1 + Q3
 ibf_eqn <- IBF ~ IBF_1 + IG_1 + TDR1Y_m_PCHY_CPI + STKVLE_d_CAPSTOCK + SPIKE2008
 exg_eqn <- EXG ~ PX_d_WPX_x_RX + GDPMAJOR + `ICSALES$` + STEP2008 + Q1 + Q2
 exs_eqn <- EXS ~ EXS_1 + `OVERSEAREV$` + VISITORS + RX + Q2 + Q4
@@ -667,9 +426,10 @@ for(v in 1:nrow(vars_used)){
 ```{r fit_bimets}
 bimets_tol <- 0.000000000000000002220446
 
-taiwan_bimets_model <- LOAD_MODEL("/Users/sharedcomputer/MMT in Taiwan/Analysis Replication Files/Taiwan Macro Model.txt")
+taiwan_bimets_model <- LOAD_MODEL("/Users/sharedcomputer/MMT in Taiwan/Analysis Replication Files/Taiwan Macro Model.txt",
+                                  quietly = TRUE)
 
-taiwan_bimets_model <- LOAD_MODEL_DATA(taiwan_bimets_model, econ_data_list)
+taiwan_bimets_model <- LOAD_MODEL_DATA(taiwan_bimets_model, econ_data_list, quietly = TRUE)
 
 taiwan_bimets_model <- ESTIMATE(taiwan_bimets_model, tol = bimets_tol, quietly = TRUE)
 
@@ -690,13 +450,280 @@ model_name_abbv <- tibble(model_abbv = bimet_formula_df$Model,
                                      "Total Market Capitalization of Listed Stocks", "Number of Employed",
                                      "Monthly Wages per Worker in Industry and Service Sectors", "Tax Revenue"))
 
-bimet_formula_df <- bimet_formula_df %>%
+print_bimet_formula_df <- bimet_formula_df %>%
   left_join(model_name_abbv, by = c("Model"="model_abbv")) %>%
   mutate(model_name = paste0("**", model_name, "**"),
          R_squared = paste0("$R^{2}: ", round(R_squared, 4), "$"),
-         Adj_R_squared = paste0("$Adj. R^{2}: ", round(Adj_R_squared, 4), "$"))
+         Adj_R_squared = paste0("$Adj. R^{2}: ", round(Adj_R_squared, 4), "$")) %>%
+  group_by(Model) %>%
+  mutate(third_plus = str_locate_all(formula, "\\+")[[1]][3]) %>%
+  mutate(formula = paste(str_sub(formula, 1, third_plus), "\\\\", str_sub(formula, third_plus+1, -1)))
 
 ```
+
+Following the methodology laid out by the [Directorate-General of Budget, Accounting, and Statistics](https://www.stat.gov.tw/public/Attachment/6531914262FZ3FA2L.pdf)^[@dgbas_econ], I build an econometric model of Taiwan's macroeconomy that I can utilize to test the impact of policy proposals as in [Fullwiler (2006)](simulating_jg_us).^[@simulating_jg_us] This approach is based on the Cowles Commission methodology of simultaneous equations (similar to the well known [Fairmodel](https://fairmodel.econ.yale.edu/mmm2/mm2018.pdf)^[@fairmodel] used to study the US economy and that of [Lin (2007)](http://www.econ.ntu.edu.tw/ter/new/data/new/TER38-1/TER381-1.pdf)^[@lin_2007_tw_macro] which models the Taiwanese economy) and has been shown to outperform VAR and other time series approaches for macroeconomic forecasts, while also providing a more useful framework for testing policy options than dynamic stochastic generalized equilibrium models, which have [their own issues](https://www.federalreserve.gov/econresdata/ifdp/2016/files/ifdp1175.pdf).^[@frb_dsge] 
+
+
+***
+# Variables and Equations
+The model will consist of 25 simultaneous equations, with 38 endogenous variables and 24 exogenous variables. The data were compiled from various Taiwanese government agencies, including the Central Bank, the Directorate-General of Budget, Accounting, and Statistics, and the Ministry of Economics. This quarterly dataset covers the period 1997Q3-2018Q4 (87 periods), with the final 8 quarters being used as a holdout sample to test the results of the model fit.
+
+## Variables 
+
+### Endogenous Variables
+```{r endog_vars}
+econ_vars %>%
+  filter(Exogenous == "N") %>%
+  select(-c(Description_zh, Exogenous, `Equations Used`)) %>%
+  kable('html', align = c("l", "c")) %>%
+  kable_styling(bootstrap_options = c("striped", "condensed"), full_width = F, font_size = 12) %>%
+  row_spec(0, bold = TRUE, background = "grey", color = "white") 
+```
+
+### Exogenous Variables
+```{r exog_vars}
+econ_vars %>%
+  filter(Exogenous == "Y") %>%
+  select(-c(Description_zh, Exogenous, `Equations Used`)) %>%
+  kable('html', align = c("l", "c")) %>%
+  kable_styling(bootstrap_options = c("striped", "condensed"), full_width = F, font_size = 12) %>%
+  row_spec(0, bold = TRUE, background = "grey", color = "white") 
+```
+
+
+## Equations
+Here I show the equations that make up this macroeconometric model of Taiwan. While the methodology laid out in this note from the [Directorate-General of Budget, Accounting, and Statistics](https://www.stat.gov.tw/public/Attachment/6531914262FZ3FA2L.pdf)^[@dgbas_econ] provided a starting point, I have adapted the equations to better handle a quarterly dataset, as well as adding in the hourly minimum wage rate to the formulation for Nominal Monthly Wages per Worker in Industry and Service Sectors to allow for easier testing of policy options later on. 
+
+### Commodity Market
+Real Private Consumption (C):
+$$
+C = f(\underset{+}{C_{-1}}, \underset{+}{\frac{YDD^{nominal}}{PGDP}}, \underset{+}{\frac{STKVLE^{nominal}}{CPI}})
+$$
+Real Private Fixed Investment (IBF):
+$$
+IBF = f(\underset{+}{IBF_{-1}}, \underset{+}{IG_{-1}}, \underset{-}{TDR1Y - \Delta(CPI)},\\ \underset{+}{EXG_{-1}},
+\underset{+}{\frac{STKVLE^{nominal}}{CAPSTOCK^{nominal}}}, \underset{-}{SPIKE2008})
+$$
+
+Real Exports of Goods, Transportation, and Insurance (EXG):
+$$
+EXG = f(\underset{-}{\frac{PX}{WPX * RX}}, \underset{+}{GDPMAJOR}, \underset{+}{ICSALES^{nominal}},\\
+\underset{-}{STEP2008}, \underset{-}{Q1}, \underset{-}{Q2})
+$$
+
+Real Other Exports (EXS):
+$$
+EXS = f(\underset{+}{EXS_{-1}}, \underset{+}{OVERSEAREV^{nominal}},\\ \underset{+}{VISITORS}, \underset{+}{RX}, \underset{-}{Q2}, \underset{+}{Q4})
+$$
+Real Imports of Goods, Transportation, and Insurance (IMG):
+$$
+IMG = f(\underset{+}{EXG}, \underset{+}{C}, \underset{+}{IPC + IBF + JJ})
+$$
+Real Other Imports (IMS):
+$$
+IMS = f(\underset{+}{IMS_{-1}}, \underset{+}{OUTBOUND})
+$$
+
+### Price Indices
+
+Import Price Index (PM):
+$$
+PM = f(\underset{+}{RX}, \underset{-}{JPNRX}, \underset{+}{NONFUEL},\\ \underset{+}{POIL}, \underset{+}{WPX})
+$$
+
+Export Price Index (PX):
+$$
+PX = f(\underset{+}{PX_{-1}}, \underset{+}{RX}, \underset{+}{PM}, \underset{+}{WTVG})
+$$
+
+Domestic Production Price Index (PD):
+$$
+PD = f(\underset{+}{PD_{-1}}, \underset{+}{PM}, \underset{+}{GDP}, \underset{+}{SPIKE2008})
+$$
+
+Food Consumer Price Index (PF):
+$$
+PF = f(\underset{+}{PF_{-1}}, \underset{+}{FOOD}, \underset{+}{WG^{nominal}_{-1}}, \underset{+}{TYPH_T}, \underset{-}{Q1})
+$$
+Non-Food Consumer Price Index (PO):
+$$
+PO = f(\underset{+}{PO_{-1}}, \underset{+}{PM_{-1}}, \underset{+}{PM}, \underset{+}{WG^{nominal}},\\
+ \underset{-}{Q1}, \underset{+}{Q2}, \underset{-}{Q3})
+$$
+
+Private Consumption Deflator (PC):
+$$
+PC = f(\underset{+}{PF}, \underset{+}{PO})
+$$
+
+Government Consumption Deflator (PCG):
+$$
+PCG = f(\underset{+}{PCG_{-1}},\underset{+}{PO}, \underset{+}{WGP}, \underset{+}{PIG}, \underset{-}{PD})
+$$
+Private Fixed Investment Deflator (PIBF):
+$$
+PIBF = f(\underset{+}{PIBF_{-1}}, \underset{+}{PCON}, \underset{+}{PCA},\\ \underset{+}{WGST^{nominal}}, \underset{-}{SPIKE2008}, \underset{+}{Q1}, \underset{-}{Q2})
+$$
+Government Fixed Investment Deflator (PIG):
+$$
+PIG = f(\underset{+}{PIG_{-1}}, \underset{+}{PCON}, \underset{+}{WGST^{nominal}}, \underset{-}{SPIKE2008})
+$$
+
+Public Enterprise Fixed Investment Deflator (PIPC)
+$$
+PIPC = f(\underset{+}{PCON}, \underset{+}{PCA}, \underset{-}{SPIKE2008})
+$$
+
+Gross Capital Formation Deflator (PGCF):
+$$
+PGCF = f(\underset{+}{PCON}, \underset{-}{PCA}, \underset{-}{SPIKE2008})
+$$
+Exports of Goods and Services Deflator (PEX):
+$$
+PEX = f(\underset{+}{PX}, \underset{+}{CPI})
+$$
+
+Imports of Goods and Services Deflator (PIM):
+$$
+PIM = f(\underset{+}{PM}, \underset{+}{CPI})
+$$
+
+### Financial Money Market
+M1B:
+$$
+\frac{M1B}{CPI} = f(\underset{-}{CPI}, \underset{+}{GDP}, \underset{+}{\frac{VSTOCK^{nominal}}{CPI}},\\ \underset{-}{TDR1Y - NOTERATE})
+$$
+
+One-year Fixed Deposit Rate (TDR1Y):
+$$
+TDR1Y = f(\underset{+}{REQ}, \underset{+}{IR}, \underset{+}{GDP_{-1}})
+$$
+
+Total Market Capitalization of Listed Stocks (STKVLE$):
+$$
+STKVLE$ = f(\underset{+}{M1B}, \underset{+}{VSTOCK^{nominal}}, \underset{-}{SPIKE2009})
+$$
+
+### Labor Market
+
+Number of Employed (NE):
+$$
+NE = f(\underset{+}{NE_{-1}}, \underset{-}{\frac{WG^{nominal}}{CPI}}, \underset{+}{GDP})
+$$
+
+Monthly Wages per Worker in Industry and Service Sectors (WG$):
+$$
+WG^{nominal} = f(\underset{+}{MINWGM^{nominal}}, \underset{+}{(GDP^{nom}_{-1} - DEP^{nom}_{-1})}, \\  \underset{+}{Q1}, \underset{-}{DIP2007}, \underset{+}{ELBOW2009})
+$$
+
+### Tax Revenues
+Tax Revenues (TAX$):
+$$
+TAX^{nominal} = f(\underset{+}{GDP^{nominal}_{-1}}, \underset{+}{EX^{nominal}+C^{nominal}},\\ \underset{+}{VSTOCK^{nominal}}, \underset{-}{Q1}, \underset{+}{Q2})
+$$
+
+## Identities
+
+Nominal Private Consumption (C$):
+$$
+C^{nominal} = C * \frac{PC}{100}
+$$
+Nominal Government Consumption (CG$):
+$$
+CG^{nominal} = Community Services + Culture + \\Economic Affairs + Education + \\Environment Protection + Public Affairs +\\ National Health Insurance + National Defense +\\ Public Safety + Social Security
+$$
+
+Real Government Consumption (CG):
+$$
+CG = \frac{CG^{nom}}{PCG}*100
+$$
+
+Real Government Fixed Investment (IG):
+$$
+IG = \frac{IG^{nom}}{PIG}*100
+$$
+Real Fixed Investment in Public Enterprises (IPC):
+$$
+IPC = \frac{IPC^{nom}}{PIPC}*100
+$$
+Nominal Private Fixed Investment (IBF$):
+$$
+IBF^{nominal} = IBF * \frac{PIBF}{100}
+$$
+
+Nominal Gross Capital Formation (GCF$):
+$$
+GCF^{nominal} = IG^{nom} + IPC^{nom} + IBF^{nom} + JJ^{nom}
+$$
+Real Gross Captial Formation (GCF):
+$$
+GCF = \frac{GCF^{nom}}{PGCF}*100
+$$
+
+Real Exports of Goods and Services (EX):
+$$
+EX = EX_{-1} * (1 + (\frac{\frac{EXG^{nom}_{-1}}{GDP^{nom}_{-1}}* \Delta{EXG} + \frac{EXS^{nom}_{-1}}{GDP^{nom}_{-1}}* \Delta{EXS}}{\frac{EX^{nom}_{-1}}{GDP^{nom}_{-1}}*100}))
+$$
+
+Real Imports of Goods and Services (EX):
+$$
+IM = IM_{-1} * (1 + (\frac{\frac{IMG^{nom}_{-1}}{GDP^{nom}_{-1}}* \Delta{IMG} + \frac{IMS^{nom}_{-1}}{GDP^{nom}_{-1}}* \Delta{IMS}}{\frac{IM^{nom}_{-1}}{GDP^{nom}_{-1}}*100}))
+$$
+Nominal Exports of Goods and Services (EX$):
+$$
+EX^{nominal} = EX * \frac{PEX}{100}
+$$
+Nominal Imports of Goods and Services (IM$):
+$$
+IM^{nominal} = IM * \frac{PIM}{100}
+$$
+Nominal Exports of Goods, Transportation, and Insurance (EXG$):
+$$
+EXG^{nominal} = EX^{nom} * WEIGHTEXG^{nom}
+$$
+Nominal Imports of Goods, Transportation, and Insurance (IMG$):
+$$
+IMG^{nominal} = IM^{nom} * WEIGHTIMG^{nom}
+$$
+Nominal Other Exports (EXS$):
+$$
+EXS^{nominal} = EX^{nom} - EXG^{nom}
+$$
+Nominal Other Imports (IMS$):
+$$
+IMS^{nominal} = IM^{nom} - IMG^{nom}
+$$
+GDP Growth Rate (PCH GDP):
+$$
+\Delta{GDP}\% = \frac{C^{nom}_{-1}}{GDP^{nom}_{-1}}*\Delta{C}\% + \frac{CG^{nom}_{-1}}{GDP^{nom}_{-1}}*\Delta{CG}\% + \\
+\frac{EX^{nom}_{-1}}{GDP^{nom}_{-1}}*\Delta{EX}\% - \frac{IM^{nom}_{-1}}{GDP^{nom}_{-1}}*\Delta{IM}\%
+$$
+Real GDP
+$$
+GDP = C + CG + GCF + EX - IM
+$$
+
+Nominal GDP (GDP$):
+$$
+GDP^{nominal} = C^{nom} + CG^{nom} + GCF^{nom} + EX^{nom} - IM^{nom}
+$$
+GDP Deflator (PGDP):
+$$
+PGDP = \frac{GDP^{nom}}{GDP} * 100
+$$
+Nominal Disposable Income (YDD$):
+$$
+YDD^{nominal} = GNI^{nom} - DEP^{nom} - TAX^{nom}
+$$
+Nominal GNI (GNI$):
+$$
+GNI^{nominal} = GDP^{nom} + FIA^{nom}
+$$
+Consumer Price Index (CPI):
+$$
+CPI = CPI_{base} * (0.2972 * \frac{PF}{PF_{base}} + 0.7027 * \frac{PO}{PO_{base}})
+$$
+
 
 
 ***
@@ -716,11 +743,11 @@ Symbol | P-value
 
 ```{r result_formulae, results="asis"}
 
-for(i in 1:nrow(bimet_formula_df)){
+for(i in 1:nrow(print_bimet_formula_df)){
   cat('\n')  
-  cat(bimet_formula_df$model_name[i], ': \n') 
-  cat(bimet_formula_df$formula[i], '\n')
-  cat(bimet_formula_df$R_squared[i], ",", bimet_formula_df$Adj_R_squared[i])
+  cat(print_bimet_formula_df$model_name[i], ': \n') 
+  cat(print_bimet_formula_df$formula[i], '\n')
+  cat(print_bimet_formula_df$R_squared[i], ",", print_bimet_formula_df$Adj_R_squared[i])
   cat('\n')
 }
 

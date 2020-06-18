@@ -1,13 +1,14 @@
 ---
 title: Building a Macroeconomic Model of Taiwan
 author: Travis Dorsey
-date: '2020-06-12'
+date: '2020-06-18'
 slug: macroeconomic-model-of-taiwan
 bibliography: econ_models_bib.bib
 biblio-style: "apalike"
 nocite: |
   @jp_gnp
   @tfp_dat
+  @R-bimets
 output:
   blogdown::html_page:
     toc: true
@@ -26,7 +27,7 @@ tags:
 <li><a href="#variables-and-equations"><span class="toc-section-number">1</span> Variables and Equations</a><ul>
 <li><a href="#variables"><span class="toc-section-number">1.1</span> Variables</a></li>
 <li><a href="#equations"><span class="toc-section-number">1.2</span> Equations</a></li>
-<li><a href="#definitions"><span class="toc-section-number">1.3</span> Definitions</a></li>
+<li><a href="#identities"><span class="toc-section-number">1.3</span> Identities</a></li>
 </ul></li>
 <li><a href="#results"><span class="toc-section-number">2</span> Results</a><ul>
 <li><a href="#estimation-results"><span class="toc-section-number">2.1</span> Estimation Results</a></li>
@@ -614,6 +615,14 @@ WEIGHTIMG$
 Percentage of Imports that are Goods
 </td>
 </tr>
+<tr>
+<td style="text-align:left;">
+FIA$
+</td>
+<td style="text-align:center;">
+Nominal Foreign Factor Income
+</td>
+</tr>
 </tbody>
 </table>
 </div>
@@ -635,11 +644,11 @@ IBF = f(\underset{+}{IBF_{-1}}, \underset{+}{IG_{-1}}, \underset{-}{TDR1Y - \Del
 <p>Real Exports of Goods, Transportation, and Insurance (EXG):
 <span class="math display">\[
 EXG = f(\underset{-}{\frac{PX}{WPX * RX}}, \underset{+}{GDPMAJOR}, \underset{+}{ICSALES^{nominal}},\\
-\underset{+}{SPIKE2002}, \underset{-}{STEP2008})
+\underset{-}{STEP2008}, \underset{-}{Q1}, \underset{-}{Q2})
 \]</span></p>
 <p>Real Other Exports (EXS):
 <span class="math display">\[
-EXS = f(\underset{+}{EXS_{-1}}, \underset{+}{OVERSEAREV^{nominal}},\\ \underset{+}{VISITORS}, \underset{+}{RX})
+EXS = f(\underset{+}{EXS_{-1}}, \underset{+}{OVERSEAREV^{nominal}},\\ \underset{+}{VISITORS}, \underset{+}{RX}, \underset{-}{Q2}, \underset{+}{Q4})
 \]</span>
 Real Imports of Goods, Transportation, and Insurance (IMG):
 <span class="math display">\[
@@ -666,11 +675,12 @@ PD = f(\underset{+}{PD_{-1}}, \underset{+}{PM}, \underset{+}{GDP}, \underset{+}{
 \]</span></p>
 <p>Food Consumer Price Index (PF):
 <span class="math display">\[
-PF = f(\underset{+}{PF_{-1}}, \underset{+}{FOOD}, \underset{+}{WG^{nominal}_{-1}}, \underset{+}{TYPH_T})
+PF = f(\underset{+}{PF_{-1}}, \underset{+}{FOOD}, \underset{+}{WG^{nominal}_{-1}}, \underset{+}{TYPH_T}, \underset{-}{Q1})
 \]</span>
 Non-Food Consumer Price Index (PO):
 <span class="math display">\[
-PO = f(\underset{+}{PO_{-1}}, \underset{+}{PM_{-1}}, \underset{+}{PM}, \underset{+}{WG^{nominal}})
+PO = f(\underset{+}{PO_{-1}}, \underset{+}{PM_{-1}}, \underset{+}{PM}, \underset{+}{WG^{nominal}},\\
+ \underset{-}{Q1}, \underset{+}{Q2}, \underset{-}{Q3})
 \]</span></p>
 <p>Private Consumption Deflator (PC):
 <span class="math display">\[
@@ -678,11 +688,11 @@ PC = f(\underset{+}{PF}, \underset{+}{PO})
 \]</span></p>
 <p>Government Consumption Deflator (PCG):
 <span class="math display">\[
-PCG = f(\underset{+}{PO}, \underset{+}{WGP}, \underset{+}{PIG})
+PCG = f(\underset{+}{PCG_{-1}},\underset{+}{PO}, \underset{+}{WGP}, \underset{+}{PIG}, \underset{-}{PD})
 \]</span>
 Private Fixed Investment Deflator (PIBF):
 <span class="math display">\[
-PIBF = f(\underset{+}{PIBF_{-1}}, \underset{+}{PCON}, \underset{+}{PCA},\\ \underset{+}{WGST^{nominal}}, \underset{-}{SPIKE2008})
+PIBF = f(\underset{+}{PIBF_{-1}}, \underset{+}{PCON}, \underset{+}{PCA},\\ \underset{+}{WGST^{nominal}}, \underset{-}{SPIKE2008}, \underset{+}{Q1}, \underset{-}{Q2})
 \]</span>
 Government Fixed Investment Deflator (PIG):
 <span class="math display">\[
@@ -694,7 +704,7 @@ PIPC = f(\underset{+}{PCON}, \underset{+}{PCA}, \underset{-}{SPIKE2008})
 \]</span></p>
 <p>Gross Capital Formation Deflator (PGCF):
 <span class="math display">\[
-PGCF = f(\underset{+}{PIBF}, \underset{+}{PIG}, \underset{+}{PIPC})
+PGCF = f(\underset{+}{PCON}, \underset{-}{PCA}, \underset{-}{SPIKE2008})
 \]</span>
 Exports of Goods and Services Deflator (PEX):
 <span class="math display">\[
@@ -735,12 +745,12 @@ WG^{nominal} = f(\underset{+}{MINWGM^{nominal}}, \underset{+}{(GDP^{nom}_{-1} - 
 <h3><span class="header-section-number">1.2.5</span> Tax Revenues</h3>
 <p>Tax Revenues (TAX$):
 <span class="math display">\[
-TAX^{nominal} = f(\underset{+}{GDP^{nominal}_{-1}}, \underset{+}{EX^{nominal}+C^{nominal}},\\ \underset{+}{VSTOCK^{nominal}})
+TAX^{nominal} = f(\underset{+}{GDP^{nominal}_{-1}}, \underset{+}{EX^{nominal}+C^{nominal}},\\ \underset{+}{VSTOCK^{nominal}}, \underset{-}{Q1}, \underset{+}{Q2})
 \]</span></p>
 </div>
 </div>
-<div id="definitions" class="section level2">
-<h2><span class="header-section-number">1.3</span> Definitions</h2>
+<div id="identities" class="section level2">
+<h2><span class="header-section-number">1.3</span> Identities</h2>
 <p>Nominal Private Consumption (C$):
 <span class="math display">\[
 C^{nominal} = C * \frac{PC}{100}
@@ -812,7 +822,7 @@ GDP Growth Rate (PCH GDP):
 \]</span>
 Real GDP
 <span class="math display">\[
-GDP = GDP_{-1} * (1 + \frac{\Delta{GDP}\%}{100})
+GDP = C + CG + GCF + EX - IM
 \]</span></p>
 <p>Nominal GDP (GDP$):
 <span class="math display">\[
@@ -834,16 +844,6 @@ Consumer Price Index (CPI):
 <span class="math display">\[
 CPI = CPI_{base} * (0.2972 * \frac{PF}{PF_{base}} + 0.7027 * \frac{PO}{PO_{base}})
 \]</span></p>
-<pre><code>## Analyzing behaviorals...
-## Analyzing identities...
-## Optimizing...
-## Loaded model &quot;/Users/sharedcomputer/MMT in Taiwan/Analysis Replication Files/Taiwan Macro Model.txt&quot;:
-##    25 behaviorals
-##    23 identities
-##   126 coefficients
-## ...LOAD MODEL OK</code></pre>
-<pre><code>## Load model data &quot;econ_data_list&quot; into model &quot;/Users/sharedcomputer/MMT in Taiwan/Analysis Replication Files/Taiwan Macro Model.txt&quot;...
-## ...LOAD MODEL DATA OK</code></pre>
 <hr />
 </div>
 </div>
@@ -883,80 +883,80 @@ CPI = CPI_{base} * (0.2972 * \frac{PF}{PF_{base}} + 0.7027 * \frac{PO}{PO_{base}
 </tbody>
 </table>
 <p><strong>Real Private Consumption</strong> :
-<span class="math display">\[C = 82448.334 + \underset{(****)}{0.862*C_1} + \underset{(***)}{0.062*YDD_nom} + \underset{(n.s.)}{0.047*STKVLE_d_CPI}\]</span>
-<span class="math inline">\(R^{2}: 0.987\)</span> , <span class="math inline">\(Adj. R^{2}: 0.9863\)</span></p>
+<span class="math display">\[C = 119848.774 + \underset{(****)}{0.828*C_{-1}} + \underset{(****)}{7.566*\frac{YDD}{PGDP}} + \\  \underset{(n.s.)}{-0.046*\frac{STKVLE}{CPI}}\]</span>
+<span class="math inline">\(R^{2}: 0.9877\)</span> , <span class="math inline">\(Adj. R^{2}: 0.987\)</span></p>
 <p><strong>Real Private Fixed Investment</strong> :
-<span class="math display">\[IBF = 69412.049 + \underset{(****)}{0.736*IBF_1} + \underset{(n.s.)}{-0.133*IG_1} + \underset{(*)}{-8378.556*TDR1Y_m_PCHY_CPI} + \underset{(***)}{303808.965*STKVLE_d_CAPSTOCK} + \underset{(**)}{-52267.969*SPIKE2008}\]</span>
+<span class="math display">\[IBF = 69412.049 + \underset{(****)}{0.736*IBF_{-1}} + \underset{(n.s.)}{-0.133*IG_{-1}} + \\  \underset{(*)}{-8378.556*TDR1Y-PCHY_CPI} + \underset{(***)}{303808.965*\frac{STKVLE}{CAPSTOCK}} + \underset{(**)}{-52267.969*SPIKE2008}\]</span>
 <span class="math inline">\(R^{2}: 0.7568\)</span> , <span class="math inline">\(Adj. R^{2}: 0.7362\)</span></p>
 <p><strong>Real Exports of Goods, Transportation, and Insurance</strong> :
-<span class="math display">\[EXG = -3392296.547 + \underset{(**)}{19139499.443*PX_d_WPX_x_RX} + \underset{(****)}{42521.563*GDPMAJOR} + \underset{(****)}{3203.044*ICSALES_nom} + \underset{(****)}{321016.835*STEP2008} + \underset{(****)}{-198506.78*Q1} + \underset{(**)}{-76581.674*Q2}\]</span>
+<span class="math display">\[EXG = -3392296.547 + \underset{(**)}{19139499.443*\frac{PX}{WPX*RX}} + \underset{(****)}{42521.563*GDPMAJOR} + \\  \underset{(****)}{3203.044*ICSALES^{nom}} + \underset{(****)}{321016.835*STEP2008} + \underset{(****)}{-198506.78*Q1} + \underset{(**)}{-76581.674*Q2}\]</span>
 <span class="math inline">\(R^{2}: 0.9756\)</span> , <span class="math inline">\(Adj. R^{2}: 0.9736\)</span></p>
 <p><strong>Real Other Exports</strong> :
-<span class="math display">\[EXS = 23171.465 + \underset{(****)}{0.342*LAG(EXS,1)} + \underset{(****)}{0.066*OVERSEAREV_nom} + \underset{(****)}{0.011*VISITORS} + \underset{(n.s.)}{57.616*RX} + \underset{(n.s.)}{-1805.246*Q2} + \underset{(**)}{4900.73*Q4}\]</span>
+<span class="math display">\[EXS = 23171.465 + \underset{(****)}{0.342*LAG(EXS,1)} + \underset{(****)}{0.066*OVERSEAREV^{nom}} + \\  \underset{(****)}{0.011*VISITORS} + \underset{(n.s.)}{57.616*RX} + \underset{(n.s.)}{-1805.246*Q2} + \underset{(**)}{4900.73*Q4}\]</span>
 <span class="math inline">\(R^{2}: 0.9888\)</span> , <span class="math inline">\(Adj. R^{2}: 0.9878\)</span></p>
 <p><strong>Real Imports of Goods, Transportation, and Insurance</strong> :
-<span class="math display">\[IMG = 267590.601 + \underset{(****)}{0.471*EXG} + \underset{(n.s.)}{-0.016*C} + \underset{(****)}{0.642*IPC_p_IBF_p_JJ}\]</span>
+<span class="math display">\[IMG = 267590.601 + \underset{(****)}{0.471*EXG} + \underset{(n.s.)}{-0.016*C} + \\  \underset{(****)}{0.642*IPC+IBF+JJ}\]</span>
 <span class="math inline">\(R^{2}: 0.9871\)</span> , <span class="math inline">\(Adj. R^{2}: 0.9866\)</span></p>
 <p><strong>Real Other Imports</strong> :
-<span class="math display">\[IMS = 14834.858 + \underset{(****)}{0.696*IMS_1} + \underset{(***)}{0.008*OUTBOUND}\]</span>
+<span class="math display">\[IMS = 14834.858 + \\  \underset{(****)}{0.696*IMS_{-1}} + \underset{(***)}{0.008*OUTBOUND}\]</span>
 <span class="math inline">\(R^{2}: 0.9486\)</span> , <span class="math inline">\(Adj. R^{2}: 0.9465\)</span></p>
 <p><strong>Import Price Index</strong> :
-<span class="math display">\[PM = 29.368 + \underset{(****)}{1.18*RX} + \underset{(n.s.)}{-0.023*JPNRX} + \underset{(****)}{0.353*NONFUEL} + \underset{(****)}{0.238*POIL} + \underset{(n.s.)}{-0.073*WPX}\]</span>
+<span class="math display">\[PM = 29.368 + \underset{(****)}{1.18*RX} + \underset{(n.s.)}{-0.023*JPNRX} + \\  \underset{(****)}{0.353*NONFUEL} + \underset{(****)}{0.238*POIL} + \underset{(n.s.)}{-0.073*WPX}\]</span>
 <span class="math inline">\(R^{2}: 0.9692\)</span> , <span class="math inline">\(Adj. R^{2}: 0.967\)</span></p>
 <p><strong>Export Price Index</strong> :
-<span class="math display">\[PX = -31.186 + \underset{(***)}{0.12*PX_1} + \underset{(****)}{1.906*RX} + \underset{(****)}{0.541*PM} + \underset{(**)}{0.059*WTVG}\]</span>
+<span class="math display">\[PX = -31.186 + \underset{(***)}{0.12*PX_{-1}} + \underset{(****)}{1.906*RX} + \\  \underset{(****)}{0.541*PM} + \underset{(**)}{0.059*WTVG}\]</span>
 <span class="math inline">\(R^{2}: 0.983\)</span> , <span class="math inline">\(Adj. R^{2}: 0.9818\)</span></p>
 <p><strong>Domestic Production Price Index</strong> :
-<span class="math display">\[PD = 16.248 + \underset{(*)}{0.122*PD_1} + \underset{(****)}{0.612*PM} + \underset{(***)}{0*GDP} + \underset{(n.s.)}{1.263*SPIKE2008}\]</span>
+<span class="math display">\[PD = 16.248 + \underset{(*)}{0.122*PD_{-1}} + \underset{(****)}{0.612*PM} + \\  \underset{(***)}{0*GDP} + \underset{(n.s.)}{1.263*SPIKE2008}\]</span>
 <span class="math inline">\(R^{2}: 0.9913\)</span> , <span class="math inline">\(Adj. R^{2}: 0.9907\)</span></p>
 <p><strong>Food Consumer Price Index</strong> :
-<span class="math display">\[PF = -1.079 + \underset{(****)}{1*PF_1} + \underset{(n.s.)}{0.01*FOOD} + \underset{(n.s.)}{0*WG_nom_1} + \underset{(***)}{1.202*TYPH_T} + \underset{(***)}{-1.989*Q1}\]</span>
+<span class="math display">\[PF = -1.079 + \underset{(****)}{1*PF_{-1}} + \underset{(n.s.)}{0.01*FOOD} + \\  \underset{(n.s.)}{0*WG^{nom}_{-1}} + \underset{(***)}{1.202*TYPH_T} + \underset{(***)}{-1.989*Q1}\]</span>
 <span class="math inline">\(R^{2}: 0.9793\)</span> , <span class="math inline">\(Adj. R^{2}: 0.9775\)</span></p>
 <p><strong>Non-food Consumer Price Index</strong> :
-<span class="math display">\[PO = 7.978 + \underset{(****)}{0.874*PO_1} + \underset{(****)}{-0.06*PM_1} + \underset{(****)}{0.076*PM} + \underset{(*)}{0*WG_nom} + \underset{(***)}{-1.272*Q1} + \underset{(**)}{0.33*Q2} + \underset{(***)}{-0.429*Q3}\]</span>
+<span class="math display">\[PO = 7.978 + \underset{(****)}{0.874*PO_{-1}} + \underset{(****)}{-0.06*PM_{-1}} + \\  \underset{(****)}{0.076*PM} + \underset{(*)}{0*WG^{nom}} + \underset{(***)}{-1.272*Q1} + \underset{(**)}{0.33*Q2} + \underset{(***)}{-0.429*Q3}\]</span>
 <span class="math inline">\(R^{2}: 0.9877\)</span> , <span class="math inline">\(Adj. R^{2}: 0.9862\)</span></p>
 <p><strong>Private Consumption Deflator</strong> :
-<span class="math display">\[PC = 34.232 + \underset{(****)}{0.149*PF} + \underset{(****)}{0.512*PO}\]</span>
+<span class="math display">\[PC = 34.232 + \\  \underset{(****)}{0.149*PF} + \underset{(****)}{0.512*PO}\]</span>
 <span class="math inline">\(R^{2}: 0.9867\)</span> , <span class="math inline">\(Adj. R^{2}: 0.9863\)</span></p>
 <p><strong>Government Consumption Deflator</strong> :
-<span class="math display">\[PCG = 136.185 + \underset{(***)}{-0.291*LAG(PCG,1)} + \underset{(n.s.)}{-0.974*PO} + \underset{(n.s.)}{-0.219*WGP} + \underset{(****)}{1.806*PIG} + \underset{(****)}{-0.865*PD}\]</span>
+<span class="math display">\[PCG = 136.185 + \underset{(***)}{-0.291*LAG(PCG,1)} + \underset{(n.s.)}{-0.974*PO} + \\  \underset{(n.s.)}{-0.219*WGP} + \underset{(****)}{1.806*PIG} + \underset{(****)}{-0.865*PD}\]</span>
 <span class="math inline">\(R^{2}: 0.6791\)</span> , <span class="math inline">\(Adj. R^{2}: 0.6568\)</span></p>
 <p><strong>Private Fixed Investment Deflator</strong> :
-<span class="math display">\[PIBF = 21.292 + \underset{(****)}{0.627*PIBF_1} + \underset{(****)}{0.19*PCON} + \underset{(n.s.)}{-0.003*PCA} + \underset{(n.s.)}{0*WGST_nom} + \underset{(n.s.)}{-0.28*SPIKE2008} + \underset{(**)}{1.806*Q1} + \underset{(****)}{-1.652*Q2}\]</span>
+<span class="math display">\[PIBF = 21.292 + \underset{(****)}{0.627*PIBF_{-1}} + \underset{(****)}{0.19*PCON} + \\  \underset{(n.s.)}{-0.003*PCA} + \underset{(n.s.)}{0*WGST^{nom}} + \underset{(n.s.)}{-0.28*SPIKE2008} + \underset{(**)}{1.806*Q1} + \underset{(****)}{-1.652*Q2}\]</span>
 <span class="math inline">\(R^{2}: 0.9887\)</span> , <span class="math inline">\(Adj. R^{2}: 0.9874\)</span></p>
 <p><strong>Government Fixed Investment Deflator</strong> :
-<span class="math display">\[PIG = 10.75 + \underset{(***)}{0.159*PIG_1} + \underset{(****)}{0.597*PCON} + \underset{(****)}{0*WGST_nom} + \underset{(***)}{-1.782*SPIKE2008}\]</span>
+<span class="math display">\[PIG = 10.75 + \underset{(***)}{0.159*PIG_{-1}} + \underset{(****)}{0.597*PCON} + \\  \underset{(****)}{0*WGST^{nom}} + \underset{(***)}{-1.782*SPIKE2008}\]</span>
 <span class="math inline">\(R^{2}: 0.9952\)</span> , <span class="math inline">\(Adj. R^{2}: 0.9949\)</span></p>
 <p><strong>Public Enterprise Fixed Investment Deflator</strong> :
-<span class="math display">\[PIPC = 68.36 + \underset{(****)}{0.4*PCON} + \underset{(***)}{-0.089*PCA} + \underset{(****)}{-5.076*SPIKE2008}\]</span>
+<span class="math display">\[PIPC = 68.36 + \underset{(****)}{0.4*PCON} + \underset{(***)}{-0.089*PCA} + \\  \underset{(****)}{-5.076*SPIKE2008}\]</span>
 <span class="math inline">\(R^{2}: 0.8393\)</span> , <span class="math inline">\(Adj. R^{2}: 0.8327\)</span></p>
 <p><strong>Gross Capital Formation Deflator</strong> :
-<span class="math display">\[PGCF = 49.179 + \underset{(****)}{0.542*PCON} + \underset{(***)}{-0.048*PCA} + \underset{(****)}{-3.268*SPIKE2008}\]</span>
+<span class="math display">\[PGCF = 49.179 + \underset{(****)}{0.542*PCON} + \underset{(***)}{-0.048*PCA} + \\  \underset{(****)}{-3.268*SPIKE2008}\]</span>
 <span class="math inline">\(R^{2}: 0.9724\)</span> , <span class="math inline">\(Adj. R^{2}: 0.9712\)</span></p>
 <p><strong>Exports of Goods and Services Deflator</strong> :
-<span class="math display">\[PEX = 66.655 + \underset{(****)}{0.694*PX} + \underset{(****)}{-0.359*CPI}\]</span>
+<span class="math display">\[PEX = 66.655 + \\  \underset{(****)}{0.694*PX} + \underset{(****)}{-0.359*CPI}\]</span>
 <span class="math inline">\(R^{2}: 0.9333\)</span> , <span class="math inline">\(Adj. R^{2}: 0.9315\)</span></p>
 <p><strong>Imports of Goods and Services Deflator</strong> :
-<span class="math display">\[PIM = 75.296 + \underset{(****)}{0.804*PM} + \underset{(****)}{-0.563*CPI}\]</span>
+<span class="math display">\[PIM = 75.296 + \\  \underset{(****)}{0.804*PM} + \underset{(****)}{-0.563*CPI}\]</span>
 <span class="math inline">\(R^{2}: 0.9633\)</span> , <span class="math inline">\(Adj. R^{2}: 0.9623\)</span></p>
 <p><strong>M1B</strong> :
-<span class="math display">\[M1B_d_CPI = 3690.398 + \underset{(****)}{-13.334*CPI} + \underset{(***)}{0*GDP} + \underset{(****)}{0.002*VSTOCK_d_CPI} + \underset{(n.s.)}{0.556*TDR1Y_m_NOTERATE}\]</span>
+<span class="math display">\[\frac{M1B}{CPI} = 3690.398 + \underset{(****)}{-13.334*CPI} + \underset{(***)}{0*GDP} + \\  \underset{(****)}{0.002*\frac{VSTOCK}{CPI}} + \underset{(n.s.)}{0.556*TDR1Y-NOTERATE}\]</span>
 <span class="math inline">\(R^{2}: 0.997\)</span> , <span class="math inline">\(Adj. R^{2}: 0.9968\)</span></p>
 <p><strong>One-Year Fixed Deposit Rate</strong> :
-<span class="math display">\[TDR1Y = -0.293 + \underset{(n.s.)}{0.036*REQ} + \underset{(****)}{0.913*IR} + \underset{(n.s.)}{0*GDP_1} + \underset{(n.s.)}{0.001*Q3}\]</span>
+<span class="math display">\[TDR1Y = -0.293 + \underset{(n.s.)}{0.036*REQ} + \underset{(****)}{0.913*IR} + \\  \underset{(n.s.)}{0*GDP_{-1}} + \underset{(n.s.)}{0.001*Q3}\]</span>
 <span class="math inline">\(R^{2}: 0.9964\)</span> , <span class="math inline">\(Adj. R^{2}: 0.9962\)</span></p>
 <p><strong>Total Market Capitalization of Listed Stocks</strong> :
-<span class="math display">\[STKVLE_nom = -2655237.771 + \underset{(****)}{168.616*M1B} + \underset{(****)}{2.479*VSTOCK_nom} + \underset{(****)}{-2799298.467*SPIKE2009}\]</span>
+<span class="math display">\[STKVLE^{nom} = -2655237.771 + \underset{(****)}{168.616*M1B} + \underset{(****)}{2.479*VSTOCK^{nom}} + \\  \underset{(****)}{-2799298.467*SPIKE2009}\]</span>
 <span class="math inline">\(R^{2}: 0.9445\)</span> , <span class="math inline">\(Adj. R^{2}: 0.9422\)</span></p>
 <p><strong>Number of Employed</strong> :
-<span class="math display">\[NE = 1294.397 + \underset{(****)}{0.823*NE_1} + \underset{(****)}{0*GDP}\]</span>
+<span class="math display">\[NE = 1294.397 + \\  \underset{(****)}{0.823*NE_{-1}} + \underset{(****)}{0*GDP}\]</span>
 <span class="math inline">\(R^{2}: 0.9983\)</span> , <span class="math inline">\(Adj. R^{2}: 0.9982\)</span></p>
 <p><strong>Monthly Wages per Worker in Industry and Service Sectors</strong> :
-<span class="math display">\[WG_nom = 7254.836 + \underset{(****)}{1.93*MINWGM} + \underset{(n.s.)}{0*GDP_m_DEP*ELBOW2009} + \underset{(****)}{13127.174*Q1} + \underset{(n.s.)}{-421.898*DIP2007_09}\]</span>
-<span class="math inline">\(R^{2}: 0.9509\)</span> , <span class="math inline">\(Adj. R^{2}: 0.9482\)</span></p>
+<span class="math display">\[WG^{nom} = 26576.862 + \underset{(n.s.)}{0.007*MINWGM} + \underset{(****)}{0.005*GDP-DEP} + \\  \underset{(****)}{12464.505*Q1} + \underset{(n.s.)}{-600.9*DIP2007_09} + \underset{(n.s.)}{-1035.193*ELBOW2009} + \underset{(n.s.)}{0*(GDP-DEP*ELBOW2009)}\]</span>
+<span class="math inline">\(R^{2}: 0.9772\)</span> , <span class="math inline">\(Adj. R^{2}: 0.9753\)</span></p>
 <p><strong>Tax Revenue</strong> :
-<span class="math display">\[TAX_nom = -40023.013 + \underset{(****)}{0.054*GDP_nom_1} + \underset{(n.s.)}{-0.009*EX_p_C} + \underset{(***)}{0.008*VSTOCK_nom} + \underset{(**)}{-18472.757*Q1} + \underset{(****)}{89900.017*Q2} + \underset{(n.s.)}{11487.233*Q3}\]</span>
-<span class="math inline">\(R^{2}: 0.883\)</span> , <span class="math inline">\(Adj. R^{2}: 0.8713\)</span></p>
+<span class="math display">\[TAX^{nom} = -33358.352 + \underset{(****)}{0.053*GDP^{nom}_{-1}} + \underset{(n.s.)}{-0.008*EX+ \\ C} + \underset{(***)}{0.008*VSTOCK^{nom}} + \underset{(****)}{-27910.878*Q1} + \underset{(****)}{88219.318*Q2}\]</span>
+<span class="math inline">\(R^{2}: 0.8802\)</span> , <span class="math inline">\(Adj. R^{2}: 0.8701\)</span></p>
 </div>
 <div id="some-key-takeaways" class="section level2">
 <h2><span class="header-section-number">2.2</span> Some Key Takeaways</h2>
@@ -1273,6 +1273,9 @@ $137.3
 </div>
 <div id="ref-jp_gnp">
 <p>“Japan Gnp 1962-2020.” 2020. macrotrends. <a href="https://www.macrotrends.net/countries/JPN/japan/gnp-gross-national-product">https://www.macrotrends.net/countries/JPN/japan/gnp-gross-national-product</a>.</p>
+</div>
+<div id="ref-R-bimets">
+<p>Luciani, Andrea, and Roberto Stok. 2020. <em>Bimets: Time Series and Econometric Modeling</em>. <a href="https://CRAN.R-project.org/package=bimets">https://CRAN.R-project.org/package=bimets</a>.</p>
 </div>
 <div id="ref-tfp_dat">
 <p>Robert C. Feenstra, Marcel P. Timmer, Robert Inklaar. n.d. “The Next Generation of the Penn World Table.” <em>American Economic Review</em> 105 (10): 3150–82. <a href="www.ggdc.net/pwt">www.ggdc.net/pwt</a>.</p>
