@@ -1,7 +1,7 @@
 ---
 title: Building a Macroeconomic Model of Taiwan
 author: Travis Dorsey
-date: '2020-05-26'
+date: '2020-06-12'
 slug: macroeconomic-model-of-taiwan
 bibliography: econ_models_bib.bib
 biblio-style: "apalike"
@@ -22,6 +22,8 @@ tags:
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
 knitr::opts_chunk$set(message = FALSE)
+knitr::opts_chunk$set(warning = FALSE)
+knitr::opts_chunk$set(error = FALSE)
 
 #################
 ##  Libraries  ##
@@ -31,6 +33,7 @@ library(kableExtra)
 library(equatiomatic)
 library(systemfit)
 library(lubridate)
+library(bimets)
 
 options(scipen=999)
 
@@ -41,72 +44,37 @@ econ_vars <- read_csv("/Users/sharedcomputer/MMT in Taiwan/Analysis Replication 
 ##  Functions  ##
 #################
 
-get_model_formula <- function(model_eq) {
-  eq_formula <- deparse(model_eq$terms)
-  if(length(eq_formula) > 1){
-    eq_formula <- str_remove_all(str_c(eq_formula, collapse = " "), "     ")
-  }
-
-  test_coef <- as.data.frame(model_eq$coefficients) %>%
-    rownames_to_column(var = "variable_name") %>%
-    mutate(sig_level = case_when(variable_name == "(Intercept)" ~ "", 
-                                 `Pr(>|t|)` < 0.001 ~ "(****)",
-                                 `Pr(>|t|)` < 0.01 ~ "(***)",
-                                 `Pr(>|t|)` < 0.05 ~ "(**)",
-                                 `Pr(>|t|)` < 0.1 ~ "(*)",
-                                 `Pr(>|t|)` >= 0.1 ~ "(n.s.)"))
-  
-  new_rhs <- test_coef %>%
-    mutate(rn = row_number()) %>%
-    group_by(rn) %>%
-    mutate(variable_name = clean_var_names(variable_name)) %>%
+get_bimets_formulas <- function(bimet_model_list){
+  model_coef <- tibble(Variable      = bimet_model_list$eqRegressorsNames,
+                       Coefficient   = round(bimet_model_list$coefficients,3),
+                       P_values      = bimet_model_list$statistics$CoeffPvalues,
+                       R_squared     = bimet_model_list$statistics$RSquared,
+                       Adj_R_squared = bimet_model_list$statistics$AdjustedRSquared,
+                       Model         = bimet_model_list$lhsFun$raw) %>%
+    mutate(sig_symbol = case_when(Variable == "1" ~ "", 
+                                  P_values < 0.001 ~ "(****)",
+                                  P_values < 0.01 ~ "(***)",
+                                  P_values < 0.05 ~ "(**)",
+                                  P_values < 0.1 ~ "(*)",
+                                  P_values >= 0.1 ~ "(n.s.)")) %>%
+    mutate(new_rhs = ifelse(Variable == "1", 
+                            Coefficient, 
+                            paste0("\\underset{", sig_symbol, "}{",Coefficient, "*", Variable, "}"))) %>%
+    group_by(Model, R_squared, Adj_R_squared) %>%
+    summarize(formula = str_c(new_rhs, collapse = " + ")) %>%
     ungroup() %>%
-    select(-rn) %>%
-    mutate(rhs = ifelse(variable_name == "(Intercept)", 
-                        round(Estimate, 4), 
-                        paste(round(Estimate, 4), variable_name, sep = "*"))) %>%
-    mutate(rhs = str_remove_all(rhs, "`")) %>%
-    mutate(rhs = case_when(is.na(sig_level) ~ rhs,
-                           !is.na(sig_level) ~ paste0("\\underset{", sig_level, "}{", rhs, "}"))) %>%
-    mutate(rn_flag = row_number() %% 4) %>%
-    mutate(rhs = ifelse(rn_flag == 0, paste("\\\\", rhs), rhs))
-  new_rhs <- str_c(new_rhs$rhs, collapse = " + ")
-  new_lhs <- str_replace(str_sub(eq_formula, 1, str_locate(eq_formula, "~")[1]), "~", "=")
-  new_lhs <- str_remove_all(new_lhs, "`")
-  new_lhs <- clean_var_names(new_lhs)
-  
-  new_eq <- paste(new_lhs, new_rhs)
-  return(new_eq)
+    mutate(formula = paste0("$$", Model, " = ", formula, "$$"))
+  return(model_coef)
 }
 
-clean_var_names <- function(eqn_text) {
-  div_detect <- str_detect(eqn_text, "_d_")
-  eq_detect <- str_detect(eqn_text, " =")
+get_bimets_preds <- function(fcast_simulation) {
+  fcast_start <- yq(str_c(as.character(start(fcast_simulation)), collapse = "Q"))
+  fcast_end   <- yq(str_c(as.character(end(fcast_simulation)), collapse = "Q"))
   
-  if(div_detect){
-    if(eq_detect){
-      eqn_text <- str_replace_all(eqn_text, " =", "")
-      eqn_text <- str_split(eqn_text, "_d_")
-      eqn_text <- sprintf("\\frac{%s}{%s}", eqn_text[[1]][1], eqn_text[[1]][2])
-      eqn_text <- paste(eqn_text, "= ")
-    } else{
-      eqn_text <- str_split(eqn_text, "_d_")
-      eqn_text <- sprintf("\\frac{%s}{%s}", eqn_text[[1]][1], eqn_text[[1]][2])
-    }
-  }
-  
-  eqn_text <- str_replace_all(eqn_text, "_x_", " * ")
-  eqn_text <- str_replace_all(eqn_text, "_m_", " - ")
-  eqn_text <- str_replace_all(eqn_text, "_p_", " + ")
-  eqn_text <- str_replace_all(eqn_text, "_1", "_{-1}")
-  
-  return(eqn_text)
-}
-
-get_model_r2 <- function(model_eq) {
-  model_r2_df <- tibble(r_squared     = model_eq$r.squared,
-                        adj_r_squared = model_eq$adj.r.squared)
-  return(model_r2_df)
+  preds <- tibble(quarterly_date = seq.Date(fcast_start, fcast_end, by = "quarter"),
+                  value = as.numeric(fcast_simulation)) %>%
+    mutate(type = "Prediction")
+  return(preds)
 }
 
 ```
@@ -117,7 +85,7 @@ Following the methodology laid out by the [Directorate-General of Budget, Accoun
 
 ***
 # Variables and Equations
-The model will consist of 25 simultaneous equations, with 38 endogenous variables and 24 exogenous variables.
+The model will consist of 25 simultaneous equations, with 38 endogenous variables and 24 exogenous variables. The data were compiled from various Taiwanese government agencies, including the Central Bank, the Directorate-General of Budget, Accounting, and Statistics, and the Ministry of Economics. This quarterly dataset covers the period 1997Q3-2018Q4 (87 periods), with the final 8 quarters being used as a holdout sample to test the results of the model fit.
 
 ## Variables 
 
@@ -143,7 +111,7 @@ econ_vars %>%
 
 
 ## Equations
-Here I show the equations that make up this macroeconometric model of Taiwan.
+Here I show the equations that make up this macroeconometric model of Taiwan. While the methodology laid out in this note from the [Directorate-General of Budget, Accounting, and Statistics](https://www.stat.gov.tw/public/Attachment/6531914262FZ3FA2L.pdf)^[@dgbas_econ] provided a starting point, I have adapted the equations to better handle a quarterly dataset, as well as adding in the hourly minimum wage rate to the formulation for Nominal Monthly Wages per Worker in Industry and Service Sectors to allow for easier testing of policy options later on. 
 
 ### Commodity Market
 Real Private Consumption (C):
@@ -152,8 +120,8 @@ C = f(\underset{+}{C_{-1}}, \underset{+}{\frac{YDD^{nominal}}{PGDP}}, \underset{
 $$
 Real Private Fixed Investment (IBF):
 $$
-IBF = f(\underset{+}{IBF_{-1}}, \underset{+}{IG_{-1}}, \underset{-}{TDR1Y - @PCHY(CPI)},\\ \underset{+}{EXG_{-1}},
-\underset{+}{\frac{STKVLE^{nominal}}{CAPSTOCK^{nominal}}})
+IBF = f(\underset{+}{IBF_{-1}}, \underset{+}{IG_{-1}}, \underset{-}{TDR1Y - \Delta(CPI)},\\ \underset{+}{EXG_{-1}},
+\underset{+}{\frac{STKVLE^{nominal}}{CAPSTOCK^{nominal}}}, \underset{-}{SPIKE2008})
 $$
 
 Real Exports of Goods, Transportation, and Insurance (EXG):
@@ -263,7 +231,7 @@ $$
 
 Monthly Wages per Worker in Industry and Service Sectors (WG$):
 $$
-WG^{nominal} = f(\underset{+}{WG^{nominal}_{-1}}, \underset{+}{GDP^{nominal}_{-1} - DEP^{nominal}_{-1}}, \underset{+}{CPI}, \underset{+}{WGP})
+WG^{nominal} = f(\underset{+}{MINWGM^{nominal}}, \underset{+}{(GDP^{nom}_{-1} - DEP^{nom}_{-1})}, \\  \underset{+}{Q1}, \underset{-}{DIP2007}, \underset{+}{ELBOW2009})
 $$
 
 ### Tax Revenues
@@ -271,6 +239,112 @@ Tax Revenues (TAX$):
 $$
 TAX^{nominal} = f(\underset{+}{GDP^{nominal}_{-1}}, \underset{+}{EX^{nominal}+C^{nominal}},\\ \underset{+}{VSTOCK^{nominal}})
 $$
+
+## Definitions
+
+Nominal Private Consumption (C$):
+$$
+C^{nominal} = C * \frac{PC}{100}
+$$
+Nominal Government Consumption (CG$):
+$$
+CG^{nominal} = Community Services + Culture + \\Economic Affairs + Education + \\Environment Protection + Public Affairs +\\ National Health Insurance + National Defense +\\ Public Safety + Social Security
+$$
+
+Real Government Consumption (CG):
+$$
+CG = \frac{CG^{nom}}{PCG}*100
+$$
+
+Real Government Fixed Investment (IG):
+$$
+IG = \frac{IG^{nom}}{PIG}*100
+$$
+Real Fixed Investment in Public Enterprises (IPC):
+$$
+IPC = \frac{IPC^{nom}}{PIPC}*100
+$$
+Nominal Private Fixed Investment (IBF$):
+$$
+IBF^{nominal} = IBF * \frac{PIBF}{100}
+$$
+
+Nominal Gross Capital Formation (GCF$):
+$$
+GCF^{nominal} = IG^{nom} + IPC^{nom} + IBF^{nom} + JJ^{nom}
+$$
+Real Gross Captial Formation (GCF):
+$$
+GCF = \frac{GCF^{nom}}{PGCF}*100
+$$
+
+Real Exports of Goods and Services (EX):
+$$
+EX = EX_{-1} * (1 + (\frac{\frac{EXG^{nom}_{-1}}{GDP^{nom}_{-1}}* \Delta{EXG} + \frac{EXS^{nom}_{-1}}{GDP^{nom}_{-1}}* \Delta{EXS}}{\frac{EX^{nom}_{-1}}{GDP^{nom}_{-1}}*100}))
+$$
+
+Real Imports of Goods and Services (EX):
+$$
+IM = IM_{-1} * (1 + (\frac{\frac{IMG^{nom}_{-1}}{GDP^{nom}_{-1}}* \Delta{IMG} + \frac{IMS^{nom}_{-1}}{GDP^{nom}_{-1}}* \Delta{IMS}}{\frac{IM^{nom}_{-1}}{GDP^{nom}_{-1}}*100}))
+$$
+Nominal Exports of Goods and Services (EX$):
+$$
+EX^{nominal} = EX * \frac{PEX}{100}
+$$
+Nominal Imports of Goods and Services (IM$):
+$$
+IM^{nominal} = IM * \frac{PIM}{100}
+$$
+Nominal Exports of Goods, Transportation, and Insurance (EXG$):
+$$
+EXG^{nominal} = EX^{nom} * WEIGHTEXG^{nom}
+$$
+Nominal Imports of Goods, Transportation, and Insurance (IMG$):
+$$
+IMG^{nominal} = IM^{nom} * WEIGHTIMG^{nom}
+$$
+Nominal Other Exports (EXS$):
+$$
+EXS^{nominal} = EX^{nom} - EXG^{nom}
+$$
+Nominal Other Imports (IMS$):
+$$
+IMS^{nominal} = IM^{nom} - IMG^{nom}
+$$
+GDP Growth Rate (PCH GDP):
+$$
+\Delta{GDP}\% = \frac{C^{nom}_{-1}}{GDP^{nom}_{-1}}*\Delta{C}\% + \frac{CG^{nom}_{-1}}{GDP^{nom}_{-1}}*\Delta{CG}\% + \\
+\frac{EX^{nom}_{-1}}{GDP^{nom}_{-1}}*\Delta{EX}\% - \frac{IM^{nom}_{-1}}{GDP^{nom}_{-1}}*\Delta{IM}\%
+$$
+Real GDP
+$$
+GDP = GDP_{-1} * (1 + \frac{\Delta{GDP}\%}{100})
+$$
+
+Nominal GDP (GDP$):
+$$
+GDP^{nominal} = C^{nom} + CG^{nom} + GCF^{nom} + EX^{nom} - IM^{nom}
+$$
+GDP Deflator (PGDP):
+$$
+PGDP = \frac{GDP^{nom}}{GDP} * 100
+$$
+Nominal Disposable Income (YDD$):
+$$
+YDD^{nominal} = GNI^{nom} - DEP^{nom} - TAX^{nom}
+$$
+Nominal GNI (GNI$):
+$$
+GNI^{nominal} = GDP^{nom} + FIA^{nom}
+$$
+Consumer Price Index (CPI):
+$$
+CPI = CPI_{base} * (0.2972 * \frac{PF}{PF_{base}} + 0.7027 * \frac{PO}{PO_{base}})
+$$
+
+
+
+
 
 
 ```{r load_econ_data}
@@ -283,11 +357,101 @@ vars_to_log <- c("TAX$", "GDP", "GDP$", "C", "C$", "CG", "CG$", "EXG", "EXG$", "
                  "VSTOCK$", "M1B", "OUTBOUND", "OVERSEAREV$", "TAX$", "VISITORS")
 
 ### Load Dataset
+min_wage_raw <- read_csv("/Users/sharedcomputer/MMT in Taiwan/Analysis Replication Files/Macroeconomic Model of Taiwan/New Dataset Min Wage.csv")
+
+min_wage_annual <- min_wage_raw %>%
+  filter(row_number() <= 20) %>%
+  mutate(year_month = as.numeric(str_remove(year_month, "年底"))+1911,
+         min_wage_hourly = as.numeric(str_remove(min_wage_hourly, "－"))) %>%
+  mutate(month = list(seq(1, 12, 1))) %>%
+  unnest(month) %>%
+  mutate(date = as_date(paste(year_month, month, "1", sep = "-"))) %>%
+  mutate(date = ceiling_date(date, "month")-1) %>%
+  select(date, min_wage_monthly, min_wage_hourly)
+
+min_wage_monthly <- min_wage_raw %>%
+  filter(row_number() > 21) %>%
+  separate(year_month, into = c("year", "month"), sep = "年 ") %>%
+  mutate(year = as.numeric(year) + 1911,
+         month = as.numeric(str_remove(month, "月底")),
+         min_wage_monthly = as.numeric(min_wage_monthly),
+         min_wage_hourly = as.numeric(min_wage_hourly)) %>%
+  mutate(date = as_date(paste(year, month, "1", sep = "-"))) %>%
+  mutate(date = ceiling_date(date, "month")-1) %>%
+  select(date, min_wage_monthly, min_wage_hourly) %>%
+  bind_rows(min_wage_annual) %>%
+  arrange(date) %>%
+  mutate(quarterly_date = yq(paste0(year(date), "Q", quarter(date)))) %>%
+  group_by(quarterly_date) %>%
+  summarize(MINWGM = mean(min_wage_monthly),
+            MINWGH  = mean(min_wage_hourly))
+
+fia_gni <- read_csv("/Users/sharedcomputer/MMT in Taiwan/Analysis Replication Files/Macroeconomic Model of Taiwan/New Dataset FIA GNI.csv") %>%
+  rename(quarterly_date = year_qtr) %>%
+  mutate(quarterly_date = yq(quarterly_date))
+
+unemp <- read_csv("/Users/sharedcomputer/MMT in Taiwan/Analysis Replication Files/TW Unemployment Data.csv") %>%
+  filter(Month != "Ave.") %>%
+  mutate(Month = str_remove(Month, "\\.")) %>%
+  mutate(Month = ifelse(Month == "Otc", "Oct", Month)) %>%
+  mutate(quarterly_date = as_date(paste(Year, Month, "1", sep = "-"))) %>%
+  mutate(quarterly_date = yq(paste(year(quarterly_date), quarter(quarterly_date), sep = "Q"))) %>%
+  group_by(quarterly_date) %>%
+  summarize(NU = mean(Total))
+
+join_lf <- read_csv("/Users/sharedcomputer/MMT in Taiwan/Analysis Replication Files/TW Not in Labor Force.csv") %>%
+  filter(month != "Ave.") %>%
+  mutate(month = str_remove(month, "\\.")) %>%
+  mutate(month = ifelse(month == "Otc", "Oct", month)) %>%
+  mutate(quarterly_date = as_date(paste(year, month, "1", sep = "-"))) %>%
+  mutate(quarterly_date = yq(paste(year(quarterly_date), quarter(quarterly_date), sep = "Q"))) %>%
+  group_by(quarterly_date) %>%
+  summarize(JOIN_LF = mean(`Intend and be available  to work  but not seeking`))
+
+jg_emp_df <- unemp %>%
+  left_join(join_lf, by = "quarterly_date") %>%
+  group_by(quarterly_date) %>%
+  mutate(JG_EMP = sum(NU, JOIN_LF)) %>%
+  ungroup()
+
+cg_components <- read_csv("/Users/sharedcomputer/MMT in Taiwan/Analysis Replication Files/Macroeconomic Model of Taiwan/New Dataset CG Components.csv") %>%
+  gather("metric", "value", -year) %>%
+  group_by(year, metric) %>%
+  mutate(year_qtr = list(paste(year, 1:4, sep = "Q")),
+         value    = value/4) %>%
+  ungroup() %>%
+  unnest(year_qtr) %>%
+  select(year_qtr, metric, value) %>%
+  mutate(metric = case_when(metric == "政府消費合計" ~ "CG$",
+                            metric == "一般公共事務" ~ "GEN_PUB_AFFAIRS",
+                            metric == "國防" ~ "NATL_DEFENSE",
+                            metric == "公共秩序與安全" ~ "PUB_SAFETY",
+                            metric == "經濟事務" ~ "ECON_AFFAIRS",
+                            metric == "環境保護" ~ "ENVIRO_PROTECT",
+                            metric == "住宅與社區服務" ~ "COMM_SERVICES",
+                            metric == "保健" ~ "HLTH_INS",
+                            metric == "娛樂、文化與宗教" ~ "CULTURE",
+                            metric == "教育" ~ "EDU",
+                            metric == "社會保障" ~ "SOC_SECURITY"),
+         quarterly_date = yq(year_qtr)) %>%
+  select(quarterly_date, metric, value) %>%
+  spread(metric, value) %>%
+  gather("metric", "value", -c(quarterly_date, `CG$`)) %>%
+  group_by(quarterly_date, metric) %>%
+  mutate(pct_cg = value/`CG$`)
+
 econ_data_url <- "https://raw.githubusercontent.com/dorseytf/Blog-Replication-Scripts/master/Taiwan%20Macro%20Dataset.csv"
 
 econ_data <- read_csv(url(econ_data_url)) %>%
-  mutate(across(one_of(vars_to_log), log)) %>%
+  left_join(min_wage_monthly, by = "quarterly_date") %>%
+  left_join(fia_gni, by = "quarterly_date") %>%
+  mutate(GCF    = GCF + JJ,
+         `GCF$` = `GCF$` + `JJ$`,
+         `TAX$` = `TAX$`/1000) %>%
   mutate(C_1               = lag(C, lag_1_q),
+         `C$_1`            = lag(`C$`, lag_1_q),
+         `CG$_1`           = lag(`CG$`, lag_1_q),
+         `GCF$_1`          = lag(`GCF$`, lag_1_q),
          YDD_d_PGDP        = `YDD$`/PGDP,
          STKVLE_d_CPI      = `STKVLE$`/CPI,
          IBF_1             = lag(IBF, lag_1_q),
@@ -314,21 +478,87 @@ econ_data <- read_csv(url(econ_data_url)) %>%
          GDP_1             = lag(GDP, lag_1_q),
          NE_1              = lag(NE, lag_1_q),
          WG_d_CPI          = `WG$`/CPI,
+         DIP2007_09        = ifelse(year(quarterly_date) >= 2007 & year(quarterly_date) <= 2009, 1, 0),
+         ELBOW2009         = ifelse(quarterly_date < as_date("2009-04-01"), 1, 0),
+         SPIKE2001_03      = ifelse(year(quarterly_date) >= 2001 & year(quarterly_date) <= 2003, 1, 0),
+         MINWGH_1          = lag(MINWGH, lag_1_q),
          `GDP$_1`          = lag(`GDP$`, lag_1_q),
          `DEP$_1`          = lag(`DEP$`, lag_1_q),
          GDP_m_DEP         = `GDP$_1` - `DEP$_1`,
          EX_p_C            = `EX$` + `C$`,
+         `OVERSEAREV$_1`   = lag(`OVERSEAREV$`, lag_1_q),
          Q1                = ifelse(quarter(quarterly_date) == 1, 1, 0),
          Q2                = ifelse(quarter(quarterly_date) == 2, 1, 0),
          Q3                = ifelse(quarter(quarterly_date) == 3, 1, 0),
-         Q4                = ifelse(quarter(quarterly_date) == 4, 1, 0)) %>%
+         Q4                = ifelse(quarter(quarterly_date) == 4, 1, 0),
+         adj_C_real        = C*(PC/100),
+         adj_CG_nom        = (`CG$`/PCG)*100,
+         adj_IG_nom        = (`IG$`/PIG)*100,
+         adj_IPC_nom       = (`IPC$`/PIPC)*100,
+         adj_IBF_real      = IBF*(PIBF/100),
+         adj_GCF_nom       = (`GCF$`/PGCF)*100,
+         EX_1              = lag(EX, lag_1_q),
+         `EX$_1`           = lag(`EX$`, lag_1_q),
+         `EXG$_1`          = lag(`EXG$`, lag_1_q),
+         `EXS$_1`          = lag(`EXS$`, lag_1_q),
+         PCH_EXG           = (EXG - EXG_1)/EXG_1,
+         PCH_EXS           = (EXS - EXS_1)/EXS_1,
+         real_EX_numerator = (`EXG$_1`/`GDP$_1`)*PCH_EXG + (`EXS$_1`/`GDP$_1`)*PCH_EXS,
+         real_EX_denominat = 100*(`EX$_1`/`GDP$_1`),
+         real_EX_def       = EX_1 * 1+(real_EX_numerator/real_EX_denominat),
+         IM_1              = lag(IM, lag_1_q),
+         IMG_1             = lag(IMG, lag_1_q),
+         `IM$_1`           = lag(`IM$`, lag_1_q),
+         `IMG$_1`          = lag(`IMG$`, lag_1_q),
+         `IMS$_1`          = lag(`IMS$`, lag_1_q),
+         PCH_IMG           = (IMG - IMG_1)/IMG_1,
+         PCH_IMS           = (IMS - IMS_1)/IMS_1,
+         real_IM_numerator = (`IMG$_1`/`GDP$_1`)*PCH_IMG + (`IMS$_1`/`GDP$_1`)*PCH_IMS,
+         real_IM_denominat = 100*(`IM$_1`/`GDP$_1`),
+         real_IM_def       = IM_1 * 1+(real_IM_numerator/real_IM_denominat),
+         adj_EX_real       = EX*(PEX/100),
+         adj_IM_real       = IM*(PIM/100),
+         `EX$_wg`          = (`EXG$`/`EX$`)*`EX$`,
+         `IM$_wg`          = (`IMG$`/`IM$`)*`IM$`,
+         EX_nom_diff       = `EX$`-`EXG$`,
+         IM_nom_diff       = `IM$`-`IMG$`,
+         PCH_GDP           = (GDP - GDP_1)/GDP_1,
+         PCH_C             = (lag(`C$`)/`GDP$_1`) * ((`C$` - lag(`C$`))/lag(`C$`)),
+         PCH_CG            = (lag(`CG$`)/`GDP$_1`) * ((`CG$` - lag(`CG$`))/lag(`CG$`)),
+         PCH_GCF           = (lag(`GCF$`)/`GDP$_1`) * ((`GCF$` - lag(`GCF$`))/lag(`GCF$`)),
+         PCH_EX            = (lag(`EX$`)/`GDP$_1`) * ((`EX$` - lag(`EX$`))/lag(`EX$`)),
+         PCH_IM            = (lag(`IM$`)/`GDP$_1`) * ((`IM$` - lag(`IM$`))/lag(`IM$`)),
+         PCH_GDP_calc      = PCH_C + PCH_CG + PCH_GCF + PCH_EX - PCH_IM, 
+         GDP_m_growth      = GDP_1 * (1 + PCH_GDP),
+         `NX$`             = `EX$` - `IM$`,
+         NX                = EX - IM,
+         gdp_deflator_calc = 100*(`GDP$`/GDP),
+         ydd_nom_calc      = `GNI$` - `DEP$` - `TAX$`,
+         `FIA$`            = `GDP$` - `YDD$`,
+         CPI_base          = CPI[which(quarterly_date == as_date("2015-07-01"))],
+         PF_base           = PF[which(quarterly_date == as_date("2015-07-01"))],
+         PO_base           = PO[which(quarterly_date == as_date("2015-07-01"))],
+         CPI_calc          = CPI_base * (.2972 * (PF/PF_base) + 0.7027 * (PO/PO_base)),
+         JG_emp            = 0) %>%
   filter_all(all_vars(!is.na(.)))
+
+adj_cg_components <- cg_components %>%
+  inner_join(select(econ_data, quarterly_date, act_cg_nom = `CG$`), by = "quarterly_date") %>%
+  group_by(quarterly_date, metric) %>%
+  mutate(new_value = pct_cg * act_cg_nom) %>%
+  ungroup() %>%
+  select(quarterly_date, metric, new_value) %>%
+  spread(metric, new_value)
+
+econ_data <- econ_data %>%
+  left_join(adj_cg_components, by = "quarterly_date")
+
 
 # Commodity Market
 c_eqn   <- C ~ C_1 + `YDD$` + STKVLE_d_CPI + Q1 + Q3
-ibf_eqn <- IBF ~ IBF_1 + IG_1 + TDR1Y_m_PCHY_CPI + EXG_1 + STKVLE_d_CAPSTOCK
+ibf_eqn <- IBF ~ IBF_1 + IG_1 + TDR1Y_m_PCHY_CPI + STKVLE_d_CAPSTOCK + SPIKE2008
 exg_eqn <- EXG ~ PX_d_WPX_x_RX + GDPMAJOR + `ICSALES$` + STEP2008 + Q1 + Q2
-exs_eqn <- EXS ~ EXS_1 + `OVERSEAREV$` + VISITORS + RX + Q1 + Q2 + Q3
+exs_eqn <- EXS ~ EXS_1 + `OVERSEAREV$` + VISITORS + RX + Q2 + Q4
 img_eqn <- IMG ~ EXG + C + IPC_p_IBF_p_JJ
 ims_eqn <- IMS ~ IMS_1 + OUTBOUND
 
@@ -361,45 +591,92 @@ stkvle_eqn <- `STKVLE$` ~ M1B + `VSTOCK$` + SPIKE2009
 fin_eqn <- list(m1bcpi = m1b_eqn, tdr1y = tdr1y_eqn, stkvle = stkvle_eqn)
 
 # Labor Market
-ne_eqn <- NE ~ NE_1 + WG_d_CPI + GDP
-wg_eqn <- `WG$` ~ `WG$_1` + GDP_m_DEP + CPI + WGP + Q1 + Q2 + Q3
+ne_eqn <- NE ~ NE_1 + GDP 
+wg_eqn <- `WG$` ~ MINWGM + GDP_m_DEP*ELBOW2009 + Q1 + DIP2007_09
 
 labor_eqn <- list(ne = ne_eqn, wg = wg_eqn)
 
 # Tax Revenue
 tax_eqn <- `TAX$` ~ `GDP$_1` + EX_p_C + `VSTOCK$` + Q1 + Q2 + Q3
 
+# Definitions
+c_nom_def    <- `C$` ~ adj_C_real
+cg_nom_def   <- `CG$` ~ COMM_SERVICES + CULTURE + ECON_AFFAIRS + EDU + ENVIRO_PROTECT + GEN_PUB_AFFAIRS + HLTH_INS + NATL_DEFENSE + PUB_SAFETY + SOC_SECURITY
+cg_real_def  <- CG ~ adj_CG_nom
+ig_real_def  <- IG ~ adj_IG_nom
+ipc_real_def <- IPC ~ adj_IPC_nom
+ibf_nom_def  <- `IBF$` ~ adj_IBF_real
+gcf_nom_def  <- `GCF$` ~ `IG$` + `IPC$` + `IBF$` + `JJ$`
+gcf_real_def <- GCF ~ adj_GCF_nom
+ex_real_def  <- EX ~ real_EX_def
+im_real_def  <- IM ~ real_IM_def
+ex_nom_def   <- `EX$` ~ adj_EX_real
+im_nom_def   <- `IM$` ~ adj_IM_real
+exg_nom_def  <- `EXG$` ~ `EX$_wg`
+img_nom_def  <- `IMG$` ~ `IM$_wg`
+exs_nom_def  <- `EXS$` ~ EX_nom_diff
+ims_nom_def  <- `IMS$` ~ IM_nom_diff
+pch_gdp_def  <- PCH_GDP ~ PCH_GDP_calc
+gdp_real_def <- GDP ~ C + CG + GCF + EX - IM
+gdp_nom_def  <- `GDP$` ~ `C$` + `CG$` + `GCF$` + `EX$` - `IM$`
+pgdp_def     <- PGDP ~ gdp_deflator_calc
+ydd_nom_def  <- `YDD$` ~ `GNI$` - `DEP$` - `TAX$` 
+gni_nom_def  <- `GNI$` ~ `GDP$` + `FIA$`
+cpi_real_def <- CPI ~ CPI_calc
+
+def_list <- list(c.nom = c_nom_def, cg.nom = cg_nom_def, cg.real = cg_real_def, ig.real = ig_real_def, 
+                 ipc.real = ipc_real_def, ibf.nom = ibf_nom_def, gcf.nom = gcf_nom_def, gcf.real = gcf_real_def, 
+                 ex.real = ex_real_def, im.real = im_real_def, ex.nom = ex_nom_def, im.nom = im_nom_def, 
+                 exg.nom = exg_nom_def, img.nom = img_nom_def, exs.nom = exs_nom_def, ims.nom = ims_nom_def, 
+                 pch.gdp = pch_gdp_def, gdp.real = gdp_real_def, gdp.nom = gdp_nom_def, pgdp = pgdp_def, 
+                 ydd.nom = ydd_nom_def, gni.nom = gni_nom_def, cpi.real = cpi_real_def)
+
+macro_eqn_list <- c(commodity_eqn, price_eqn, fin_eqn, labor_eqn, tax = tax_eqn, def_list)
+
+vars_used <- tibble(eqn = map_chr(macro_eqn_list, .f = function(x) str_c(as.character(x)[-1], collapse = " + "))) %>%
+  mutate(eqn = str_split(eqn, " \\+ ")) %>%
+  unnest(eqn) %>%
+  distinct() %>%
+  mutate(eqn = str_remove_all(eqn, "`")) %>%
+  mutate(eqn = str_split(eqn, "\\*")) %>%
+  unnest(eqn) %>%
+  mutate(eqn = str_trim(eqn)) %>%
+  mutate(eqn = str_replace_all(eqn, "\\$", "_nom")) %>%
+  mutate(eqn = str_split(eqn, " - ")) %>%
+  unnest(eqn)
+
+## Create a list of time series objects from each var used
+long_econ_data <- econ_data %>%
+  gather("metric", "value", -quarterly_date) %>%
+  mutate(metric = str_replace_all(metric, "\\$", "_nom")) %>%
+  mutate(metric = str_remove_all(metric, "`"))
+
+econ_data_list <- vector("list", length = nrow(vars_used))
+for(v in 1:nrow(vars_used)){
+  vals_to_ts <- long_econ_data$value[which(long_econ_data$metric == vars_used$eqn[v])]
+  start_yr <- min(year(long_econ_data$quarterly_date))
+  start_qtr <- min(quarter(long_econ_data$quarterly_date[1]))
+  
+  econ_data_list[[v]] <- TIMESERIES(vals_to_ts, START = c(start_yr, start_qtr), FREQ = 4)
+  names(econ_data_list)[v] <- vars_used$eqn[v]
+}
+
 ```
 
 
+```{r fit_bimets}
+bimets_tol <- 0.000000000000000002220446
 
-```{r fit_models}
-macro_eqn_list <- c(commodity_eqn, price_eqn, fin_eqn, labor_eqn, tax = tax_eqn)
+taiwan_bimets_model <- LOAD_MODEL("/Users/sharedcomputer/MMT in Taiwan/Analysis Replication Files/Taiwan Macro Model.txt")
 
-macro_iv_list <- ~ `CAPSTOCK$` + GDPMAJOR + RX + `ICSALES$` + WPX + `OVERSEAREV$` + VISITORS + JJ + OUTBOUND + NONFUEL + POIL + JPNRX + WTVG + FOOD + TYPH_T + WGP + PCON + PCA + `WGST$` + `VSTOCK$` + NOTERATE + REQ + IR + `DEP$`
+taiwan_bimets_model <- LOAD_MODEL_DATA(taiwan_bimets_model, econ_data_list)
 
+taiwan_bimets_model <- ESTIMATE(taiwan_bimets_model, tol = bimets_tol, quietly = TRUE)
 
-train_data <- econ_data %>%
-  filter(quarterly_date < train_test_cutoff)
-test_data <- econ_data %>%
-  filter(quarterly_date >= train_test_cutoff)
+bimet_formula_df <- map_df(taiwan_bimets_model$behaviorals, get_bimets_formulas)
 
-taiwan_macro_model <- systemfit(macro_eqn_list, inst = macro_iv_list, method = "2SLS", data = train_data)
-
-taiwan_macro_model_fit <- summary(taiwan_macro_model)
-
-model_formulas <- tibble(formulas = map_chr(taiwan_macro_model_fit$eq, get_model_formula)) %>%
-  mutate(formulas = str_replace_all(formulas, "\\$", "^{nominal}")) %>%
-  mutate(formulas = paste0("$$", formulas, "$$")) %>%
-  mutate(model_final = str_split(formulas, "=", n = 2)) %>%
-  unnest(model_final) %>%
-  filter(str_sub(model_final, 1, 1) == "$") %>%
-  mutate(model_final = str_trim(str_replace_all(model_final, "\\$", "")))
-
-model_r2 <- map_df(taiwan_macro_model_fit$eq, get_model_r2)
-
-formula_df <- tibble(model_final = model_formulas$model_final,
-                     model_name  = c("Real Private Consumption", "Real Private Fixed Investment",
+model_name_abbv <- tibble(model_abbv = bimet_formula_df$Model,
+                          model_name  = c("Real Private Consumption", "Real Private Fixed Investment",
                                      "Real Exports of Goods, Transportation, and Insurance",
                                      "Real Other Exports", "Real Imports of Goods, Transportation, and Insurance",
                                      "Real Other Imports", "Import Price Index", "Export Price Index", 
@@ -411,12 +688,14 @@ formula_df <- tibble(model_final = model_formulas$model_final,
                                      "Gross Capital Formation Deflator", "Exports of Goods and Services Deflator",
                                      "Imports of Goods and Services Deflator", "M1B", "One-Year Fixed Deposit Rate",
                                      "Total Market Capitalization of Listed Stocks", "Number of Employed",
-                                     "Monthly Wages per Worker in Industry and Service Sectors", "Tax Revenue")) %>%
-  mutate(model_name = paste0("**", model_name, "**")) %>%
-  left_join(model_formulas, by = "model_final") %>%
-  bind_cols(model_r2) %>%
-  mutate(r_squared = paste0("$R^{2}: ", round(r_squared, 4), "$"),
-         adj_r_squared = paste0("$Adj. R^{2}: ", round(adj_r_squared, 4), "$"))
+                                     "Monthly Wages per Worker in Industry and Service Sectors", "Tax Revenue"))
+
+bimet_formula_df <- bimet_formula_df %>%
+  left_join(model_name_abbv, by = c("Model"="model_abbv")) %>%
+  mutate(model_name = paste0("**", model_name, "**"),
+         R_squared = paste0("$R^{2}: ", round(R_squared, 4), "$"),
+         Adj_R_squared = paste0("$Adj. R^{2}: ", round(Adj_R_squared, 4), "$"))
+
 ```
 
 
@@ -424,38 +703,81 @@ formula_df <- tibble(model_final = model_formulas$model_final,
 # Results
 
 ## Estimation Results
+Below are the results of the system used to model Taiwan's macroeconomy. The significance level of each term is given in parentheses. The R^2 and Adjusted R^2 for each model in the system are also reported. 
+
+Symbol | P-value
+------------- | -------------
+ (n.s.) | >= 0.1
+ (*) | < 0.1
+ (**) | < 0.05
+ (***) | < 0.01
+ (****) | < 0.001
+ 
+
 ```{r result_formulae, results="asis"}
 
-for(i in 1:nrow(formula_df)){
+for(i in 1:nrow(bimet_formula_df)){
   cat('\n')  
-  cat(formula_df$model_name[i], ': \n') 
-  cat(formula_df$formulas[i], '\n')
-  cat(formula_df$r_squared[i], ",", formula_df$adj_r_squared[i])
+  cat(bimet_formula_df$model_name[i], ': \n') 
+  cat(bimet_formula_df$formula[i], '\n')
+  cat(bimet_formula_df$R_squared[i], ",", bimet_formula_df$Adj_R_squared[i])
   cat('\n')
 }
+
 ```
+
+## Some Key Takeaways
+
+Some of the most interesting and important things to note from this model include:
+
+1. **Monthly Wages per Worker**: The almost comically large seasonal swings in wage data from Taiwan are actually due to the traditional custom of employers giving out large bonuses (typically the equivalent of 1-2 months worth of wages) leading up to the Lunar New Year celebrations, which fall in Q1 (usually late-January to mid-February).
+
+```{r wage_seasonality}
+econ_data %>%
+  mutate(qtr = ifelse(quarter(quarterly_date) == 1, "Q1", "Q2-Q4")) %>%
+  ggplot(aes(x = quarterly_date, y = `WG$`)) +
+  geom_line() +
+  scale_y_continuous(labels = scales::dollar) +
+  labs(title = "Nominal Monthly Wages per Worker in Taiwan",
+       x = "",
+       y = "Nominal Monthly Wages (NT$)")
+```
+
+
+2. **Number of Employed**: The original theoretical specification included a Nominal Monthly Wage term which would have a negative coefficient (traditional economic theory suggests wage increases drive down employment). While fitting the model, this term had the expected negative coefficient, but it was not actually significant, which aligns with empirical research on wages that shows that the increase in economic activity that results from wage increases outweigh any marginal employment effects. Therefore, this term was removed.
+
+3. **Real Private Fixed Investment**: The interest rate term is not significant, which also aligns with more modern research that shows firms make investment decisions based mostly on their expectations for future growth, and things like interest rates and tax policy have only limited influence. 
+
 
 ## Predicting on Test Data
 Using the holdout sample from Q1 2017 to Q4 2018 we can see that the model performs reasonably well at modeling the various aspects of Taiwan's macroeconomy. 
 
 ```{r model_preds}
-long_test_data <- test_data %>%
+long_test_data <- econ_data %>%
+  filter(quarterly_date >= train_test_cutoff) %>%
   gather("metric", "value", -quarterly_date) %>%
   mutate(type = "Actual") %>%
   select(quarterly_date, type, metric, value)
 
-taiwan_macro_preds <- predict(taiwan_macro_model, test_data) %>%
-  mutate(quarterly_date = test_data$quarterly_date) %>%
-  select(quarterly_date, everything()) %>%
-  gather("metric", "value", -quarterly_date) %>%
-  mutate(metric = toupper(str_replace(metric, "\\.pred", "")),
-         type = "Prediction") %>%
-  mutate(metric = case_when(metric == "M1BCPI" ~ "M1B_d_CPI",
-                            metric == "WG" ~ "WG$",
-                            metric == "TAX" ~ "TAX$",
-                            metric == "STKVLE" ~ "STKVLE$",
-                            TRUE ~ metric)) %>%
-  select(quarterly_date, type, metric, value) %>%
+taiwan_bimets_fcast <- SIMULATE(taiwan_bimets_model,
+                                TSRANGE = c(2017,1,2018,4),
+                                simConvergence = 0.000001,
+                                simIterLimit = 100,
+                                simType = "FORECAST",
+                                quietly = TRUE)
+taiwan_bimets_fcast$simulation[[48]] <- NULL
+
+
+taiwan_bimets_preds <- vector("list", length = length(taiwan_bimets_fcast$simulation))
+for(p in 1:length(taiwan_bimets_preds)){
+  taiwan_bimets_preds[[p]] <- get_bimets_preds(taiwan_bimets_fcast$simulation[[p]]) %>%
+    mutate(metric = names(taiwan_bimets_fcast$simulation)[p])
+}
+taiwan_bimets_preds <- bind_rows(taiwan_bimets_preds) %>%
+  select(quarterly_date, metric, type, value) %>%
+  mutate(metric = str_replace_all(metric, "_nom", "$"))
+
+taiwan_macro_preds <- taiwan_bimets_preds %>%
   bind_rows(long_test_data) %>%
   spread(type, value) %>%
   filter(!is.na(Prediction)) %>%
@@ -464,7 +786,170 @@ taiwan_macro_preds <- predict(taiwan_macro_model, test_data) %>%
   gather("type", "value", -c(quarterly_date, metric, RMSE))
 
 taiwan_macro_preds %>%
-  filter(metric %in% c("C", "IMG", "WG$", "NE")) %>%
+  filter(metric %in% c("C", "STKVLE$", "WG$", "NE")) %>%
+  ggplot(aes(x = quarterly_date, y = value, color = type)) +
+  geom_line() +
+  facet_grid(metric ~ ., scales = "free") +
+  scale_color_viridis_d(name = " ") +
+  theme(legend.position = "top") +
+  labs(title="Actuals vs Predictions for Selected Variables",
+       x = "",
+       y = "")
+```
+
+
+***
+
+# Testing Policy Proposals
+With a reasonable model of Taiwan's economy, we can now test various policy proposals to see their impact on the economy.
+
+## Job Guarantee
+At the heart of a Job Guarantee (JG) is the promise of a liveable wage for everyone. Most proposals and estimates of the impacts of a JG are based on the US case and use USD\$15/hour liveable wage, however, given that the hourly minimum wage in Taiwan for part-time workers is only ~ USD\$5.32/hour (NT$158 as of Jan-2020), we need to determine a more appropriate wage rate for a Taiwanese Job Guarantee. 
+
+Under Taiwan's current minimum wage system, there is both a Monthly Minimum Wage and an Hourly Minimum Wage to cover full- and part-time workers. These two minimum wage rates are not necessarily tied to each other though, and indeed, in recent years the Hourly Minimum Wage rate has been increased at a faster pace to account for difference in total earnings caused by the difference in hours worked between full- and part-time employees. 
+
+```{r min_wage_yr}
+min_wage_table <- min_wage_monthly %>%
+  mutate(Year = year(quarterly_date)) %>%
+  filter(Year >= 2005) %>%
+  group_by(Year) %>%
+  summarize(`Monthly Minimum Wage` = last(MINWGM),
+            `Hourly Minimum Wage`  = last(MINWGH)) %>%
+  mutate(`Hourly Rate of Monthly Minimum Wage` = paste0("$", round(`Monthly Minimum Wage`/((40*52)/12),1))) %>%
+  mutate(`Monthly Minimum Wage` = paste0("$", str_sub(`Monthly Minimum Wage`, 1, 2), ",", 
+                                         str_sub(`Monthly Minimum Wage`, 3, -1)),
+         `Hourly Minimum Wage` = paste0("$", `Hourly Minimum Wage`)) 
+names(min_wage_table)[4] <- paste0(names(min_wage_table)[4], footnote_marker_symbol(1))
+
+min_wage_table %>%
+  kable("html", align = c("c", "c", "c", "c"), escape = "F") %>%
+  kable_styling(bootstrap_options = c("striped", "condensed"), full_width = F, font_size = 12) %>%
+  row_spec(0, bold = TRUE, background = "grey", color = "white") %>%
+  add_header_above(c("Wage Rates are End of Year values in NT$" = 4), align = "r", background = "white") %>%
+  footnote(symbol = c("Hourly Rate of Monthly Minimum Wage is calculated as Monthly Min. Wage / (40 Hours per week * 52 weeks / 12 months)"))
+```
+
+Despite the fact that this wage differential is reasonable, given that most people [qualify under the Monthly Minimum Wage](https://www.taiwannews.com.tw/en/news/3523557)^[@twnews_min_wage] and for ease of estimation in this initial model, I will follow the approach used in Tcherneva (2018)^[@tcherneva_jg_design] and set the JG wage rate at the same level for both full- and part-time workers. In future work, I hope to be able to more explicitly model the impacts on full- and part-time workers separately. 
+
+Using a monthly minimum wage of $28,000 (as proposed in various places, including by 3rd Parties [such as the NPP](https://www.facebook.com/newpowerparty/photos/%E6%9C%80%E4%BD%8E%E5%B7%A5%E8%B3%87%E6%87%89%E6%BB%BF%E8%B6%B3%E5%8B%9E%E5%B7%A5%E5%9F%BA%E6%9C%AC%E7%94%9F%E6%B4%BB%E9%9C%80%E8%A6%81%E5%8F%B0%E7%81%A3%E5%8B%9E%E5%8B%95%E5%B8%82%E5%A0%B4%E9%95%B7%E6%9C%9F%E5%AD%98%E5%9C%A8%E4%BD%8E%E8%96%AA%E5%8C%96%E5%95%8F%E9%A1%8C%E8%BF%91%E4%BE%86%E5%84%98%E7%AE%A1gdp%E6%9C%89%E6%89%80%E6%88%90%E9%95%B7%E4%BD%86%E5%AF%A6%E8%B3%AA%E8%96%AA%E5%8D%BB%E4%B8%8D%E6%96%B7%E4%B8%8B%E9%99%8D%E8%B2%A7%E5%AF%8C%E5%B7%AE%E8%B7%9D%E6%8C%81%E7%BA%8C%E6%83%A1%E5%8C%96%E4%BD%BF%E5%BE%97%E6%89%80%E5%BE%97%E5%88%86%E9%85%8D%E4%B8%8D%E5%85%AC%E7%9A%84%E5%95%8F%E9%A1%8C%E6%9B%B4%E7%82%BA%E5%9A%B4%E9%87%8D%E4%BD%8E%E8%96%AA%E7%9A%84%E5%95%8F%E9%A1%8C%E4%B9%9F%E9%80%A3/1028666937204662/)) as the JG wage rate, we can test what impact such a plan would have on Taiwan's economy.
+
+While implementation strategies differ in the literature, we will use a simple 3 year phase-in for the new JG wage rate beginning in 2012. Because a JG is funded by the central government and administered at a local level, the funds for the JG will come from an increase to the Economic Affairs line item of Nominal Government Consumption. 
+
+Assumptions:
+
+1. JG Monthly Wage Rate = $28,000
+2. Costs for administering the program are wages + materials and other costs (an additional 25% of wages)
+3. The wage rate will be raised gradually over 3 years to the full $28,000/month
+4. No difference in the JG wage rate between full- and part-time workers
+
+```{r jg_forecast}
+jg_start_yr <- 2012
+jg_phase_in_yrs <- 3
+jg_wage_rate <- 28000
+jg_hours_avg <- 138
+
+#JG Equations
+jjg_eqn <- JJG ~ NU_x_PHASE_NU
+wjg_eqn <- WJG ~ WJG_1 + PHASE_WG
+yjg_eqn <- YJG ~ JJG*WJG*HJG
+spend_jg_eqn <- SPENDJG ~ YJG + CJG
+
+jg_start_qtr     <- min(econ_data$quarterly_date[which(year(econ_data$quarterly_date) == jg_start_yr)])
+jg_phase_end_qtr <- jg_start_qtr + months(33)
+jg_phase_in_qtrs <- econ_data$quarterly_date[which(between(econ_data$quarterly_date, jg_start_qtr, jg_phase_end_qtr))]
+wg_diff_start_yr <- jg_wage_rate - econ_data$`MINWGM`[which(econ_data$quarterly_date == jg_start_qtr)]
+phase_in_addtl   <- wg_diff_start_yr/4
+
+jg_emp_df$PHASE_NU <- 0
+for(p in 1:length(jg_phase_in_qtrs)){
+  jg_emp_df$PHASE_NU[which(jg_emp_df$quarterly_date %in% jg_phase_in_qtrs)][p] <- round(p*0.0833,2)
+}
+jg_emp_df <- jg_emp_df %>%
+  mutate(PHASE_NU = ifelse(quarterly_date > jg_phase_end_qtr, 1, PHASE_NU)) %>%
+  mutate(NU_x_PHASE = NU * PHASE_NU,
+         JJG = NU * PHASE_NU)
+
+jg_dataset <- econ_data %>%
+  mutate(PHASE_WG = case_when(year(quarterly_date) < jg_start_yr ~ 0,
+                              year(quarterly_date) == jg_start_yr ~ phase_in_addtl,
+                              year(quarterly_date) == jg_start_yr + 1 ~ 2*phase_in_addtl,
+                              year(quarterly_date) == jg_start_yr + 2 ~ 3*phase_in_addtl,
+                              year(quarterly_date) >= jg_start_yr + 3 ~ 4*phase_in_addtl,
+                              TRUE ~ 0),
+         `(Intercept)` = 1) %>%
+  left_join(jg_emp_df, by = "quarterly_date") %>%
+  mutate(WJG     = MINWGM + PHASE_WG,
+         HJG     = jg_hours_avg,
+         YJG     = ((1000*JJG)*MINWGM*HJG)/1000000,
+         CJG     = 0.15 * YJG,
+         SPENDJG = YJG + CJG) %>%
+  mutate(ECON_AFFAIRS = ECON_AFFAIRS + SPENDJG,
+         NE           = NE + JJG) 
+
+long_jg_dataset <- jg_dataset %>%
+  gather("metric", "value", -quarterly_date) %>%
+  mutate(metric = str_replace_all(metric, "\\$", "_nom")) %>%
+  mutate(metric = str_remove_all(metric, "`"))
+
+jg_vars_used <- unique(long_jg_dataset$metric)
+
+jg_data_list <- vector("list", length = length(jg_vars_used))
+for(v in 1:length(jg_vars_used)){
+  vals_to_ts <- long_jg_dataset$value[which(long_jg_dataset$metric == jg_vars_used[v])]
+  start_yr <- min(year(long_jg_dataset$quarterly_date))
+  start_qtr <- min(quarter(long_jg_dataset$quarterly_date[1]))
+  
+  jg_data_list[[v]] <- TIMESERIES(vals_to_ts, START = c(start_yr, start_qtr), FREQ = 4)
+  names(jg_data_list)[v] <- jg_vars_used[v]
+}
+
+# Create TS to adjust NE by the number of ppl employed by JG and WG$ by the JG Wage phase in
+constant_adj_list <- list(NE = TIMESERIES(jg_data_list$JJG['2012-01-01/2018-12-31'], START = c(2012,1), FREQ = 4),
+                          WG_nom = TIMESERIES(jg_data_list$PHASE_WG['2012-01-01/2018-12-31'], START = c(2012,1), FREQ = 4))
+
+# Adjust ECON_AFFAIRS and MINWGM to reflect JG spending and wage level
+taiwan_bimets_model$modelData$ECON_AFFAIRS <- jg_data_list$ECON_AFFAIRS
+# taiwan_bimets_model$modelData$MINWGM <- jg_data_list$MINWGM
+
+taiwan_jg_model <- SIMULATE(taiwan_bimets_model,
+                            TSRANGE = c(2012, 1, 2018, 4),
+                            simType = "FORECAST",
+                            simConvergence = 0.0001,
+                            simIterLimit = 100,
+                            # Exogenize = exogenize_list, 
+                            ConstantAdjustment = constant_adj_list,
+                            quietly = TRUE)
+
+taiwan_jg_model$simulation[[48]] <- NULL
+
+taiwan_jg_preds <- vector("list", length = length(taiwan_jg_model$simulation))
+for(p in 1:length(taiwan_jg_preds)){
+  taiwan_jg_preds[[p]] <- get_bimets_preds(taiwan_jg_model$simulation[[p]]) %>%
+    mutate(metric = names(taiwan_jg_model$simulation)[p])
+}
+taiwan_jg_preds <- bind_rows(taiwan_jg_preds) %>%
+  select(quarterly_date, metric, type, value) %>%
+  mutate(metric = str_replace_all(metric, "_nom", "$"))
+
+long_econ_actuals <- long_econ_data %>%
+  filter(quarterly_date >= jg_start_qtr) %>%
+  mutate(type = "Actual") %>%
+  select(quarterly_date, metric, type, value) %>%
+  mutate(metric = str_replace_all(metric, "_nom", "$"))
+
+taiwan_jg_preds_vs_actuals <- taiwan_jg_preds %>%
+  bind_rows(long_econ_actuals) %>%
+  spread(type, value) %>%
+  filter(!is.na(Prediction)) %>%
+  group_by(quarterly_date, metric) %>%
+  mutate(RMSE = sqrt(mean((Prediction - Actual)^2))) %>%
+  gather("type", "value", -c(quarterly_date, metric, RMSE))
+
+```
+
+```{r plot_jg_fcast}
+taiwan_jg_preds_vs_actuals %>%
+  filter(metric %in% c("C", "GDP$", "GDP", "NE", "WG$")) %>%
   ggplot(aes(x = quarterly_date, y = value, color = type)) +
   geom_line() +
   facet_grid(metric ~ ., scales = "free") +
