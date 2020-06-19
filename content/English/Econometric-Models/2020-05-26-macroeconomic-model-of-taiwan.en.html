@@ -1,8 +1,8 @@
 ---
-title: Building a Macroeconomic Model of Taiwan
+title: Building an Initial Macroeconomic Model of Taiwan
 author: Travis Dorsey
-date: '2020-06-18'
-slug: macroeconomic-model-of-taiwan
+date: '2020-06-19'
+slug: initial-macroeconomic-model-of-taiwan
 bibliography: econ_models_bib.bib
 biblio-style: "apalike"
 nocite: |
@@ -45,7 +45,7 @@ tags:
 <hr />
 <div id="variables-and-equations" class="section level1">
 <h1><span class="header-section-number">1</span> Variables and Equations</h1>
-<p>The model will consist of 25 simultaneous equations, with 38 endogenous variables and 24 exogenous variables. The data were compiled from various Taiwanese government agencies, including the Central Bank, the Directorate-General of Budget, Accounting, and Statistics, and the Ministry of Economics. This quarterly dataset covers the period 1997Q3-2018Q4 (87 periods), with the final 8 quarters being used as a holdout sample to test the results of the model fit.</p>
+<p>The model will consist of 25 stochastic equations and 23 identities. The data were compiled from various Taiwanese government agencies, including the Central Bank, the Directorate-General of Budget, Accounting, and Statistics, and the Ministry of Economics. This quarterly dataset covers the period 1997Q2-2018Q4 (87 periods), with the final 8 quarters being used as a holdout sample to test the results of the model fit.</p>
 <div id="variables" class="section level2">
 <h2><span class="header-section-number">1.1</span> Variables</h2>
 <div id="endogenous-variables" class="section level3">
@@ -886,7 +886,7 @@ CPI = CPI_{base} * (0.2972 * \frac{PF}{PF_{base}} + 0.7027 * \frac{PO}{PO_{base}
 <span class="math display">\[C = 119848.774 + \underset{(****)}{0.828*C_{-1}} + \underset{(****)}{7.566*\frac{YDD}{PGDP}} + \\  \underset{(n.s.)}{-0.046*\frac{STKVLE}{CPI}}\]</span>
 <span class="math inline">\(R^{2}: 0.9877\)</span> , <span class="math inline">\(Adj. R^{2}: 0.987\)</span></p>
 <p><strong>Real Private Fixed Investment</strong> :
-<span class="math display">\[IBF = 69412.049 + \underset{(****)}{0.736*IBF_{-1}} + \underset{(n.s.)}{-0.133*IG_{-1}} + \\  \underset{(*)}{-8378.556*TDR1Y-PCHY_CPI} + \underset{(***)}{303808.965*\frac{STKVLE}{CAPSTOCK}} + \underset{(**)}{-52267.969*SPIKE2008}\]</span>
+<span class="math display">\[IBF = 69412.049 + \underset{(****)}{0.736*IBF_{-1}} + \underset{(n.s.)}{-0.133*IG_{-1}} + \\  \underset{(*)}{-8378.556*TDR1Y - \Delta{CPI}} + \underset{(***)}{303808.965*\frac{STKVLE}{CAPSTOCK}} + \underset{(**)}{-52267.969*SPIKE2008}\]</span>
 <span class="math inline">\(R^{2}: 0.7568\)</span> , <span class="math inline">\(Adj. R^{2}: 0.7362\)</span></p>
 <p><strong>Real Exports of Goods, Transportation, and Insurance</strong> :
 <span class="math display">\[EXG = -3392296.547 + \underset{(**)}{19139499.443*\frac{PX}{WPX*RX}} + \underset{(****)}{42521.563*GDPMAJOR} + \\  \underset{(****)}{3203.044*ICSALES^{nom}} + \underset{(****)}{321016.835*STEP2008} + \underset{(****)}{-198506.78*Q1} + \underset{(**)}{-76581.674*Q2}\]</span>
@@ -952,10 +952,10 @@ CPI = CPI_{base} * (0.2972 * \frac{PF}{PF_{base}} + 0.7027 * \frac{PO}{PO_{base}
 <span class="math display">\[NE = 1294.397 + \\  \underset{(****)}{0.823*NE_{-1}} + \underset{(****)}{0*GDP}\]</span>
 <span class="math inline">\(R^{2}: 0.9983\)</span> , <span class="math inline">\(Adj. R^{2}: 0.9982\)</span></p>
 <p><strong>Monthly Wages per Worker in Industry and Service Sectors</strong> :
-<span class="math display">\[WG^{nom} = 26576.862 + \underset{(n.s.)}{0.007*MINWGM} + \underset{(****)}{0.005*GDP-DEP} + \\  \underset{(****)}{12464.505*Q1} + \underset{(n.s.)}{-600.9*DIP2007_09} + \underset{(n.s.)}{-1035.193*ELBOW2009} + \underset{(n.s.)}{0*(GDP-DEP*ELBOW2009)}\]</span>
-<span class="math inline">\(R^{2}: 0.9772\)</span> , <span class="math inline">\(Adj. R^{2}: 0.9753\)</span></p>
+<span class="math display">\[WG^{nom} = 24865.97 + \underset{(n.s.)}{0.079*MINWGM} + \underset{(****)}{0.005*GDP-DEP} + \\  \underset{(****)}{12477.091*Q1}\]</span>
+<span class="math inline">\(R^{2}: 0.9761\)</span> , <span class="math inline">\(Adj. R^{2}: 0.9751\)</span></p>
 <p><strong>Tax Revenue</strong> :
-<span class="math display">\[TAX^{nom} = -33358.352 + \underset{(****)}{0.053*GDP^{nom}_{-1}} + \underset{(n.s.)}{-0.008*EX+ \\ C} + \underset{(***)}{0.008*VSTOCK^{nom}} + \underset{(****)}{-27910.878*Q1} + \underset{(****)}{88219.318*Q2}\]</span>
+<span class="math display">\[TAX^{nom} = -33358.352 + \underset{(****)}{0.053*GDP^{nom}_{-1}} + \underset{(n.s.)}{-0.008*EX + \\  C} + \underset{(***)}{0.008*VSTOCK^{nom}} + \underset{(****)}{-27910.878*Q1} + \underset{(****)}{88219.318*Q2}\]</span>
 <span class="math inline">\(R^{2}: 0.8802\)</span> , <span class="math inline">\(Adj. R^{2}: 0.8701\)</span></p>
 </div>
 <div id="some-key-takeaways" class="section level2">
@@ -1244,16 +1244,23 @@ $137.3
 </table>
 <p>Despite the fact that this wage differential is reasonable, given that most people <a href="https://www.taiwannews.com.tw/en/news/3523557">qualify under the Monthly Minimum Wage</a><a href="#fn7" class="footnote-ref" id="fnref7"><sup>7</sup></a> and for ease of estimation in this initial model, I will follow the approach used in Tcherneva (2018)<a href="#fn8" class="footnote-ref" id="fnref8"><sup>8</sup></a> and set the JG wage rate at the same level for both full- and part-time workers. In future work, I hope to be able to more explicitly model the impacts on full- and part-time workers separately.</p>
 <p>Using a monthly minimum wage of $28,000 (as proposed in various places, including by 3rd Parties <a href="https://www.facebook.com/newpowerparty/photos/%E6%9C%80%E4%BD%8E%E5%B7%A5%E8%B3%87%E6%87%89%E6%BB%BF%E8%B6%B3%E5%8B%9E%E5%B7%A5%E5%9F%BA%E6%9C%AC%E7%94%9F%E6%B4%BB%E9%9C%80%E8%A6%81%E5%8F%B0%E7%81%A3%E5%8B%9E%E5%8B%95%E5%B8%82%E5%A0%B4%E9%95%B7%E6%9C%9F%E5%AD%98%E5%9C%A8%E4%BD%8E%E8%96%AA%E5%8C%96%E5%95%8F%E9%A1%8C%E8%BF%91%E4%BE%86%E5%84%98%E7%AE%A1gdp%E6%9C%89%E6%89%80%E6%88%90%E9%95%B7%E4%BD%86%E5%AF%A6%E8%B3%AA%E8%96%AA%E5%8D%BB%E4%B8%8D%E6%96%B7%E4%B8%8B%E9%99%8D%E8%B2%A7%E5%AF%8C%E5%B7%AE%E8%B7%9D%E6%8C%81%E7%BA%8C%E6%83%A1%E5%8C%96%E4%BD%BF%E5%BE%97%E6%89%80%E5%BE%97%E5%88%86%E9%85%8D%E4%B8%8D%E5%85%AC%E7%9A%84%E5%95%8F%E9%A1%8C%E6%9B%B4%E7%82%BA%E5%9A%B4%E9%87%8D%E4%BD%8E%E8%96%AA%E7%9A%84%E5%95%8F%E9%A1%8C%E4%B9%9F%E9%80%A3/1028666937204662/">such as the NPP</a>) as the JG wage rate, we can test what impact such a plan would have on Taiwan’s economy.</p>
-<p>While implementation strategies differ in the literature, we will use a simple 3 year phase-in for the new JG wage rate beginning in 2012. Because a JG is funded by the central government and administered at a local level, the funds for the JG will come from an increase to the Economic Affairs line item of Nominal Government Consumption.</p>
-<p>Assumptions:</p>
+<p>While implementation strategies differ in the literature, we will use a simple 3 year phase-in for the new JG wage rate beginning in 2012 (the full JG wage rate will start in Q1 of 2015). Because a JG is funded by the central government and administered at a local level, the funds for the JG will come from an increase to the Economic Affairs line item of Nominal Government Consumption.</p>
+<div id="assumptions" class="section level3">
+<h3><span class="header-section-number">3.1.1</span> Assumptions</h3>
 <ol style="list-style-type: decimal">
 <li>JG Monthly Wage Rate = $28,000</li>
-<li>Costs for administering the program are wages + materials and other costs (an additional 25% of wages)</li>
-<li>The wage rate will be raised gradually over 3 years to the full $28,000/month</li>
+<li>Total costs for the JG program are wages + materials and other costs (an additional 15% of wages)</li>
+<li>The JG will only hire those who are unemployed, not bring discouraged workers back into the labor force (more conservative estimates of JG impacts)</li>
+<li>The JG wage rate will be raised gradually to the full $28,000/month with a one-time adjustment each Q1 for 3 years</li>
 <li>No difference in the JG wage rate between full- and part-time workers</li>
 </ol>
+</div>
+<div id="results-1" class="section level3">
+<h3><span class="header-section-number">3.1.2</span> Results</h3>
 <p><img src="/English/Econometric-Models/2020-05-26-macroeconomic-model-of-taiwan.en_files/figure-html/plot_jg_fcast-1.png" width="672" /></p>
+<p>In addition to increasing employment, implementing a JG in Taiwan would also increase the average monthly wages for everyone in Taiwan by nearly 18% by 2018Q4 ($56,528 vs $47,913), significantly increase nominal GDP, and have only a small marginal impact on CPI.</p>
 <hr />
+</div>
 </div>
 </div>
 <div id="references" class="section level1 unnumbered">

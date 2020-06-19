@@ -1,8 +1,8 @@
 ---
-title: Building a Macroeconomic Model of Taiwan
+title: Building an Initial Macroeconomic Model of Taiwan
 author: Travis Dorsey
-date: '2020-06-18'
-slug: macroeconomic-model-of-taiwan
+date: '2020-06-19'
+slug: initial-macroeconomic-model-of-taiwan
 bibliography: econ_models_bib.bib
 biblio-style: "apalike"
 nocite: |
@@ -78,6 +78,8 @@ get_bimets_formulas <- function(bimet_model_list){
                                   P_values < 0.1 ~ "(*)",
                                   P_values >= 0.1 ~ "(n.s.)"),
            Variable = str_replace_all(Variable, "_1", "_{-1}")) %>%
+    mutate(Variable = ifelse(Variable == "EX_p_C", "EX + C", 
+                             ifelse(Variable == "TDR1Y_m_PCHY_CPI", "TDR1Y - \\Delta{CPI}", Variable))) %>%
     mutate(Variable = str_replace_all(Variable, "_nom", "^{nom}"),
            Model    = str_replace_all(Model, "_nom", "^{nom}")) %>%
     mutate(Model = ifelse(Model == "M1B_d_CPI", "\\frac{M1B}{CPI}", Model)) %>%
@@ -466,7 +468,7 @@ Following the methodology laid out by the [Directorate-General of Budget, Accoun
 
 ***
 # Variables and Equations
-The model will consist of 25 simultaneous equations, with 38 endogenous variables and 24 exogenous variables. The data were compiled from various Taiwanese government agencies, including the Central Bank, the Directorate-General of Budget, Accounting, and Statistics, and the Ministry of Economics. This quarterly dataset covers the period 1997Q3-2018Q4 (87 periods), with the final 8 quarters being used as a holdout sample to test the results of the model fit.
+The model will consist of 25 stochastic equations and 23 identities. The data were compiled from various Taiwanese government agencies, including the Central Bank, the Directorate-General of Budget, Accounting, and Statistics, and the Ministry of Economics. This quarterly dataset covers the period 1997Q2-2018Q4 (87 periods), with the final 8 quarters being used as a holdout sample to test the results of the model fit.
 
 ## Variables 
 
@@ -860,14 +862,15 @@ Despite the fact that this wage differential is reasonable, given that most peop
 
 Using a monthly minimum wage of $28,000 (as proposed in various places, including by 3rd Parties [such as the NPP](https://www.facebook.com/newpowerparty/photos/%E6%9C%80%E4%BD%8E%E5%B7%A5%E8%B3%87%E6%87%89%E6%BB%BF%E8%B6%B3%E5%8B%9E%E5%B7%A5%E5%9F%BA%E6%9C%AC%E7%94%9F%E6%B4%BB%E9%9C%80%E8%A6%81%E5%8F%B0%E7%81%A3%E5%8B%9E%E5%8B%95%E5%B8%82%E5%A0%B4%E9%95%B7%E6%9C%9F%E5%AD%98%E5%9C%A8%E4%BD%8E%E8%96%AA%E5%8C%96%E5%95%8F%E9%A1%8C%E8%BF%91%E4%BE%86%E5%84%98%E7%AE%A1gdp%E6%9C%89%E6%89%80%E6%88%90%E9%95%B7%E4%BD%86%E5%AF%A6%E8%B3%AA%E8%96%AA%E5%8D%BB%E4%B8%8D%E6%96%B7%E4%B8%8B%E9%99%8D%E8%B2%A7%E5%AF%8C%E5%B7%AE%E8%B7%9D%E6%8C%81%E7%BA%8C%E6%83%A1%E5%8C%96%E4%BD%BF%E5%BE%97%E6%89%80%E5%BE%97%E5%88%86%E9%85%8D%E4%B8%8D%E5%85%AC%E7%9A%84%E5%95%8F%E9%A1%8C%E6%9B%B4%E7%82%BA%E5%9A%B4%E9%87%8D%E4%BD%8E%E8%96%AA%E7%9A%84%E5%95%8F%E9%A1%8C%E4%B9%9F%E9%80%A3/1028666937204662/)) as the JG wage rate, we can test what impact such a plan would have on Taiwan's economy.
 
-While implementation strategies differ in the literature, we will use a simple 3 year phase-in for the new JG wage rate beginning in 2012. Because a JG is funded by the central government and administered at a local level, the funds for the JG will come from an increase to the Economic Affairs line item of Nominal Government Consumption. 
+While implementation strategies differ in the literature, we will use a simple 3 year phase-in for the new JG wage rate beginning in 2012 (the full JG wage rate will start in Q1 of 2015). Because a JG is funded by the central government and administered at a local level, the funds for the JG will come from an increase to the Economic Affairs line item of Nominal Government Consumption. 
 
-Assumptions:
+### Assumptions
 
 1. JG Monthly Wage Rate = $28,000
-2. Costs for administering the program are wages + materials and other costs (an additional 25% of wages)
-3. The wage rate will be raised gradually over 3 years to the full $28,000/month
-4. No difference in the JG wage rate between full- and part-time workers
+2. Total costs for the JG program are wages + materials and other costs (an additional 15% of wages)
+3. The JG will only hire those who are unemployed, not bring discouraged workers back into the labor force (more conservative estimates of JG impacts)
+4. The JG wage rate will be raised gradually to the full $28,000/month with a one-time adjustment each Q1 for 3 years
+5. No difference in the JG wage rate between full- and part-time workers
 
 ```{r jg_forecast}
 jg_start_yr <- 2012
@@ -974,9 +977,11 @@ taiwan_jg_preds_vs_actuals <- taiwan_jg_preds %>%
 
 ```
 
+### Results
+
 ```{r plot_jg_fcast}
 taiwan_jg_preds_vs_actuals %>%
-  filter(metric %in% c("C", "GDP$", "GDP", "NE", "WG$")) %>%
+  filter(metric %in% c("C", "GDP$", "CPI", "NE", "WG$")) %>%
   ggplot(aes(x = quarterly_date, y = value, color = type)) +
   geom_line() +
   facet_grid(metric ~ ., scales = "free") +
@@ -987,7 +992,7 @@ taiwan_jg_preds_vs_actuals %>%
        y = "")
 ```
 
-
+In addition to increasing employment, implementing a JG in Taiwan would also increase the average monthly wages for everyone in Taiwan by nearly 18% by 2018Q4 (\$56,528 vs \$47,913), significantly increase nominal GDP, and have only a small marginal impact on CPI. 
 
 
 ***
