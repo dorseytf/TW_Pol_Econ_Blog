@@ -1,7 +1,7 @@
 ---
 title: 'Part 3: Economic Policies to Strengthen Taiwan’s Democracy'
 author: Travis Dorsey
-date: '2020-05-15'
+date: '2020-06-19'
 slug: part-3-policies-to-strengthen-taiwan-s-democracy
 weight: 1
 bibliography: part1_bib.bib
@@ -194,11 +194,31 @@ In addition, the JG should also focus on the UBI advocates' concern about the [c
 
 ***
 
+# What Types of Jobs Might a Taiwanese JG Provide?
+One of the benefits of a locally administered JG is that the jobs provided can vary with the varying needs of each community and location. Despite this, there are several categories of jobs that would likely be benficial all across Taiwan.
+
+1. Elderly Care
+  + Similar to other East Asian countries, Taiwan has an aging population, and elderly care is a growing area of need. While many families already hire caretakers, the JG would be able to pay a living wage to family members who take care of their relatives, thus allowing them to earn an income from what is most definitely a valuable endeavor. 
+  
+2. Environmental Cleanup/Monitoring
+  + While Taiwan is renowned for its natural beauty, the rapid pace of economic development, urbanization, and industrialization in the second half of the 20th century caused a great deal of environmental damage. While the government has been eager to adopt more environmental protections in recent years, the JG would be able to provide the labor needed to cleanup and restore ecosystems tailored to the specific damage/needs of each location. 
+  
+3. Child Care
+  + As mentioned above, Taiwan's aging and shrinking population is one of the biggest challenges it faces. And one of the biggest concerns for new parents and young people considering starting a family is the cost/availability of child care and preschool. The JG would be able to train child care workers and preschool teachers to help alleviate the costs and significantly reduce the barriers to starting a family. 
+  
+4. Education
+  + Taiwan is also a very diverse nation, both linguistically and culturally, but decades of authoritarian rule that outlawed teaching these mother languages and limited their use have put many at risk and significantly shrunk the number of young people who can speak them. The JG would be able to employ older citizens with knowledge and fluency in these languages to bring them back through educational and enrichment activities. Not only languages, but other cultural knowledge, such as traditional arts, crafts, and music could be preserved and passed down to future generations.
+
+***
+
 # Simulating the Impact of a Taiwanese JG
-Most of the literature on Job Guarantees has focused on the US case and how to structure a JG in that particular political/economic context. Here, I will apply a similar methodology to simulate what the effects of a JG would be for Taiwan.
+This all sounds good in theory, but can we get any hard data on what impacts a JG would have? Most of the literature on Job Guarantees has focused on the US case and how to structure a JG in that particular political/economic context. Therefore, I built a macroeconomic model of Taiwan in [this post](/english/econometric-models/initial-macroeconomic-model-of-taiwan/) where I also test the economic impacts of a JG program in the context of Taiwan's economy (see the post for full details on model specification and assumptions).
 
-## Model
+![Fig 3: Simulated Impacts of a Job Guarantee in Taiwan](/English/Proactive-Policies-for-Safeguarding-Democracy/2020-05-12-part-3-policies-to-prevent-future-attacks-on-taiwan-s-democracy.en_files/plot_jg_fcast-1.png)
 
+The results of this conservative simulation suggest that a JG would have widespread benefits for Taiwan's political economy. By providing good paying jobs to the unemployed and effectively increasing the economy-wide minimum wage, the JG would help grow the economy and increase average wages for all workers by about 18%. The impact on CPI would be marginal, so the program would not be inflationary. 
+
+This improved economic climate would eliminate one of the major drivers of support for Populist candidates, and help to protect Taiwan's democracy while also allowing for the provision of resources toward socially beneficial work, such as social work, elderly care, environmental cleanup, the arts, and ensuring traditional languages and culture are passed down.
 
 ***
 # References
