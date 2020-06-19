@@ -1,7 +1,7 @@
 ---
 title: 'Part 3: Economic Policies to Strengthen Taiwan’s Democracy'
 author: Travis Dorsey
-date: '2020-05-15'
+date: '2020-06-19'
 slug: part-3-policies-to-strengthen-taiwan-s-democracy
 weight: 1
 bibliography: part1_bib.bib
@@ -20,50 +20,205 @@ tags:
   - data
 ---
 
-[Previously](/english/proactive-policies-for-safeguarding-democracy/part-1-how-the-populist-wave-came-to-taiwan/), we covered how trends in the economy and media over the last several decades laid the groundwork for growing discontent that right-wing populists have been able to leverage to gain political power. However, in [Part 2](/english/proactive-policies-for-safeguarding-democracy/part-2-how-did-taiwanese-voters-push-back/), we also saw how Taiwan was able to avoid this same fate by 1) leveraging external factors that worked against the populist candidate, and 2) taking a proactive stance toward some of the underlying economic and media factors. Here, I will expand on the replicable policies that other countries can adopt, as well as lay out additional policies that Taiwan and others should consider to strengthen their democracies. 
 
 ***
 
-# Recap on the Causes of Populism
-Here, I present a quick recap of the underlying economic and media factors that can lead to populist surges in democracies.
+[Previously](/english/proactive-policies-for-safeguarding-democracy/part-1-how-the-populist-wave-came-to-taiwan/), we covered how trends in the economy and media over the last several decades laid the groundwork for growing discontent that right-wing populists have been able to leverage to gain political power. However, in [Part 2](/english/proactive-policies-for-safeguarding-democracy/part-2-how-did-taiwanese-voters-push-back/), we also saw how Taiwan was able to avoid this same fate by 1) leveraging external factors that worked against the populist candidate, and 2) taking a proactive stance toward some of the underlying economic and media factors. Here, I will expand on economic policies that Taiwan (and others) should consider to strengthen support for democracy. 
 
-## Economic Factors
+# Recap on Populism's Economic Factors
+Here, I present a quick recap of the underlying economic factors that can lead to surges in popularity for populist candidates. 
 
-### Inequality
+## Inequality
 Taiwan, as with most democracies throughout the world, has seen income and wealth inequality increase dramatically over the past several decades, leading to growing discontent aimed at those at the top. 
 
-![Figure 1: Wealth Distribution and Average Net Worth in Taiwan](/post/2020-03-30-part-1-how-the-populist-wave-came-to-taiwan_files/Taiwan Wealth Pyramid English.png)
+![*Figure 1: Wealth Distribution and Average Net Worth in Taiwan*](/post/2020-03-30-part-1-how-the-populist-wave-came-to-taiwan_files/Taiwan Wealth Pyramid English.png)
 
-### Stagnant Earnings and Unemployment
-Earnings for most workers in democracies around the world have largely been stagnant for quite some time, making price increases more painful for most people.
+There is already a large body of research focusing on [tax policy](https://www.cbpp.org/sites/default/files/atoms/files/12-15-16sfp.pdf)^[@cbpp_tax] for [reducing](http://www.oecd.org/economy/labour/49421421.pdf)^[@oecd_tax] [income](https://www.nber.org/papers/w17616.pdf)^[@piketty_tax] and wealth inequality. Given that this topic is not my expertise, I will refer interested readers to this existing body of work. 
 
-![Figure 2: Real Monthly Earnings in Taiwan have stagnated](/post/2020-03-30-part-1-how-the-populist-wave-came-to-taiwan_files/Real Monthly Earnings in Taiwan.jpg)
 
-### Housing Prices
-Home prices in nearly every major metropolitan area have risen significantly, creating housing crises in many countries. 
+## Housing Prices
+Home prices in nearly every major metropolitan area have risen significantly, creating housing affordability crises in many countries around the world. 
 
-![Figure 3: Quarterly Housing Median Multiple for Taiwan and Taipei. A value above 5.1 is considered Extremely Unaffordable](/post/2020-03-30-part-1-how-the-populist-wave-came-to-taiwan_files/Quarterly Housing Median Multiple for Taiwan.jpg)
+![*Figure 2: Quarterly Housing Median Multiple for Taiwan and Taipei. A value above 5.1 is considered Extremely Unaffordable*](/post/2020-03-30-part-1-how-the-populist-wave-came-to-taiwan_files/Quarterly Housing Median Multiple for Taiwan.jpg)
 
-## Media Factors
+While we see from the evidence in Figure 2 that Taiwan is also battling a housing affordability crisis, work by Hu (2015) and others has already laid out housing policy to [reduce speculation and control housing affordability](http://www.econ.sinica.edu.tw/UpFiles/2013090214141704234/Periodicals_Pdf2013090215154369017/EC452-3.pdf) that is specific to the case of Taiwan, so I will defer to their expertise on this subject.^[@hu_15]
 
-### Partisanship in the Media
-Not only can highly partisan media outlets, both in traditional media and on social media, spread populist viewpoints and talking points, but even in mainstream media the discourse has shifted toward populist talking points, lending credibility and shifting the framing of debate.
 
-### Greater Audiences
-The proliferation of social media and the willingness of traditional media to give attention to populist candidates have allowed populist talking points and fake news to reach ever-larger audiences. 
+## Stagnant Earnings and Unemployment
+Earnings for most workers in countries around the world have largely been stagnant for quite some time, making price increases more painful for most people.
+
+![*Figure 3: Real Monthly Earnings in Taiwan have stagnated*](/post/2020-03-30-part-1-how-the-populist-wave-came-to-taiwan_files/Real Monthly Earnings in Taiwan.jpg)
+
+This issue has proven to be multi-faceted and difficult, especially given the relative dearth of research on how to effectively raise wages within a more developed economy. Therefore, I will focus my efforts in this post on providing a solution to the interrelated issues of wage stagnation and under/unemployment: a Job Guarantee Program. In addition to providing a theoretical justification, I will also describe what the structure of a Job Guarantee (JG) might look like in Taiwan, provide estimates of its effects on Taiwan's economy, and explain why a JG framework with a robust safety net is preferable to simply adopting a Universal Basic Income (UBI).
 
 ***
 
-# Economic Policies to Strengthen Support for Democracy
+# What is a Job Guarantee (JG) Program?
 
-A great deal of research has already been done on the topic of crafting [tax policy](https://www.cbpp.org/sites/default/files/atoms/files/12-15-16sfp.pdf)^[@cbpp_tax] to [reduce](http://www.oecd.org/economy/labour/49421421.pdf)^[@oecd_tax] [income](https://www.nber.org/papers/w17616.pdf)^[@piketty_tax] and wealth inequality, so I will instead focus on how to tackle the other core economic issues of stagnant wages, unemployment, and rising housing prices. 
+## JG Overview
+At a high level, a Job Guarantee is just that: the government guaranteeing a job for everyone willing and able to work. This does NOT replace either traditional safety net programs (such as unemployment insurance) or private sector employment. Rather, it means that the government acts as the employer of last resort to eliminate unemployment and underemployment.^[@tcherneva_se_model]
 
-## Controlling House Prices
-
-
-## Job Guarantee
+![*Figure 1: Number of Unemployed and Underemployed Workers vs Number of Job Openings (in thousands) for United States. Taken from Tcherneva (2014)*](/English/Proactive-Policies-for-Safeguarding-Democracy/2020-05-15-part-3-policies-to-strengthen-taiwan-s-democracy/Unemployed vs Job Openings.png)
 
 
+```{r tw_unemp, echo=FALSE, message=FALSE, warning=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(message = FALSE)
+
+## Load required libraries
+library(tidyverse)
+library(lubridate)
+library(janitor)
+
+tw_unemp_url <- "https://raw.githubusercontent.com/dorseytf/Blog-Replication-Scripts/master/TW%20Unemployment%20Data.csv"
+tw_unemp_df <- read_csv(url(tw_unemp_url)) %>%
+  clean_names() %>%
+  filter(month != "Ave.") %>%
+  mutate(month = str_sub(str_replace(month, "[:punct:]", ""), 1, 3)) %>%
+  mutate(date = ymd(paste(year, month, '01', sep = "-"))) %>%
+  select(date, total, new_jobseekers, experienced_jobseekers) %>%
+  gather("metric", "value", -date) %>%
+  mutate(metric = str_replace(metric, "_", " ")) %>%
+  mutate(metric = str_to_title(metric)) %>%
+  filter(metric == "Total") %>%
+  mutate(metric = "Officially Unemployed") %>%
+  spread(metric, value)
+
+tw_non_lf_url <- "https://raw.githubusercontent.com/dorseytf/Blog-Replication-Scripts/master/TW%20Not%20in%20Labor%20Force.csv"
+tw_non_lf_df <- read_csv(url(tw_non_lf_url)) %>%
+  clean_names() %>%
+  filter(month != "Ave.") %>%
+  mutate(month = str_sub(str_replace(month, "[:punct:]", ""), 1, 3)) %>%
+  mutate(date = ymd(paste(year, month, '01', sep = "-"))) %>%
+  select(-c(year, month, x9)) %>%
+  gather("metric", "value", -date) %>%
+  mutate(value = as.numeric(str_replace_all(value, "[:space:]", ""))) %>%
+  filter(metric == "intend_and_be_available_to_work_but_not_seeking") %>%
+  mutate(metric = "Discouraged Workers") %>%
+  spread(metric, value) 
+
+tw_labor_shortage_url <- "https://raw.githubusercontent.com/dorseytf/Blog-Replication-Scripts/master/TW%20Labor%20Shortage.csv"
+
+tw_labor_short_df <- read_csv(url(tw_labor_shortage_url)) %>%
+  clean_names() %>%
+  mutate(date = ymd(paste(year, month, '01', sep = "-"))) %>%
+  mutate(`Total Labor Shortage (Industry and Service)` = total_labor_shortage/1000) %>%
+  select(date, `Total Labor Shortage (Industry and Service)`) 
+
+tw_unemp_df %>%
+  left_join(tw_non_lf_df, by = "date") %>%
+  mutate(`Officially Unemployed + Discouraged Workers` = `Officially Unemployed` + `Discouraged Workers`) %>%
+  select(date, `Officially Unemployed + Discouraged Workers`) %>%
+  gather("metric", "value", -date) %>%
+  filter(date >= as.Date("2005-01-01")) %>%
+  bind_rows(gather(tw_labor_short_df, "metric", "value", -date)) %>%
+  ggplot(aes(x = date, y = value, color = metric)) +
+  geom_line() +
+  annotate("text", x = as.Date("2017-01-01"), y = 800, label = "Jobs Needed") +
+  annotate("segment", x = as.Date("2017-01-01"), xend = as.Date("2018-05-01"), 
+           y = 780, yend = 620, color = "black", size = 0.5, arrow = arrow()) +
+  annotate("text", x = as.Date("2016-05-01"), y = 400, label = "Jobs Available") +
+  annotate("segment", x = as.Date("2016-05-01"), xend = as.Date("2017-10-01"), 
+           y = 380, yend = 260, color = "black", size = 0.5, arrow = arrow()) +
+  scale_color_manual(values = c("#440154FF", "#35B779FF"), name = "") +
+  theme(legend.position = "top") +
+  labs(x = " ",
+       y = "Thousands",
+       caption = "Source: DGBAS")
+
+```
+
+*Figure 2: Number of Unemployed + Discouraged Workers by Month in Taiwan. Discouraged Workers are those not counted in the labor force who are available and willing to work, but are not currently seeking employment*
+
+Regardless of country and economic performance, there are always people who wish to work, but are unable to find work in the private sector (aka [structural unemployment](http://www.levyinstitute.org/pubs/pn_14_1.pdf)), as shown in Figures 1 & 2 above. To make matters worse, over the past several decades an ever increasing share of these unemployed workers have fallen into [long-term unemployment](http://media.wix.com/ugd/f4c1a3_a2f9d44a1a754ae2a542ca6a88c1d5f5.pdf), which has serious negative effects on the ability to gain employment, escape poverty, and even on health.^[@tcherneva_fiscal_policy]
+
+This is where the Job Guarantee program comes in: by providing a job to anyone who wants one at a fixed, liveable wage. 
+
+## JG Structure
+While eliminating unemployment sounds good, what would such a program actually look like? Though many different proposals have been floated, and any JG program should be tailored to the specific (social, political, and economic) conditions of the country where it would be adopted, the main points are consistent:
+
+- National Government provides funding for the program (with flexibility to increase its size during recessions)
+- Local governments, nonprofits, and community groups administer the program locally by hiring workers with these funds
+
+The main takeaway is that while funded at the national level, this structure is focused on local control of the program, which ensures that the jobs created under the program are actually helpful and responsive to the needs of the communities in which they operate. 
+
+Funding the JG at the national level accomplishes two goals: 
+
+1. Ensures sufficient funds, even during recessions, when the number of workers applying to the JG would grow. The JG is, by design, countercyclical, because it acts as a [buffer stock for employment during times of recession](http://www.levyinstitute.org/pubs/rpr_4_18.pdf),^[@levy_jg_report] which means that as private sector unemployment increases (due to layoffs, companies going out of business, etc.), the JG would grow to absorb these workers and ensures they can maintain a livelihood while also performing a useful job.
+
+2. The national government agency overseeing the program would have the ability to coordinate larger-scale projects, such as seeking specific proposals for ways to tackle environmental issues and climate change. 
+
+
+## JG Impacts
+
+Taiwan has historically had a very low unemployment rate, so you may be thinking "why should we care about a JG in the context of Taiwan?" Because beyond the societal and economic improvements that come from eliminating unemployment directly, implementing such a program would also benefit Taiwan through several other improvements, namely: increasing economic growth, improving wages and working conditions economy-wide, improving income distribution, stabilizing inflation, and addressing issues that are in the public interest.
+
+### Benefits of Eliminating Unemployment
+Empirical research has shown that unemployment, and particularly long-term unemployment, has [numerous negative impacts](https://www.urban.org/sites/default/files/publication/23921/412887-Consequences-of-Long-Term-Unemployment.PDF)^[@urban_unempl_neg] beyond just decreasing incomes for the unemployed. These include homelessness, worsened health, worsened educational and employment outcomes for children of the unemployed, and lower incomes if they do manage to find work again.^[@tcherneva_jg_design] By eliminating unemployment, the JG would eliminate many of these issues which already cost economies and societies greatly. 
+
+### Impacts on Income, Inequality, and Labor Standards
+Because the JG pays a **_liveable_** wage, not just the prevailing minimum wage rate (most proposals suggest USD$15/hour for the US, significantly higher than the federal minimum wage), and it is available to everyone who wishes to join the program, the JG raises the income floor for the economy as a whole.^[@tcherneva_jg_design] Private, public, and nonprofit employers alike will need to increase their wage/benefit packages or risk losing workers to the JG program. (While some may worry this could negatively impact employment, previous increases to the minimum wage in the US and elsewhere have shown that the vast majority of firms are able to stay in business, because the cost increases affect all competitors.^[@wray_consensus_jg])
+
+This mechanism would also allow the JG to help improve income inequality. Because it raises wages at the bottom of the distribution faster than those at the top (since highly-paid workers are less likely to enroll in the JG), the within-labor income distribution is improved. Since it also supports labor incomes in the face of recessions and new technology, the JG also improves the income distribution between labor and capital.
+
+In the same way that it establishes a new, higher income floor, the JG would also force private, public, and nonprofit employers to improve their working conditions and hours, as workers would be able to find rewarding work with better working conditions and/or flexible schedules through the JG. 
+
+### Economic Growth
+[Simulations](http://www.levyinstitute.org/pubs/rpr_4_18.pdf)^[@levy_jg_report] and estimates^[@wray_consensus_jg] of various JG proposals suggest that a JG would have a strong, positive impact on economic growth, increasing GDP substantially and leading to the creation of millions of private sector jobs in addition to those created directly by the JG. And it accomplishes all this with marginal impacts to both inflation (a one-time bump in prices due to the readjustment to the new wage floor) and government deficits (due to the increased tax revenues from more people working at higher incomes).
+
+### Public Purpose
+In addition to these benefits, the JG also allows for the creation of jobs that are actually *useful* and *impactful*, unlike [many jobs in the private sector](https://evonomics.com/why-capitalism-creates-pointless-jobs-david-graeber/).^[@evo_pointless_jobs] Because the JG creates jobs based on the actual needs of a community, as assessed by experts in the nonprofits and local governments that operate there, as opposed to what might be able to turn a profit, many market failures and persistent, under-addressed issues can be tackled. 
+
+***
+
+# JG vs UBI
+For anyone interested in progressive or novel policy proposals focused on addressing the underlying issues facing our modern world, it's likely that you have at least heard mentioned a Universal Basic Income (UBI). The idea is simple: everyone in a country is given the same amount of money every month, no strings attached. 
+
+This proposal is offered up by a wide variety of sources (including a [US presidential candidate](https://www.yang2020.com/what-is-freedom-dividend-faq/)) as a solution for everything from automation rendering jobs obsolete, to allowing people time to pursue interests in things like art. And while I can certainly agree with the sentiment, there are significant technical reasons why a UBI is not as well suited to addressing the problems of unemployment and poverty as a Job Guarantee (though, as stated before, a JG does not preclude direct cash support for transition periods and those unable/unwilling to work). 
+
+## UBIs are Destabilizing and Inflationary
+Essentially, a UBI seeks to "decommodify labor", or "remove the need to work in order to have an income", in plain English. However, because nearly every country in the world operates as a *monetary production economy*, which means that aggregate income is generated by through the commodification of labor and production for sale (i.e. "we get paid for doing/making stuff that can be sold for money"),^[@tcherneva_jg_ubi] a UBI in this context is inherently destabilizing and inflationary regardless of how it is funded. 
+
+If the UBI is funded via a tax-and-redistribute plan, the taxes required to fund a UBI would curb production and employment, thus reducing production and the economic output that the UBI needs to redistribute.^[@tcherneva_jg_ubi] Even if the taxes were levied on all the undesireable polluting activities, parasitic rentier incomes, and generally bad jobs, eventually these would be eliminated and the tax burden would have to shift to productive industries and wages. These taxes would have the same effect they had on the "bad" jobs/industries, disincentivizing these activities, and again destabilizing the whole income-generation process.^[If funded through sales taxes (which are regressive) or property taxes (which are often used to fund schools/local municipalities), the UBI would hurt those at the bottom the most, thus undermining its stated goals of helping everyone.]
+
+Even if the UBI is funded via government fiat, it is still destabilizing and inflationary because UBI will incentivize workers in low-paying jobs to leave employment (why stay at a low-paying job when you can get more money from the UBI and do whatever you please?), thus decreasing production and output. However, because the UBI [does not fundamentally change the structure of the economy](https://modernmoneynetwork.org/sites/default/files/biblio/Tcherneva%2C%202006%2C%20Evaluating%20UBI%20and%20JG.pdf),^[@tcherneva_ubi_vs_jg] individuals still need to purchase goods and services (such as food, housing, etc.) on the market, but there are now fewer people involved in producing these commodities and generating the income that the UBI redistributes, which means more money chasing fewer goods and services (inflation). In order to prevent this drop in employment and production, firms would need to raise wages to entice workers back and raise their costs to cover these higher wages, which would reduce the real value of the UBI. To maintain the same standard of living, the UBI would then need to be increased, necessitating another increase in wages and prices, and creating an inflationary spiral (see [Mitchell and Watts (2005)](https://rutgerspolicyjournal.org/sites/jlpp/files/vol2issue1mitchell_and_watts.pdf)^[@tcherneva_wray_common_goals] and [Tcherneva and Wray (2005)](https://rutgerspolicyjournal.org/sites/jlpp/files/Tcherneva_0.pdf)^[@mitchell_watts_ubi_jg] for more). 
+
+## JG Improves the Investment Environment
+To the extent that both UBI and JG are successful in alleviating poverty and all of its social ills (poor physical and mental health, economic crimes, homelessness, school drop-outs, etc.), the invesment envrionment is improved. But because the JG also maintains employment for people, it ensures that there is no deterioration to human capital (such as lost skills, not keeping up with new technologies, etc.) unlike under a UBI which does not directly address unemployment. 
+
+## How can a JG address the Concerns of UBI Proponents?
+While they may support differing proposals, JG and UBI proponents actually [agree on a great deal](https://rutgerspolicyjournal.org/sites/jlpp/files/Tcherneva_0.pdf).^[@tcherneva_wray_common_goals] Namely, that decades of neoliberal reforms have eroded social safety nets, led to precarious job markets, and intensified the social ills brought about by poverty and unemployment. A JG can address these concerns directly, by eliminating unemployment and focusing jobs for the public purpose [without being inflationary](https://rutgerspolicyjournal.org/sites/jlpp/files/vol2issue1mitchell_and_watts.pdf),^[@mitchell_watts_ubi_jg] but there should also be support provided for the young, elderly, and disabled. 
+
+In addition, the JG should also focus on the UBI advocates' concern about the [coercive nature of many jobs](https://modernmoneynetwork.org/sites/default/files/biblio/Tcherneva%2C%202006%2C%20Evaluating%20UBI%20and%20JG.pdf).^[@tcherneva_ubi_vs_jg] By focusing on fitting the job to the person and creating jobs that supply social benefits, the JG can change the nature of work to enhance personal freedom and choice while still improving society. 
+
+
+***
+
+# What Types of Jobs Might a Taiwanese JG Provide?
+One of the benefits of a locally administered JG is that the jobs provided can vary with the varying needs of each community and location. Despite this, there are several categories of jobs that would likely be benficial all across Taiwan.
+
+1. Elderly Care
+  + Similar to other East Asian countries, Taiwan has an aging population, and elderly care is a growing area of need. While many families already hire caretakers, the JG would be able to pay a living wage to family members who take care of their relatives, thus allowing them to earn an income from what is most definitely a valuable endeavor. 
+  
+2. Environmental Cleanup/Monitoring
+  + While Taiwan is renowned for its natural beauty, the rapid pace of economic development, urbanization, and industrialization in the second half of the 20th century caused a great deal of environmental damage. While the government has been eager to adopt more environmental protections in recent years, the JG would be able to provide the labor needed to cleanup and restore ecosystems tailored to the specific damage/needs of each location. 
+  
+3. Child Care
+  + As mentioned above, Taiwan's aging and shrinking population is one of the biggest challenges it faces. And one of the biggest concerns for new parents and young people considering starting a family is the cost/availability of child care and preschool. The JG would be able to train child care workers and preschool teachers to help alleviate the costs and significantly reduce the barriers to starting a family. 
+  
+4. Education
+  + Taiwan is also a very diverse nation, both linguistically and culturally, but decades of authoritarian rule that outlawed teaching these mother languages and limited their use have put many at risk and significantly shrunk the number of young people who can speak them. The JG would be able to employ older citizens with knowledge and fluency in these languages to bring them back through educational and enrichment activities. Not only languages, but other cultural knowledge, such as traditional arts, crafts, and music could be preserved and passed down to future generations.
+
+***
+
+# Simulating the Impact of a Taiwanese JG
+This all sounds good in theory, but can we get any hard data on what impacts a JG would have? Most of the literature on Job Guarantees has focused on the US case and how to structure a JG in that particular political/economic context. Therefore, I built a macroeconomic model of Taiwan in [this post](/english/econometric-models/initial-macroeconomic-model-of-taiwan/) where I also test the economic impacts of a JG program in the context of Taiwan's economy (see the post for full details on model specification and assumptions).
+
+![Fig 3: Simulated Impacts of a Job Guarantee in Taiwan](/English/Proactive-Policies-for-Safeguarding-Democracy/2020-05-12-part-3-policies-to-prevent-future-attacks-on-taiwan-s-democracy.en_files/plot_jg_fcast-1.png)
+
+The results of this conservative simulation suggest that a JG would have widespread benefits for Taiwan's political economy. By providing good paying jobs to the unemployed and effectively increasing the economy-wide minimum wage, the JG would help grow the economy and increase average wages for all workers by about 18%. The impact on CPI would be marginal, so the program would not be inflationary. 
+
+This improved economic climate would eliminate one of the major drivers of support for Populist candidates, and help to protect Taiwan's democracy while also allowing for the provision of resources toward socially beneficial work, such as social work, elderly care, environmental cleanup, the arts, and ensuring traditional languages and culture are passed down.
 
 ***
 # References

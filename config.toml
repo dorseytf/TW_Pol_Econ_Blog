@@ -6,6 +6,7 @@ theme = "hugo-lithium"
 disqusShortname = ""
 ignoreFiles = ["\\.Rmd$", "\\.Rmarkdown$", "_files$", "_cache$"]
 pluralizeListTitles = false
+math = true
 
 defaultContentLanguage = "en"
 defaultContentLanguageInSubdir = false
