@@ -1,0 +1,46 @@
+---
+title: 第三篇： 能夠保護民主的經濟政策
+author: Travis Dorsey
+date: '2020-06-19'
+slug: 保護民主的經濟政策
+weight: 1
+bibliography: part1_bib.bib
+output:
+  blogdown::html_page:
+    toc: true
+    toc_depth: 2
+    number_sections: true
+categories:
+  - 積極保護民主的政策
+tags:
+  - 政治
+  - 民粹主義
+  - 經濟
+  - 資料
+---
+
+[第一篇](/中文版/積極保護民主的政策/第一篇民粹主義浪潮如何來台/)結識了近幾十年來的經濟和媒體趨勢如何讓各國的公民變得很不滿，甚至讓民粹政客越來越接人氣。 不過， [上一集](/中文版/積極保護民主的政策/第二篇台灣避免粹主義/)有結識台灣是靠這兩招避免了同樣的命運：1) 利用不利於民粹政客的外來因素， 2) 積極面對這些經濟和媒體的原因。 在這篇我會結識台灣應該要採取的保護民主政策。
+
+# 複習民粹主義的經濟因素
+首先要複習一下利於民粹主義的經濟因素。
+
+## 分配不均
+這幾十年來，台灣的收入和財富分配跟其他國家的一起向天飛，導致一般的台灣人對超級富豪人士非常不滿。
+
+![*圖 1: 台灣的財富分配以及平均身價*](/zh/2020-04-02-_files/Taiwan Welath Pyramid.jpg)
+
+關於[減少](http://www.oecd.org/economy/labour/49421421.pdf)^[@oecd_tax]  [收入](https://www.nber.org/papers/w17616.pdf)^[@piketty_tax]  和財富分配不均的[稅收政策](https://www.cbpp.org/sites/default/files/atoms/files/12-15-16sfp.pdf)^[@cbpp_tax] 已經有大量的研究，而這不是我的專長，所以我會推薦有興趣的朋友去讀這幾個研究報告。
+
+## 房價的狀況
+跟世界各國一樣，近年來台灣的房價也在飆漲，導致房屋負擔能力危機。
+
+![*圖二: 台灣全國以及台北市的季度房價中位數倍數*](/zh/2020-04-02-_files/Quarterly Housing Median Multiple for Taiwan_zh.jpg)
+隨然台灣也正在面對房價的問題，但是胡（2015）等人的研究已經制定了房屋政策，以[減少投機並控制房屋負擔能力](http://www.econ.sinica.edu.tw/UpFiles/2013090214141704234/Periodicals_Pdf2013090215154369017/EC452-3.pdf)，所以我會尊重他們在這個問題上的專業知識。^[@hu_15]
+
+
+## 收入停滯與失業
+世界各國都發生了收入停滯趨勢
+
+
+***
+# 參考文獻
