@@ -1,8 +1,8 @@
 ---
-title: Building an Initial Macroeconomic Model of Taiwan
-author: Travis Dorsey
-date: '2020-06-19'
-slug: initial-macroeconomic-model-of-taiwan
+title: 製作基本的台灣總體經濟計量模型
+author: 杜欣川
+date: '2020-06-22'
+slug: 總體經濟計量模型
 bibliography: econ_models_bib.bib
 biblio-style: "apalike"
 nocite: |
@@ -14,50 +14,50 @@ output:
     toc: true
     toc_depth: 2
     number_sections: true
-categories: [Econometric Models]
+categories:
+  - 總體經濟計量模
 tags:
-  - economics
-  - data
+  - 經濟
+  - 資料
 ---
 
-<script src="/rmarkdown-libs/kePrint/kePrint.js"></script>
+<script src="2020-06-22-總體經濟計量模型.zh_files/kePrint/kePrint.js"></script>
 
 <div id="TOC">
 <ul>
-<li><a href="#variables-and-equations"><span class="toc-section-number">1</span> Variables and Equations</a><ul>
-<li><a href="#variables"><span class="toc-section-number">1.1</span> Variables</a></li>
-<li><a href="#equations"><span class="toc-section-number">1.2</span> Equations</a></li>
-<li><a href="#identities"><span class="toc-section-number">1.3</span> Identities</a></li>
+<li><a href="#變數及方程式"><span class="toc-section-number">1</span> 變數及方程式</a><ul>
+<li><a href="#變數"><span class="toc-section-number">1.1</span> 變數</a></li>
+<li><a href="#方程式"><span class="toc-section-number">1.2</span> 方程式</a></li>
+<li><a href="#定義式"><span class="toc-section-number">1.3</span> 定義式</a></li>
 </ul></li>
-<li><a href="#results"><span class="toc-section-number">2</span> Results</a><ul>
-<li><a href="#estimation-results"><span class="toc-section-number">2.1</span> Estimation Results</a></li>
-<li><a href="#some-key-takeaways"><span class="toc-section-number">2.2</span> Some Key Takeaways</a></li>
-<li><a href="#predicting-on-test-data"><span class="toc-section-number">2.3</span> Predicting on Test Data</a></li>
+<li><a href="#模型結果"><span class="toc-section-number">2</span> 模型結果</a><ul>
+<li><a href="#估算結果"><span class="toc-section-number">2.1</span> 估算結果</a></li>
+<li><a href="#一些重點"><span class="toc-section-number">2.2</span> 一些重點</a></li>
+<li><a href="#測試模型"><span class="toc-section-number">2.3</span> 測試模型</a></li>
 </ul></li>
-<li><a href="#testing-policy-proposals"><span class="toc-section-number">3</span> Testing Policy Proposals</a><ul>
-<li><a href="#job-guarantee"><span class="toc-section-number">3.1</span> Job Guarantee</a></li>
+<li><a href="#測試政策建議"><span class="toc-section-number">3</span> 測試政策建議</a><ul>
+<li><a href="#就業保證"><span class="toc-section-number">3.1</span> 就業保證</a></li>
 </ul></li>
-<li><a href="#references">References</a></li>
+<li><a href="#參考文獻">參考文獻</a></li>
 </ul>
 </div>
 
-<p>Following the methodology laid out by the <a href="https://www.stat.gov.tw/public/Attachment/6531914262FZ3FA2L.pdf">Directorate-General of Budget, Accounting, and Statistics</a><a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a>, I build an econometric model of Taiwan’s macroeconomy that I can utilize to test the impact of policy proposals as in <a href="simulating_jg_us">Fullwiler (2006)</a>.<a href="#fn2" class="footnote-ref" id="fnref2"><sup>2</sup></a> This approach is based on the Cowles Commission methodology of simultaneous equations (similar to the well known <a href="https://fairmodel.econ.yale.edu/mmm2/mm2018.pdf">Fairmodel</a><a href="#fn3" class="footnote-ref" id="fnref3"><sup>3</sup></a> used to study the US economy and that of <a href="http://www.econ.ntu.edu.tw/ter/new/data/new/TER38-1/TER381-1.pdf">Lin (2007)</a><a href="#fn4" class="footnote-ref" id="fnref4"><sup>4</sup></a> which models the Taiwanese economy) and has been shown to outperform VAR and other time series approaches for macroeconomic forecasts, while also providing a more useful framework for testing policy options than dynamic stochastic generalized equilibrium models, which have <a href="https://www.federalreserve.gov/econresdata/ifdp/2016/files/ifdp1175.pdf">their own issues</a>.<a href="#fn5" class="footnote-ref" id="fnref5"><sup>5</sup></a></p>
+<p>根據<a href="https://www.stat.gov.tw/public/Attachment/6531914262FZ3FA2L.pdf">主計總處</a><a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a> 的總體經濟計量模型方法，我會製作一個能夠測試各種政策的台灣總體計量模型如<a href="simulating_jg_us">Fullwiler (2006)</a>。<a href="#fn2" class="footnote-ref" id="fnref2"><sup>2</sup></a> 此模型是依據 Cowles Commission 的聯立方程方式 (如常用來學美國經濟的<a href="https://fairmodel.econ.yale.edu/mmm2/mm2018.pdf">Fairmodel</a><a href="#fn3" class="footnote-ref" id="fnref3"><sup>3</sup></a> 和<a href="http://www.econ.ntu.edu.tw/ter/new/data/new/TER38-1/TER381-1.pdf">林 (2007)</a><a href="#fn4" class="footnote-ref" id="fnref4"><sup>4</sup></a> 的台灣經濟模型)，這種方法不只比VAR 等方式還要準，卻還能給比較仔細又有用的政策測試結構。</p>
 <hr />
-<div id="variables-and-equations" class="section level1">
-<h1><span class="header-section-number">1</span> Variables and Equations</h1>
-<p>The model will consist of 25 stochastic equations and 23 identities. The data were compiled from various Taiwanese government agencies, including the Central Bank, the Directorate-General of Budget, Accounting, and Statistics, and the Ministry of Economics. This quarterly dataset covers the period 1997Q2-2018Q4 (87 periods), with the final 8 quarters being used as a holdout sample to test the results of the model fit.</p>
-<div id="variables" class="section level2">
-<h2><span class="header-section-number">1.1</span> Variables</h2>
-<div id="endogenous-variables" class="section level3">
-<h3><span class="header-section-number">1.1.1</span> Endogenous Variables</h3>
+<div id="變數及方程式" class="section level1">
+<h1><span class="header-section-number">1</span> 變數及方程式</h1>
+<div id="變數" class="section level2">
+<h2><span class="header-section-number">1.1</span> 變數</h2>
+<div id="內生變數" class="section level3">
+<h3><span class="header-section-number">1.1.1</span> 內生變數</h3>
 <table class="table table-striped table-condensed" style="font-size: 12px; width: auto !important; margin-left: auto; margin-right: auto;">
 <thead>
 <tr>
 <th style="text-align:left;font-weight: bold;color: white !important;background-color: grey !important;">
-Variable Name
+變數名字
 </th>
 <th style="text-align:center;font-weight: bold;color: white !important;background-color: grey !important;">
-Description
+說明
 </th>
 </tr>
 </thead>
@@ -67,7 +67,7 @@ Description
 C
 </td>
 <td style="text-align:center;">
-Real Private Consumption
+實質民間消費
 </td>
 </tr>
 <tr>
@@ -75,7 +75,7 @@ Real Private Consumption
 YDD$
 </td>
 <td style="text-align:center;">
-Nominal Disposable Income
+名目可支配所得
 </td>
 </tr>
 <tr>
@@ -83,7 +83,7 @@ Nominal Disposable Income
 PGDP
 </td>
 <td style="text-align:center;">
-GDP Deflator
+國內生產毛額物價平減指數
 </td>
 </tr>
 <tr>
@@ -91,7 +91,7 @@ GDP Deflator
 STKVLE$
 </td>
 <td style="text-align:center;">
-Total market capitalization of listed stocks
+上市櫃股票總市值
 </td>
 </tr>
 <tr>
@@ -99,7 +99,7 @@ Total market capitalization of listed stocks
 CPI
 </td>
 <td style="text-align:center;">
-Consumer Price Index
+消費者物價指數
 </td>
 </tr>
 <tr>
@@ -107,7 +107,7 @@ Consumer Price Index
 IBF
 </td>
 <td style="text-align:center;">
-Real Private Fixed Investment
+實質民間固定投資
 </td>
 </tr>
 <tr>
@@ -115,7 +115,7 @@ Real Private Fixed Investment
 IG
 </td>
 <td style="text-align:center;">
-Real Government Fixed Investment
+實質政府固定投資
 </td>
 </tr>
 <tr>
@@ -123,7 +123,7 @@ Real Government Fixed Investment
 EXG
 </td>
 <td style="text-align:center;">
-Real Exports of Goods, Transportation, and Insurance
+實質商品、運輸與保險輸出
 </td>
 </tr>
 <tr>
@@ -131,7 +131,7 @@ Real Exports of Goods, Transportation, and Insurance
 TDR1Y
 </td>
 <td style="text-align:center;">
-One-year fixed deposit rate
+一年期定存利率
 </td>
 </tr>
 <tr>
@@ -139,7 +139,7 @@ One-year fixed deposit rate
 PX
 </td>
 <td style="text-align:center;">
-Export Price Index
+出口物價指數
 </td>
 </tr>
 <tr>
@@ -147,7 +147,7 @@ Export Price Index
 SPIKE2002
 </td>
 <td style="text-align:center;">
-Dummy Variable for 2002
+虛擬變數
 </td>
 </tr>
 <tr>
@@ -155,7 +155,7 @@ Dummy Variable for 2002
 STEP2008
 </td>
 <td style="text-align:center;">
-Dummy Variable for 2008 and on
+虛擬變數
 </td>
 </tr>
 <tr>
@@ -163,7 +163,7 @@ Dummy Variable for 2008 and on
 EXS
 </td>
 <td style="text-align:center;">
-Real Other Exports
+實質其他輸出
 </td>
 </tr>
 <tr>
@@ -171,7 +171,7 @@ Real Other Exports
 IMG
 </td>
 <td style="text-align:center;">
-Real Imports of Goods, Transportation, and Insurance
+實質商品、運輸與保險輸入
 </td>
 </tr>
 <tr>
@@ -179,7 +179,7 @@ Real Imports of Goods, Transportation, and Insurance
 IPC
 </td>
 <td style="text-align:center;">
-Fixed investment in real public enterprises
+實質公營事業固定投資
 </td>
 </tr>
 <tr>
@@ -187,7 +187,7 @@ Fixed investment in real public enterprises
 IMS
 </td>
 <td style="text-align:center;">
-Real Other Imports
+實質其他輸入
 </td>
 </tr>
 <tr>
@@ -195,7 +195,7 @@ Real Other Imports
 PM
 </td>
 <td style="text-align:center;">
-Import Price Index
+進口物價指數
 </td>
 </tr>
 <tr>
@@ -203,7 +203,7 @@ Import Price Index
 PD
 </td>
 <td style="text-align:center;">
-Domestic Price Index
+國產內銷物價指數
 </td>
 </tr>
 <tr>
@@ -211,7 +211,7 @@ Domestic Price Index
 GDP
 </td>
 <td style="text-align:center;">
-Gross Domestic Product
+實質國內生產毛額
 </td>
 </tr>
 <tr>
@@ -219,7 +219,7 @@ Gross Domestic Product
 SPIKE2008
 </td>
 <td style="text-align:center;">
-Dummy Variable for 2008
+虛擬變數
 </td>
 </tr>
 <tr>
@@ -227,7 +227,7 @@ Dummy Variable for 2008
 PF
 </td>
 <td style="text-align:center;">
-Food Consumption Price Index
+食物類消費者物價指數
 </td>
 </tr>
 <tr>
@@ -235,7 +235,7 @@ Food Consumption Price Index
 WG$
 </td>
 <td style="text-align:center;">
-Monthly Wages per Worker in Industry and Service Sectors
+工業及服務業受僱員工每人每月薪資
 </td>
 </tr>
 <tr>
@@ -243,7 +243,7 @@ Monthly Wages per Worker in Industry and Service Sectors
 PO
 </td>
 <td style="text-align:center;">
-Non-Food Consumption Price Index
+非食物類消費者物價指數
 </td>
 </tr>
 <tr>
@@ -251,7 +251,7 @@ Non-Food Consumption Price Index
 PC
 </td>
 <td style="text-align:center;">
-Private Consumption Deflator
+民間消費物價平減指數
 </td>
 </tr>
 <tr>
@@ -259,7 +259,7 @@ Private Consumption Deflator
 PCG
 </td>
 <td style="text-align:center;">
-Government Consumption Deflator
+政府消費物價平減指數
 </td>
 </tr>
 <tr>
@@ -267,7 +267,7 @@ Government Consumption Deflator
 PIG
 </td>
 <td style="text-align:center;">
-Government Fixed Investment Deflator
+政府固定投資物價平減指數
 </td>
 </tr>
 <tr>
@@ -275,7 +275,7 @@ Government Fixed Investment Deflator
 PIBF
 </td>
 <td style="text-align:center;">
-Private Fixed Investment Deflator
+民間固定投資物價平減指數
 </td>
 </tr>
 <tr>
@@ -283,7 +283,7 @@ Private Fixed Investment Deflator
 PIPC
 </td>
 <td style="text-align:center;">
-Public Enterprise Fixed Investment Deflator
+公營事業固定投資物價平減指數
 </td>
 </tr>
 <tr>
@@ -291,7 +291,7 @@ Public Enterprise Fixed Investment Deflator
 PGCF
 </td>
 <td style="text-align:center;">
-Gross Fixed Capital Formation Deflator
+資本形成毛額物價平減指數
 </td>
 </tr>
 <tr>
@@ -299,7 +299,7 @@ Gross Fixed Capital Formation Deflator
 PEX
 </td>
 <td style="text-align:center;">
-Exports of Goods and Services Deflator
+商品及服務輸出物價平減指數
 </td>
 </tr>
 <tr>
@@ -307,7 +307,7 @@ Exports of Goods and Services Deflator
 PIM
 </td>
 <td style="text-align:center;">
-Imports of Goods and Services Deflator
+商品及服務輸入物價平減指數
 </td>
 </tr>
 <tr>
@@ -315,7 +315,7 @@ Imports of Goods and Services Deflator
 M1B
 </td>
 <td style="text-align:center;">
-M1B Money Supply
+狹義貨幣總計數
 </td>
 </tr>
 <tr>
@@ -323,7 +323,7 @@ M1B Money Supply
 SPIKE2009
 </td>
 <td style="text-align:center;">
-Dummy Variable for 2009
+虛擬變數
 </td>
 </tr>
 <tr>
@@ -331,7 +331,7 @@ Dummy Variable for 2009
 NE
 </td>
 <td style="text-align:center;">
-Number of Employed
+就業人數
 </td>
 </tr>
 <tr>
@@ -339,7 +339,7 @@ Number of Employed
 GDP$
 </td>
 <td style="text-align:center;">
-Nominal GDP
+名目國內生產毛額
 </td>
 </tr>
 <tr>
@@ -347,7 +347,7 @@ Nominal GDP
 TAX$
 </td>
 <td style="text-align:center;">
-Tax Revenue
+賦稅收入
 </td>
 </tr>
 <tr>
@@ -355,7 +355,7 @@ Tax Revenue
 C$
 </td>
 <td style="text-align:center;">
-Nominal Private Consumption
+名目民間消費
 </td>
 </tr>
 <tr>
@@ -363,7 +363,7 @@ Nominal Private Consumption
 EX$
 </td>
 <td style="text-align:center;">
-Nominal Exports of Goods and Services
+名目商品及服務輸出
 </td>
 </tr>
 <tr>
@@ -371,7 +371,7 @@ Nominal Exports of Goods and Services
 DIP2007
 </td>
 <td style="text-align:center;">
-Dummy Variable for 2007-2009
+虛擬變數
 </td>
 </tr>
 <tr>
@@ -379,7 +379,7 @@ Dummy Variable for 2007-2009
 ELBOW2009
 </td>
 <td style="text-align:center;">
-Dummy Variable for Periods Prior to 2009Q4
+虛擬變數
 </td>
 </tr>
 <tr>
@@ -387,7 +387,7 @@ Dummy Variable for Periods Prior to 2009Q4
 IBF$
 </td>
 <td style="text-align:center;">
-Nominal Private Fixed Investment
+名目民間固定投資
 </td>
 </tr>
 <tr>
@@ -395,7 +395,7 @@ Nominal Private Fixed Investment
 GCF$
 </td>
 <td style="text-align:center;">
-Nominal Gross Capital Formation
+名目資本形成毛額
 </td>
 </tr>
 <tr>
@@ -403,7 +403,7 @@ Nominal Gross Capital Formation
 GCF
 </td>
 <td style="text-align:center;">
-Real Gross Capital Formation
+實質資本形成毛額
 </td>
 </tr>
 <tr>
@@ -411,7 +411,7 @@ Real Gross Capital Formation
 EX
 </td>
 <td style="text-align:center;">
-Real Exports
+實質商品及服務輸出
 </td>
 </tr>
 <tr>
@@ -419,7 +419,7 @@ Real Exports
 EXG$
 </td>
 <td style="text-align:center;">
-Nominal Exports of Goods, Transportation, and Insurance
+名目商品、運輸與保險輸出
 </td>
 </tr>
 <tr>
@@ -427,7 +427,7 @@ Nominal Exports of Goods, Transportation, and Insurance
 EXS$
 </td>
 <td style="text-align:center;">
-Nominal Other Exports
+名目其他輸出
 </td>
 </tr>
 <tr>
@@ -435,7 +435,7 @@ Nominal Other Exports
 PCH_GDP
 </td>
 <td style="text-align:center;">
-GDP Growth Rate
+經濟成長率
 </td>
 </tr>
 <tr>
@@ -443,22 +443,22 @@ GDP Growth Rate
 GNI$
 </td>
 <td style="text-align:center;">
-Nominal Gross National Income
+名目國民所得毛額
 </td>
 </tr>
 </tbody>
 </table>
 </div>
-<div id="exogenous-variables" class="section level3">
-<h3><span class="header-section-number">1.1.2</span> Exogenous Variables</h3>
+<div id="外生變數" class="section level3">
+<h3><span class="header-section-number">1.1.2</span> 外生變數</h3>
 <table class="table table-striped table-condensed" style="font-size: 12px; width: auto !important; margin-left: auto; margin-right: auto;">
 <thead>
 <tr>
 <th style="text-align:left;font-weight: bold;color: white !important;background-color: grey !important;">
-Variable Name
+變數名字
 </th>
 <th style="text-align:center;font-weight: bold;color: white !important;background-color: grey !important;">
-Description
+說明
 </th>
 </tr>
 </thead>
@@ -468,7 +468,7 @@ Description
 CAPSTOCK$
 </td>
 <td style="text-align:center;">
-Fixed capital stock of private enterprises
+公民營企業名目固定資本存量
 </td>
 </tr>
 <tr>
@@ -476,7 +476,7 @@ Fixed capital stock of private enterprises
 GDPMAJOR
 </td>
 <td style="text-align:center;">
-Real GDP Index of Major Economies
+主要經濟體實質 GDP 指數
 </td>
 </tr>
 <tr>
@@ -484,7 +484,7 @@ Real GDP Index of Major Economies
 RX
 </td>
 <td style="text-align:center;">
-NTD/USD Exchange Rate
+新台幣兌美元匯率
 </td>
 </tr>
 <tr>
@@ -492,7 +492,7 @@ NTD/USD Exchange Rate
 ICSALES$
 </td>
 <td style="text-align:center;">
-Global Semiconductor Sales
+全球半導體銷售額
 </td>
 </tr>
 <tr>
@@ -500,7 +500,7 @@ Global Semiconductor Sales
 WPX
 </td>
 <td style="text-align:center;">
-World Export Price Index
+全球出口物價指數
 </td>
 </tr>
 <tr>
@@ -508,7 +508,7 @@ World Export Price Index
 OVERSEAREV$
 </td>
 <td style="text-align:center;">
-Export Orders
+外銷訂單海外生產金額
 </td>
 </tr>
 <tr>
@@ -516,7 +516,7 @@ Export Orders
 VISITORS
 </td>
 <td style="text-align:center;">
-Number of Visitors to Taiwan
+來台旅客人數
 </td>
 </tr>
 <tr>
@@ -524,7 +524,7 @@ Number of Visitors to Taiwan
 JJ
 </td>
 <td style="text-align:center;">
-Real Inventory Changes
+實質存貨變動
 </td>
 </tr>
 <tr>
@@ -532,7 +532,7 @@ Real Inventory Changes
 OUTBOUND
 </td>
 <td style="text-align:center;">
-Number of Citizens Going Abroad
+國人出國人數
 </td>
 </tr>
 <tr>
@@ -540,7 +540,7 @@ Number of Citizens Going Abroad
 NONFUEL
 </td>
 <td style="text-align:center;">
-Global Non-Energy Commodity Price Index
+全球非能源商品價格指數
 </td>
 </tr>
 <tr>
@@ -548,7 +548,7 @@ Global Non-Energy Commodity Price Index
 POIL
 </td>
 <td style="text-align:center;">
-Crude Oil Price
+原油價
 </td>
 </tr>
 <tr>
@@ -556,7 +556,7 @@ Crude Oil Price
 JPNRX
 </td>
 <td style="text-align:center;">
-JPY/USD Exchange Rate
+日圓兌美元匯率
 </td>
 </tr>
 <tr>
@@ -564,7 +564,7 @@ JPY/USD Exchange Rate
 WTVG
 </td>
 <td style="text-align:center;">
-World Trade Volume Growth Rate
+世界貿易量成長率
 </td>
 </tr>
 <tr>
@@ -572,7 +572,7 @@ World Trade Volume Growth Rate
 FOOD
 </td>
 <td style="text-align:center;">
-Global Food Commodity Price Index
+全球食物類商品物價指數
 </td>
 </tr>
 <tr>
@@ -580,7 +580,7 @@ Global Food Commodity Price Index
 TYPH_T
 </td>
 <td style="text-align:center;">
-Number of Typhoons Hitting Taiwan
+侵台颱風個數
 </td>
 </tr>
 <tr>
@@ -588,7 +588,7 @@ Number of Typhoons Hitting Taiwan
 WGP
 </td>
 <td style="text-align:center;">
-Civil service salary adjustment
+公務人員調薪幅度
 </td>
 </tr>
 <tr>
@@ -596,7 +596,7 @@ Civil service salary adjustment
 PCON
 </td>
 <td style="text-align:center;">
-Construction Price Index
+營造工程物價指數
 </td>
 </tr>
 <tr>
@@ -604,7 +604,7 @@ Construction Price Index
 PCA
 </td>
 <td style="text-align:center;">
-Capital goods import price index
+資本用品進口物價指數
 </td>
 </tr>
 <tr>
@@ -612,7 +612,7 @@ Capital goods import price index
 WGST$
 </td>
 <td style="text-align:center;">
-Monthly Wages per Worker in Professional, Scientific, and Technical Services
+專業、科學及技術服務業 受僱員工每人每月薪資
 </td>
 </tr>
 <tr>
@@ -620,7 +620,7 @@ Monthly Wages per Worker in Professional, Scientific, and Technical Services
 VSTOCK$
 </td>
 <td style="text-align:center;">
-Total turnover of listed counter stocks
+上市櫃股票總成交值
 </td>
 </tr>
 <tr>
@@ -628,7 +628,7 @@ Total turnover of listed counter stocks
 NOTERATE
 </td>
 <td style="text-align:center;">
-31-90-day commercial promissory note secondary market interest rate
+31-90 天期商業本票次級市場利率
 </td>
 </tr>
 <tr>
@@ -636,7 +636,7 @@ NOTERATE
 REQ
 </td>
 <td style="text-align:center;">
-Time deposit reserve ratio
+定期存款準備率
 </td>
 </tr>
 <tr>
@@ -644,7 +644,7 @@ Time deposit reserve ratio
 IR
 </td>
 <td style="text-align:center;">
-Rediscount rate
+重貼現率
 </td>
 </tr>
 <tr>
@@ -652,7 +652,7 @@ Rediscount rate
 DEP$
 </td>
 <td style="text-align:center;">
-Nominal Fixed Capital Consumption
+名目固定資本消耗
 </td>
 </tr>
 <tr>
@@ -660,7 +660,7 @@ Nominal Fixed Capital Consumption
 MINWGM$
 </td>
 <td style="text-align:center;">
-Nominal Monthly Minimum Wage
+基本工資(月薪)
 </td>
 </tr>
 <tr>
@@ -668,7 +668,7 @@ Nominal Monthly Minimum Wage
 WEIGHTEXG$
 </td>
 <td style="text-align:center;">
-Percentage of Exports that are Goods
+商品、運輸與保險輸出百分比
 </td>
 </tr>
 <tr>
@@ -676,7 +676,7 @@ Percentage of Exports that are Goods
 WEIGHTIMG$
 </td>
 <td style="text-align:center;">
-Percentage of Imports that are Goods
+商品、運輸與保險輸入百分比
 </td>
 </tr>
 <tr>
@@ -684,7 +684,7 @@ Percentage of Imports that are Goods
 FIA$
 </td>
 <td style="text-align:center;">
-Nominal Foreign Factor Income
+國外要素所得
 </td>
 </tr>
 <tr>
@@ -692,7 +692,7 @@ Nominal Foreign Factor Income
 CG$
 </td>
 <td style="text-align:center;">
-Nominal Government Consumption
+名目政府消費
 </td>
 </tr>
 <tr>
@@ -700,243 +700,242 @@ Nominal Government Consumption
 CG
 </td>
 <td style="text-align:center;">
-Real Government Consumption
+實質政府消費
 </td>
 </tr>
 </tbody>
 </table>
 </div>
 </div>
-<div id="equations" class="section level2">
-<h2><span class="header-section-number">1.2</span> Equations</h2>
-<p>Here I show the equations that make up this macroeconometric model of Taiwan. While the methodology laid out in this note from the <a href="https://www.stat.gov.tw/public/Attachment/6531914262FZ3FA2L.pdf">Directorate-General of Budget, Accounting, and Statistics</a><a href="#fn6" class="footnote-ref" id="fnref6"><sup>6</sup></a> provided a starting point, I have adapted the equations to better handle a quarterly dataset, as well as adding in the hourly minimum wage rate to the formulation for Nominal Monthly Wages per Worker in Industry and Service Sectors to allow for easier testing of policy options later on.</p>
-<div id="commodity-market" class="section level3">
-<h3><span class="header-section-number">1.2.1</span> Commodity Market</h3>
-<p>Real Private Consumption (C):
+<div id="方程式" class="section level2">
+<h2><span class="header-section-number">1.2</span> 方程式</h2>
+<div id="商品市場" class="section level3">
+<h3><span class="header-section-number">1.2.1</span> 商品市場</h3>
+<p>實質民間消費 (C):
 <span class="math display">\[
 C = f(\underset{+}{C_{-1}}, \underset{+}{\frac{YDD^{nominal}}{PGDP}}, \underset{+}{\frac{STKVLE^{nominal}}{CPI}})
 \]</span>
-Real Private Fixed Investment (IBF):
+實質民間固定投資 (IBF):
 <span class="math display">\[
 IBF = f(\underset{+}{IBF_{-1}}, \underset{+}{IG_{-1}}, \underset{-}{TDR1Y - \Delta(CPI)},\\ \underset{+}{EXG_{-1}},
 \underset{+}{\frac{STKVLE^{nominal}}{CAPSTOCK^{nominal}}}, \underset{-}{SPIKE2008})
-\]</span></p>
-<p>Real Exports of Goods, Transportation, and Insurance (EXG):
+\]</span>
+實質商品、運輸與保險輸出 (EXG):
 <span class="math display">\[
 EXG = f(\underset{-}{\frac{PX}{WPX * RX}}, \underset{+}{GDPMAJOR}, \underset{+}{ICSALES^{nominal}},\\
 \underset{-}{STEP2008}, \underset{-}{Q1}, \underset{-}{Q2})
 \]</span></p>
-<p>Real Other Exports (EXS):
+<p>實質其他輸出 (EXS):
 <span class="math display">\[
 EXS = f(\underset{+}{EXS_{-1}}, \underset{+}{OVERSEAREV^{nominal}},\\ \underset{+}{VISITORS}, \underset{+}{RX}, \underset{-}{Q2}, \underset{+}{Q4})
-\]</span>
-Real Imports of Goods, Transportation, and Insurance (IMG):
+\]</span></p>
+<p>實質商品、運輸與保險輸入 (IMG):
 <span class="math display">\[
 IMG = f(\underset{+}{EXG}, \underset{+}{C}, \underset{+}{IPC + IBF + JJ})
 \]</span>
-Real Other Imports (IMS):
+實質其他輸入 (IMS):
 <span class="math display">\[
 IMS = f(\underset{+}{IMS_{-1}}, \underset{+}{OUTBOUND})
 \]</span></p>
 </div>
-<div id="price-indices" class="section level3">
-<h3><span class="header-section-number">1.2.2</span> Price Indices</h3>
-<p>Import Price Index (PM):
+<div id="物價" class="section level3">
+<h3><span class="header-section-number">1.2.2</span> 物價</h3>
+<p>進口物價指數 (PM):
 <span class="math display">\[
 PM = f(\underset{+}{RX}, \underset{-}{JPNRX}, \underset{+}{NONFUEL},\\ \underset{+}{POIL}, \underset{+}{WPX})
-\]</span></p>
-<p>Export Price Index (PX):
+\]</span>
+出口物價指數 (PX):
 <span class="math display">\[
 PX = f(\underset{+}{PX_{-1}}, \underset{+}{RX}, \underset{+}{PM}, \underset{+}{WTVG})
 \]</span></p>
-<p>Domestic Production Price Index (PD):
+<p>國產內銷物價指數 (PD):
 <span class="math display">\[
 PD = f(\underset{+}{PD_{-1}}, \underset{+}{PM}, \underset{+}{GDP}, \underset{+}{SPIKE2008})
 \]</span></p>
-<p>Food Consumer Price Index (PF):
+<p>食物類消費者物價指數 (PF):
 <span class="math display">\[
 PF = f(\underset{+}{PF_{-1}}, \underset{+}{FOOD}, \underset{+}{WG^{nominal}_{-1}}, \underset{+}{TYPH_T}, \underset{-}{Q1})
-\]</span>
-Non-Food Consumer Price Index (PO):
+\]</span></p>
+<p>非食物類消費者物價指數 (PO):
 <span class="math display">\[
 PO = f(\underset{+}{PO_{-1}}, \underset{+}{PM_{-1}}, \underset{+}{PM}, \underset{+}{WG^{nominal}},\\
  \underset{-}{Q1}, \underset{+}{Q2}, \underset{-}{Q3})
-\]</span></p>
-<p>Private Consumption Deflator (PC):
+\]</span>
+民間消費物價平減指數 (PC):
 <span class="math display">\[
 PC = f(\underset{+}{PF}, \underset{+}{PO})
-\]</span></p>
-<p>Government Consumption Deflator (PCG):
+\]</span>
+政府消費物價平減指數 (PCG):
 <span class="math display">\[
 PCG = f(\underset{+}{PCG_{-1}},\underset{+}{PO}, \underset{+}{WGP}, \underset{+}{PIG}, \underset{-}{PD})
-\]</span>
-Private Fixed Investment Deflator (PIBF):
+\]</span></p>
+<p>民間固定投資物價平減指數 (PIBF):
 <span class="math display">\[
 PIBF = f(\underset{+}{PIBF_{-1}}, \underset{+}{PCON}, \underset{+}{PCA},\\ \underset{+}{WGST^{nominal}}, \underset{-}{SPIKE2008}, \underset{+}{Q1}, \underset{-}{Q2})
-\]</span>
-Government Fixed Investment Deflator (PIG):
+\]</span></p>
+<p>政府固定投資物價平減指數 (PIG):
 <span class="math display">\[
 PIG = f(\underset{+}{PIG_{-1}}, \underset{+}{PCON}, \underset{+}{WGST^{nominal}}, \underset{-}{SPIKE2008})
 \]</span></p>
-<p>Public Enterprise Fixed Investment Deflator (PIPC)
+<p>公營事業固定投資物價平減指數 (PIPC):
 <span class="math display">\[
 PIPC = f(\underset{+}{PCON}, \underset{+}{PCA}, \underset{-}{SPIKE2008})
 \]</span></p>
-<p>Gross Capital Formation Deflator (PGCF):
+<p>資本形成毛額物價平減指數 (PGCF):
 <span class="math display">\[
 PGCF = f(\underset{+}{PCON}, \underset{-}{PCA}, \underset{-}{SPIKE2008})
-\]</span>
-Exports of Goods and Services Deflator (PEX):
+\]</span></p>
+<p>商品及服務輸出物價平減指數 (PEX):
 <span class="math display">\[
 PEX = f(\underset{+}{PX}, \underset{+}{CPI})
 \]</span></p>
-<p>Imports of Goods and Services Deflator (PIM):
+<p>商品及服務輸入物價平減指數 (PIM):
 <span class="math display">\[
 PIM = f(\underset{+}{PM}, \underset{+}{CPI})
 \]</span></p>
 </div>
-<div id="financial-money-market" class="section level3">
-<h3><span class="header-section-number">1.2.3</span> Financial Money Market</h3>
-<p>M1B:
+<div id="金融貨幣市場" class="section level3">
+<h3><span class="header-section-number">1.2.3</span> 金融貨幣市場</h3>
+<p>狹義貨幣總計數 (M1B):
 <span class="math display">\[
 M1B = f(\underset{-}{CPI}, \underset{+}{GDP}, \underset{+}{\frac{VSTOCK^{nominal}}{CPI}},\\ \underset{-}{TDR1Y - NOTERATE})
-\]</span></p>
-<p>One-year Fixed Deposit Rate (TDR1Y):
+\]</span>
+一年期定存利率 (TDR1Y):
 <span class="math display">\[
 TDR1Y = f(\underset{+}{REQ}, \underset{+}{IR}, \underset{+}{GDP_{-1}})
-\]</span></p>
-<p>Total Market Capitalization of Listed Stocks (STKVLE$):
+\]</span>
+上市櫃股票總市值 (STKVLE$):
 <span class="math display">\[
 STKVLE$ = f(\underset{+}{M1B}, \underset{+}{VSTOCK^{nominal}}, \underset{-}{SPIKE2009})
 \]</span></p>
 </div>
-<div id="labor-market" class="section level3">
-<h3><span class="header-section-number">1.2.4</span> Labor Market</h3>
-<p>Number of Employed (NE):
+<div id="勞動市場" class="section level3">
+<h3><span class="header-section-number">1.2.4</span> 勞動市場</h3>
+<p>就業人數 (NE):
 <span class="math display">\[
 NE = f(\underset{+}{NE_{-1}}, \underset{-}{\frac{WG^{nominal}}{CPI}}, \underset{+}{GDP})
 \]</span></p>
-<p>Monthly Wages per Worker in Industry and Service Sectors (WG$):
+<p>工業及服務業受僱員工每人每月薪資 (WG$):
 <span class="math display">\[
 WG^{nominal} = f(\underset{+}{MINWGM^{nominal}}, \underset{+}{(GDP^{nom}_{-1} - DEP^{nom}_{-1})}, \\  \underset{+}{Q1}, \underset{-}{DIP2007}, \underset{+}{ELBOW2009})
 \]</span></p>
 </div>
-<div id="tax-revenues" class="section level3">
-<h3><span class="header-section-number">1.2.5</span> Tax Revenues</h3>
-<p>Tax Revenues (TAX$):
+<div id="賦稅收入" class="section level3">
+<h3><span class="header-section-number">1.2.5</span> 賦稅收入</h3>
+<p>賦稅收入 (TAX$):
 <span class="math display">\[
 TAX^{nominal} = f(\underset{+}{GDP^{nominal}_{-1}}, \underset{+}{EX^{nominal}+C^{nominal}},\\ \underset{+}{VSTOCK^{nominal}}, \underset{-}{Q1}, \underset{+}{Q2})
 \]</span></p>
 </div>
 </div>
-<div id="identities" class="section level2">
-<h2><span class="header-section-number">1.3</span> Identities</h2>
-<p>Nominal Private Consumption (C$):
+<div id="定義式" class="section level2">
+<h2><span class="header-section-number">1.3</span> 定義式</h2>
+<p>名目民間消費 (C$):
 <span class="math display">\[
 C^{nominal} = C * \frac{PC}{100}
-\]</span>
-Nominal Government Consumption (CG$):
+\]</span></p>
+<p>名目政府消費 (CG$):
 <span class="math display">\[
 CG^{nominal} = Community Services + Culture + \\Economic Affairs + Education + \\Environment Protection + Public Affairs +\\ National Health Insurance + National Defense +\\ Public Safety + Social Security
 \]</span></p>
-<p>Real Government Consumption (CG):
+<p>實質政府消費 (CG):
 <span class="math display">\[
 CG = \frac{CG^{nom}}{PCG}*100
 \]</span></p>
-<p>Real Government Fixed Investment (IG):
+<p>實質政府固定投資 (IG):
 <span class="math display">\[
 IG = \frac{IG^{nom}}{PIG}*100
-\]</span>
-Real Fixed Investment in Public Enterprises (IPC):
+\]</span></p>
+<p>實質公營事業固定投資 (IPC):
 <span class="math display">\[
 IPC = \frac{IPC^{nom}}{PIPC}*100
-\]</span>
-Nominal Private Fixed Investment (IBF$):
+\]</span></p>
+<p>名目民間固定投資 (IBF$):
 <span class="math display">\[
 IBF^{nominal} = IBF * \frac{PIBF}{100}
-\]</span></p>
-<p>Nominal Gross Capital Formation (GCF$):
+\]</span>
+名目資本形成毛額 (GCF$):
 <span class="math display">\[
 GCF^{nominal} = IG^{nom} + IPC^{nom} + IBF^{nom} + JJ^{nom}
-\]</span>
-Real Gross Captial Formation (GCF):
+\]</span></p>
+<p>實質資本形成毛額 (GCF):
 <span class="math display">\[
 GCF = \frac{GCF^{nom}}{PGCF}*100
-\]</span></p>
-<p>Real Exports of Goods and Services (EX):
+\]</span>
+實質商品及服務輸出 (EX):
 <span class="math display">\[
 EX = EX_{-1} * (1 + (\frac{\frac{EXG^{nom}_{-1}}{GDP^{nom}_{-1}}* \Delta{EXG} + \frac{EXS^{nom}_{-1}}{GDP^{nom}_{-1}}* \Delta{EXS}}{\frac{EX^{nom}_{-1}}{GDP^{nom}_{-1}}*100}))
-\]</span></p>
-<p>Real Imports of Goods and Services (IM):
+\]</span>
+實質商品及服務輸入 (IM):
 <span class="math display">\[
 IM = IM_{-1} * (1 + (\frac{\frac{IMG^{nom}_{-1}}{GDP^{nom}_{-1}}* \Delta{IMG} + \frac{IMS^{nom}_{-1}}{GDP^{nom}_{-1}}* \Delta{IMS}}{\frac{IM^{nom}_{-1}}{GDP^{nom}_{-1}}*100}))
-\]</span>
-Nominal Exports of Goods and Services (EX$):
+\]</span></p>
+<p>名目商品及服務輸出 (EX$):
 <span class="math display">\[
 EX^{nominal} = EX * \frac{PEX}{100}
-\]</span>
-Nominal Imports of Goods and Services (IM$):
+\]</span></p>
+<p>名目商品及服務輸入 (IM$):
 <span class="math display">\[
 IM^{nominal} = IM * \frac{PIM}{100}
-\]</span>
-Nominal Exports of Goods, Transportation, and Insurance (EXG$):
+\]</span></p>
+<p>名目商品、運輸與保險輸出 (EXG$):
 <span class="math display">\[
 EXG^{nominal} = EX^{nom} * WEIGHTEXG^{nom}
 \]</span>
-Nominal Imports of Goods, Transportation, and Insurance (IMG$):
+名目商品、運輸與保險輸入 (IMG$):
 <span class="math display">\[
 IMG^{nominal} = IM^{nom} * WEIGHTIMG^{nom}
 \]</span>
-Nominal Other Exports (EXS$):
+名目其他輸出 (EXS$):
 <span class="math display">\[
 EXS^{nominal} = EX^{nom} - EXG^{nom}
 \]</span>
-Nominal Other Imports (IMS$):
+名目其他輸入 (IMS$):
 <span class="math display">\[
 IMS^{nominal} = IM^{nom} - IMG^{nom}
 \]</span>
-GDP Growth Rate (PCH GDP):
+經濟成長率 (PCH_GDP):
 <span class="math display">\[
 \Delta{GDP}\% = \frac{C^{nom}_{-1}}{GDP^{nom}_{-1}}*\Delta{C}\% + \frac{CG^{nom}_{-1}}{GDP^{nom}_{-1}}*\Delta{CG}\% + \\
 \frac{EX^{nom}_{-1}}{GDP^{nom}_{-1}}*\Delta{EX}\% - \frac{IM^{nom}_{-1}}{GDP^{nom}_{-1}}*\Delta{IM}\%
 \]</span>
-Real GDP
+實質國內生產毛額 (GDP):
 <span class="math display">\[
 GDP = C + CG + GCF + EX - IM
-\]</span></p>
-<p>Nominal GDP (GDP$):
+\]</span>
+名目國內生產毛額 (GDP$):
 <span class="math display">\[
 GDP^{nominal} = C^{nom} + CG^{nom} + GCF^{nom} + EX^{nom} - IM^{nom}
-\]</span>
-GDP Deflator (PGDP):
+\]</span></p>
+<p>國內生產毛額物價平減指數 (PGDP):
 <span class="math display">\[
 PGDP = \frac{GDP^{nom}}{GDP} * 100
 \]</span>
-Nominal Disposable Income (YDD$):
+名目可支配所得 (YDD$):
 <span class="math display">\[
 YDD^{nominal} = GNI^{nom} - DEP^{nom} - TAX^{nom}
-\]</span>
-Nominal GNI (GNI$):
+\]</span></p>
+<p>名目國民所得毛額 (GNI$):
 <span class="math display">\[
 GNI^{nominal} = GDP^{nom} + FIA^{nom}
-\]</span>
-Consumer Price Index (CPI):
+\]</span></p>
+<p>消費者物價指數 (CPI):
 <span class="math display">\[
 CPI = CPI_{base} * (0.2972 * \frac{PF}{PF_{base}} + 0.7027 * \frac{PO}{PO_{base}})
 \]</span></p>
 <hr />
 </div>
 </div>
-<div id="results" class="section level1">
-<h1><span class="header-section-number">2</span> Results</h1>
-<div id="estimation-results" class="section level2">
-<h2><span class="header-section-number">2.1</span> Estimation Results</h2>
-<p>Below are the results of the system used to model Taiwan’s macroeconomy. The significance level of each term is given in parentheses. The R^2 and Adjusted R^2 for each model in the system are also reported.</p>
+<div id="模型結果" class="section level1">
+<h1><span class="header-section-number">2</span> 模型結果</h1>
+<div id="估算結果" class="section level2">
+<h2><span class="header-section-number">2.1</span> 估算結果</h2>
+<p>以下為台灣總體經濟計量模型估算結果。 每個變數的顯著性水平在括號中給出。 還報告了系統中每個模型的R ^ 2和調整後的R ^ 2。</p>
 <table>
 <thead>
 <tr class="header">
-<th>Symbol</th>
-<th>P-value</th>
+<th>符號</th>
+<th>P值</th>
 </tr>
 </thead>
 <tbody>
@@ -1038,38 +1037,37 @@ CPI = CPI_{base} * (0.2972 * \frac{PF}{PF_{base}} + 0.7027 * \frac{PO}{PO_{base}
 <span class="math display">\[TAX^{nom} = -32529.547 + \underset{(****)}{0.052*TSLAG(GDP^{nom},1)} + \underset{(n.s.)}{-0.008*(EX^{nom}+ \\ C^{nom})} + \underset{(***)}{0.008*VSTOCK^{nom}} + \underset{(****)}{-27406.682*Q1} + \underset{(****)}{88127.881*Q2}\]</span>
 <span class="math inline">\(R^{2}: 0.8804\)</span> , <span class="math inline">\(Adj. R^{2}: 0.8701\)</span></p>
 </div>
-<div id="some-key-takeaways" class="section level2">
-<h2><span class="header-section-number">2.2</span> Some Key Takeaways</h2>
-<p>Some of the most interesting and important things to note from this model include:</p>
+<div id="一些重點" class="section level2">
+<h2><span class="header-section-number">2.2</span> 一些重點</h2>
+<p>此模型比較有興趣的重點為：</p>
 <ol style="list-style-type: decimal">
-<li><strong>Monthly Wages per Worker</strong>: The almost comically large seasonal swings in wage data from Taiwan are actually due to the traditional custom of employers giving out large bonuses (typically the equivalent of 1-2 months worth of wages) leading up to the Lunar New Year celebrations, which fall in Q1 (usually late-January to mid-February).</li>
+<li><strong>每人每月總薪水</strong>: 季節性的大波動是台灣過年給獎金的習慣導致的。</li>
 </ol>
-<p><img src="/English/Econometric-Models/2020-05-26-macroeconomic-model-of-taiwan.en_files/figure-html/wage_seasonality-1.png" width="672" /></p>
+<p><img src="/中文版/總體經濟計量模型/2020-06-22-%E7%B8%BD%E9%AB%94%E7%B6%93%E6%BF%9F%E8%A8%88%E9%87%8F%E6%A8%A1%E5%9E%8B.zh_files/figure-html/wage_seasonality-1.png" width="672" /></p>
 <ol start="2" style="list-style-type: decimal">
-<li><p><strong>Number of Employed</strong>: The original theoretical specification included a Nominal Monthly Wage term which would have a negative coefficient (traditional economic theory suggests wage increases drive down employment). While fitting the model, this term had the expected negative coefficient, but it was not actually significant, which aligns with empirical research on wages that shows that the increase in economic activity that results from wage increases outweigh any marginal employment effects. Therefore, this term was removed.</p></li>
-<li><p><strong>Real Private Fixed Investment</strong>: The interest rate term is not significant, which also aligns with more modern research that shows firms make investment decisions based mostly on their expectations for future growth, and things like interest rates and tax policy have only limited influence.</p></li>
+<li><p><strong>就業人數</strong>： 原本的就業人數方程認為總薪水會有負係數（傳統經濟理論說勞動越貴就業人數就會越低），不過估算時，總薪水在回歸中並不顯著。 此結果其實是根據近年顯示提高薪水導致的經濟增長勝過就業的負面影響之研究。 因此該變數已從模型中刪除。</p></li>
+<li><p><strong>實質民間固定投資</strong>： 利率的變數卻不顯著，也是根據近年的研究結果。 大部分的投資決策主要基於對未來增長的期望，稅策和利率的影響有限。</p></li>
 </ol>
 </div>
-<div id="predicting-on-test-data" class="section level2">
-<h2><span class="header-section-number">2.3</span> Predicting on Test Data</h2>
-<p>Using the holdout sample from Q1 2017 to Q4 2018 we can see that the model performs reasonably well at modeling the various aspects of Taiwan’s macroeconomy.</p>
-<p><img src="/English/Econometric-Models/2020-05-26-macroeconomic-model-of-taiwan.en_files/figure-html/model_preds-1.png" width="672" /></p>
+<div id="測試模型" class="section level2">
+<h2><span class="header-section-number">2.3</span> 測試模型</h2>
+<p>利用2017Q1至2018Q4的資料為保留數據我們可以測試此模型的準確性。 結果顯示此模型蠻準確的。</p>
+<p><img src="/中文版/總體經濟計量模型/2020-06-22-%E7%B8%BD%E9%AB%94%E7%B6%93%E6%BF%9F%E8%A8%88%E9%87%8F%E6%A8%A1%E5%9E%8B.zh_files/figure-html/model_preds-1.png" width="672" /></p>
 <hr />
 </div>
 </div>
-<div id="testing-policy-proposals" class="section level1">
-<h1><span class="header-section-number">3</span> Testing Policy Proposals</h1>
-<p>With a reasonable model of Taiwan’s economy, we can now test various policy proposals to see their impact on the economy.</p>
-<div id="job-guarantee" class="section level2">
-<h2><span class="header-section-number">3.1</span> Job Guarantee</h2>
-<p>At the heart of a Job Guarantee (JG) is the promise of a liveable wage for everyone. Most proposals and estimates of the impacts of a JG are based on the US case and use USD$15/hour liveable wage, however, given that the hourly minimum wage in Taiwan for part-time workers is only ~ USD$5.32/hour (NT$158 as of Jan-2020), we need to determine a more appropriate wage rate for a Taiwanese Job Guarantee.</p>
-<p>Under Taiwan’s current minimum wage system, there is both a Monthly Minimum Wage and an Hourly Minimum Wage to cover full- and part-time workers. These two minimum wage rates are not necessarily tied to each other though, and indeed, in recent years the Hourly Minimum Wage rate has been increased at a faster pace to account for difference in total earnings caused by the difference in hours worked between full- and part-time employees.</p>
+<div id="測試政策建議" class="section level1">
+<h1><span class="header-section-number">3</span> 測試政策建議</h1>
+<div id="就業保證" class="section level2">
+<h2><span class="header-section-number">3.1</span> 就業保證</h2>
+<p>就業保證的重點就是給所有的公民一個宜居工資。 因為大部分的就業保證研究以美國為主（常聽到的每小時$15 USD）， 因此我們需要先決定台灣的宜居工資有多少。</p>
+<p>在台灣現在的基本工資制度下有兩種基本工資： 月薪跟時薪。 這兩種基本工資卻不一定要一起調整， 近年來時薪以更快的速度提高，以解決由全職和兼職員工之間的工作時數差異引起的總收入差異。</p>
 <table class="table table-striped table-condensed" style="font-size: 12px; width: auto !important; margin-left: auto; margin-right: auto;">
 <thead>
 <tr>
 <th style="border-bottom:hidden; padding-bottom:0; padding-left:3px;padding-right:3px;text-align: right; padding-right: 4px; padding-left: 4px; background-color: white !important;" colspan="4">
 <div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">
-Wage Rates are End of Year values in NT$
+基本工資為年低價值(NT$)
 </div>
 </th>
 </tr>
@@ -1078,13 +1076,13 @@ Wage Rates are End of Year values in NT$
 Year
 </th>
 <th style="text-align:center;font-weight: bold;color: white !important;background-color: grey !important;">
-Monthly Minimum Wage
+每月基本工資
 </th>
 <th style="text-align:center;font-weight: bold;color: white !important;background-color: grey !important;">
-Hourly Minimum Wage
+每時基本工資
 </th>
 <th style="text-align:center;font-weight: bold;color: white !important;background-color: grey !important;">
-Hourly Rate of Monthly Minimum Wage<sup>*</sup>
+每月基本工資的小時率<sup>*</sup>
 </th>
 </tr>
 </thead>
@@ -1317,35 +1315,34 @@ $137.3
 <tfoot>
 <tr>
 <td style="padding: 0; border: 0;" colspan="100%">
-<sup><em></sup> Hourly Rate of Monthly Minimum Wage is calculated as Monthly Min. Wage / (40 Hours per week </em> 52 weeks / 12 months)
+<sup><em></sup> 每月基本工資的小時率計算為 每月基本工資 / (40小時每禮拜 </em> 52個禮拜 / 12個月)
 </td>
 </tr>
 </tfoot>
 </table>
-<p>Despite the fact that this wage differential is reasonable, given that most people <a href="https://www.taiwannews.com.tw/en/news/3523557">qualify under the Monthly Minimum Wage</a><a href="#fn7" class="footnote-ref" id="fnref7"><sup>7</sup></a> and for ease of estimation in this initial model, I will follow the approach used in Tcherneva (2018)<a href="#fn8" class="footnote-ref" id="fnref8"><sup>8</sup></a> and set the JG wage rate at the same level for both full- and part-time workers. In future work, I hope to be able to more explicitly model the impacts on full- and part-time workers separately.</p>
-<p>Using a monthly minimum wage of $28,000 (as proposed in various places, including by 3rd Parties <a href="https://www.facebook.com/newpowerparty/photos/%E6%9C%80%E4%BD%8E%E5%B7%A5%E8%B3%87%E6%87%89%E6%BB%BF%E8%B6%B3%E5%8B%9E%E5%B7%A5%E5%9F%BA%E6%9C%AC%E7%94%9F%E6%B4%BB%E9%9C%80%E8%A6%81%E5%8F%B0%E7%81%A3%E5%8B%9E%E5%8B%95%E5%B8%82%E5%A0%B4%E9%95%B7%E6%9C%9F%E5%AD%98%E5%9C%A8%E4%BD%8E%E8%96%AA%E5%8C%96%E5%95%8F%E9%A1%8C%E8%BF%91%E4%BE%86%E5%84%98%E7%AE%A1gdp%E6%9C%89%E6%89%80%E6%88%90%E9%95%B7%E4%BD%86%E5%AF%A6%E8%B3%AA%E8%96%AA%E5%8D%BB%E4%B8%8D%E6%96%B7%E4%B8%8B%E9%99%8D%E8%B2%A7%E5%AF%8C%E5%B7%AE%E8%B7%9D%E6%8C%81%E7%BA%8C%E6%83%A1%E5%8C%96%E4%BD%BF%E5%BE%97%E6%89%80%E5%BE%97%E5%88%86%E9%85%8D%E4%B8%8D%E5%85%AC%E7%9A%84%E5%95%8F%E9%A1%8C%E6%9B%B4%E7%82%BA%E5%9A%B4%E9%87%8D%E4%BD%8E%E8%96%AA%E7%9A%84%E5%95%8F%E9%A1%8C%E4%B9%9F%E9%80%A3/1028666937204662/">such as the NPP</a>) as the JG wage rate, we can test what impact such a plan would have on Taiwan’s economy.</p>
-<p>While implementation strategies differ in the literature, we will use a simple 3 year phase-in for the new JG wage rate beginning in 2012 (the full JG wage rate will start in Q1 of 2015). Because a JG is funded by the central government and administered at a local level, the funds for the JG will come from an increase to the Economic Affairs line item of Nominal Government Consumption.</p>
-<div id="assumptions" class="section level3">
-<h3><span class="header-section-number">3.1.1</span> Assumptions</h3>
+<p>隨然此工資差異是很合理的，但是鑑於大多數的人是賺<a href="https://www.taiwannews.com.tw/en/news/3523557">月性的基本工資</a><a href="#fn5" class="footnote-ref" id="fnref5"><sup>5</sup></a>，也為了簡化估算，我會跟Tcherneva (2018)<a href="#fn6" class="footnote-ref" id="fnref6"><sup>6</sup></a> 一樣假設月性跟時性的工資都ㄧ樣。</p>
+<p>就業保證的工資為NT$28,000，根據各方的推薦（甚至台灣的<a href="https://www.facebook.com/newpowerparty/photos/%E6%9C%80%E4%BD%8E%E5%B7%A5%E8%B3%87%E6%87%89%E6%BB%BF%E8%B6%B3%E5%8B%9E%E5%B7%A5%E5%9F%BA%E6%9C%AC%E7%94%9F%E6%B4%BB%E9%9C%80%E8%A6%81%E5%8F%B0%E7%81%A3%E5%8B%9E%E5%8B%95%E5%B8%82%E5%A0%B4%E9%95%B7%E6%9C%9F%E5%AD%98%E5%9C%A8%E4%BD%8E%E8%96%AA%E5%8C%96%E5%95%8F%E9%A1%8C%E8%BF%91%E4%BE%86%E5%84%98%E7%AE%A1gdp%E6%9C%89%E6%89%80%E6%88%90%E9%95%B7%E4%BD%86%E5%AF%A6%E8%B3%AA%E8%96%AA%E5%8D%BB%E4%B8%8D%E6%96%B7%E4%B8%8B%E9%99%8D%E8%B2%A7%E5%AF%8C%E5%B7%AE%E8%B7%9D%E6%8C%81%E7%BA%8C%E6%83%A1%E5%8C%96%E4%BD%BF%E5%BE%97%E6%89%80%E5%BE%97%E5%88%86%E9%85%8D%E4%B8%8D%E5%85%AC%E7%9A%84%E5%95%8F%E9%A1%8C%E6%9B%B4%E7%82%BA%E5%9A%B4%E9%87%8D%E4%BD%8E%E8%96%AA%E7%9A%84%E5%95%8F%E9%A1%8C%E4%B9%9F%E9%80%A3/1028666937204662/">各小黨</a>）。</p>
+<p>就業保證的實施策略不少，此測試會假設計畫實施要分三年逐漸提高薪水，2012年為第一年。因為就業保證的財源來至中央政府，就業保證會提高名目政府消費的經濟事務。</p>
+<div id="模型假設" class="section level3">
+<h3><span class="header-section-number">3.1.1</span> 模型假設</h3>
 <ol style="list-style-type: decimal">
-<li>JG Monthly Wage Rate = $28,000</li>
-<li>Total costs for the JG program are wages + materials and other costs (an additional 15% of wages)</li>
-<li>The JG wage rate will be raised gradually to the full $28,000/month with a one-time adjustment each Q1 for 3 years</li>
-<li>No difference in the JG wage rate between full- and part-time workers</li>
-<li>Number of Jobs Created</li>
-</ol>
+<li>就業保證每月工資 = $28,000</li>
+<li>就業保證的總費用為工資加材料和其他費用(算為工資的15%)</li>
+<li>就業保證每月工資會逐步提高到每月2萬8，每年的Q1會調整一次，期間為3年</li>
+<li>全職和兼職的每時工資率是一樣的</li>
+<li><p>創造的工作數量</p>
 <ul>
-<li><strong>More Conservative Model:</strong> The JG will only hire those who are unemployed, not bring discouraged workers back into the labor force
-<ul>
-<li><strong>More Realistic Model:</strong> The JG will hire the unemployed as well as bring discouraged workers back into the labor force (assume 100% of those who would like to work but are not currently looking will be incentivized to join the JG)</li>
+<li><strong>較保守的模型:</strong> 就業保證只會僱用失業者，而不會讓灰心喪氣的工人重返勞動力<br />
+</li>
+<li><strong>較實在的模型:</strong> 將僱用失業者，並將沮喪的工人帶回勞動力 (假設有100％的灰心喪氣的工人會受到激勵加入就業保證)</li>
 </ul></li>
-</ul>
+</ol>
 </div>
-<div id="results-1" class="section level3">
-<h3><span class="header-section-number">3.1.2</span> Results</h3>
-<p><img src="/English/Econometric-Models/2020-05-26-macroeconomic-model-of-taiwan.en_files/figure-html/plot_jg_fcast-1.png" width="672" /></p>
-<p>In addition to increasing employment, implementing a JG in Taiwan would also increase the average monthly wages for everyone in Taiwan by over 16%, increase real GDP by approximately 5%, and only increase CPI by about 2.5%, all within the span of a few years.</p>
-<em>Simulated JG Impacts - Seasonally Adjusted</em>
+<div id="測試結果" class="section level3">
+<h3><span class="header-section-number">3.1.2</span> 測試結果</h3>
+<p><img src="/中文版/總體經濟計量模型/2020-06-22-%E7%B8%BD%E9%AB%94%E7%B6%93%E6%BF%9F%E8%A8%88%E9%87%8F%E6%A8%A1%E5%9E%8B.zh_files/figure-html/plot_jg_fcast-1.png" width="672" /></p>
+<p>除了增加就業人數，在台灣實施就業保證的話，至第六年還可以使台灣每個人的平均月工資提高16.6％，實質GDP增長差不多5％，並且把CPI只提高2.6%。</p>
+<em>模擬的就業保證影響 - 季節性調整後</em>
 <table class="table table-striped table-condensed" style="font-size: 12px; width: auto !important; margin-left: auto; margin-right: auto;">
 <thead>
 <tr>
@@ -1353,30 +1350,30 @@ $137.3
 </th>
 <th style="border-bottom:hidden; padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="2">
 <div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">
-Conservative Model
+較保守的模型
 </div>
 </th>
 <th style="border-bottom:hidden; padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="2">
 <div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">
-Realistic Model
+較實在的模型
 </div>
 </th>
 </tr>
 <tr>
 <th style="text-align:left;">
-Metric
+變數
 </th>
 <th style="text-align:center;">
-Average Change for 2018
+2018年的平均變化
 </th>
 <th style="text-align:center;">
-Max Change for 2018
+2018年的最大變化
 </th>
 <th style="text-align:center;">
-Average Change for 2018
+2018年的平均變化
 </th>
 <th style="text-align:center;">
-Max Change for 2018
+2018年的最大變化
 </th>
 </tr>
 </thead>
@@ -1472,12 +1469,9 @@ WG$
 </div>
 </div>
 </div>
-<div id="references" class="section level1 unnumbered">
-<h1>References</h1>
+<div id="參考文獻" class="section level1 unnumbered">
+<h1>參考文獻</h1>
 <div id="refs" class="references">
-<div id="ref-frb_dsge">
-<p>Daniel O. Beltran, David Draper. 2016. “Estimating Dynamic Macroeconomic Models.” <em>International Finance Discussion Papers</em>, no. 1175.</p>
-</div>
 <div id="ref-twnews_min_wage">
 <p>Everington, Keoni. 2018. “Taiwan’s Monthly Minimum Wage to Increase by 5.” <em>Taiwan News</em>.</p>
 </div>
@@ -1514,9 +1508,7 @@ WG$
 <li id="fn2"><p><span class="citation">Fullwiler (2006)</span><a href="#fnref2" class="footnote-back">↩</a></p></li>
 <li id="fn3"><p><span class="citation">Fair (2018)</span><a href="#fnref3" class="footnote-back">↩</a></p></li>
 <li id="fn4"><p><span class="citation">林建甫 (2010)</span><a href="#fnref4" class="footnote-back">↩</a></p></li>
-<li id="fn5"><p><span class="citation">Daniel O. Beltran (2016)</span><a href="#fnref5" class="footnote-back">↩</a></p></li>
-<li id="fn6"><p><span class="citation">(“總體經濟計量模型,” n.d.)</span><a href="#fnref6" class="footnote-back">↩</a></p></li>
-<li id="fn7"><p><span class="citation">Everington (2018)</span><a href="#fnref7" class="footnote-back">↩</a></p></li>
-<li id="fn8"><p><span class="citation">Tcherneva (2018)</span><a href="#fnref8" class="footnote-back">↩</a></p></li>
+<li id="fn5"><p><span class="citation">Everington (2018)</span><a href="#fnref5" class="footnote-back">↩</a></p></li>
+<li id="fn6"><p><span class="citation">Tcherneva (2018)</span><a href="#fnref6" class="footnote-back">↩</a></p></li>
 </ol>
 </div>
