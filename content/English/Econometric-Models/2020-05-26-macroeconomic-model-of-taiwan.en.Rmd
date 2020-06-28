@@ -116,11 +116,24 @@ get_bimets_preds <- function(fcast_simulation) {
 ### Load Datasets
 train_test_cutoff <- as_date("2017-01-01")
 
+vars_to_log <- c("C", "YDD$", "STKVLE$", "IBF", "IG", "CAPSTOCK$", "EXS", "OVERSEAREV$", "EXG", "IPC",
+                 "JJ", "IMS", "GDP", "VSTOCK$", "GDP$", "DEP$", "EX$", "C$", "COMM_SERVICES", "CULTURE", "ECON_AFFAIRS",
+                 "EDU", "ENVIRO_PROTECT", "GEN_PUB_AFFAIRS", "HLTH_INS", "NATL_DEFENSE", "PUB_SAFETY", "SOC_SECURITY",
+                 "CG$", "IG$", "IPC$", "IBF$", "JJ$", "GCF$", "EX", "EXG$", "EXS$", "IM", "IMG$", "IMS$", "IM$", "CG",
+                 "GCF", "GNI$", "TAX$", "FIA$", "IMG", "M1B", "VISITORS", "OUTBOUND")
+
+rescale_big_vars = FALSE
+
 econ_data_url <- "https://raw.githubusercontent.com/dorseytf/Blog-Replication-Scripts/master/Taiwan%20Macro%20Dataset.csv"
 jg_emp_url <- "https://raw.githubusercontent.com/dorseytf/Blog-Replication-Scripts/master/Taiwan%20JG%20Emp%20Dataset.csv"
 
 econ_data <- read_csv(url(econ_data_url))
 jg_emp_df <- read_csv(url(jg_emp_url))
+
+if(rescale_big_vars){
+  econ_data <- econ_data %>%
+    mutate(across(all_of(vars_to_log), rescale_vars))
+}
 
 ## Create a list of time series objects from each var used
 long_econ_data <- econ_data %>%
@@ -139,12 +152,13 @@ for(v in 1:length(metric_list)){
   econ_data_list[[v]] <- TIMESERIES(vals_to_ts, START = c(start_yr, start_qtr), FREQ = 4)
   names(econ_data_list)[v] <- metric_list[v]
 }
+
 ```
 
 ```{r fit_bimets}
-bimets_tol <- 0.000000000000000002220446
+bimets_tol <- 2*10^-24
 
-taiwan_bimets_model <- LOAD_MODEL("/Users/sharedcomputer/MMT in Taiwan/Analysis Replication Files/Taiwan Macro Model.txt",
+taiwan_bimets_model <- LOAD_MODEL("/Users/sharedcomputer/MMT in Taiwan/Analysis Replication Files/Taiwan Macro Model v2.txt",
                                   quietly = TRUE)
 
 taiwan_bimets_model <- LOAD_MODEL_DATA(taiwan_bimets_model, econ_data_list, quietly = TRUE)
@@ -157,9 +171,9 @@ bimet_formula_df <- map_df(taiwan_bimets_model$behaviorals, get_bimets_formulas)
 
 model_name_abbv <- tibble(model_abbv = bimet_formula_df$Model,
                           model_name  = c("Real Private Consumption", "Real Private Fixed Investment",
-                                     "Real Exports of Goods, Transportation, and Insurance",
-                                     "Real Other Exports", "Real Imports of Goods, Transportation, and Insurance",
-                                     "Real Other Imports", "Import Price Index", "Export Price Index", 
+                                     "Real Exports of Goods and Services",
+                                     "Real Imports of Goods and Services",
+                                     "Import Price Index", "Export Price Index", 
                                      "Domestic Production Price Index", "Food Consumer Price Index", 
                                      "Non-food Consumer Price Index", "Private Consumption Deflator",
                                      "Government Consumption Deflator", "Private Fixed Investment Deflator",
@@ -512,7 +526,7 @@ taiwan_bimets_fcast <- SIMULATE(taiwan_bimets_model,
                                 simIterLimit = 100,
                                 simType = "FORECAST",
                                 quietly = TRUE)
-taiwan_bimets_fcast$simulation[[48]] <- NULL
+taiwan_bimets_fcast$simulation[[41]] <- NULL
 
 
 taiwan_bimets_preds <- vector("list", length = length(taiwan_bimets_fcast$simulation))
@@ -533,7 +547,7 @@ taiwan_macro_preds <- taiwan_bimets_preds %>%
   gather("type", "value", -c(quarterly_date, metric, RMSE))
 
 taiwan_macro_preds %>%
-  filter(metric %in% c("C", "STKVLE$", "WG$", "NE")) %>%
+  filter(metric %in% c("C", "GDP", "WG$", "NE", "STKVLE$", "TAX$")) %>%
   ggplot(aes(x = quarterly_date, y = value, color = type)) +
   geom_line() +
   facet_grid(metric ~ ., scales = "free") +
@@ -556,6 +570,10 @@ At the heart of a Job Guarantee (JG) is the promise of a liveable wage for every
 Under Taiwan's current minimum wage system, there is both a Monthly Minimum Wage and an Hourly Minimum Wage to cover full- and part-time workers. These two minimum wage rates are not necessarily tied to each other though, and indeed, in recent years the Hourly Minimum Wage rate has been increased at a faster pace to account for difference in total earnings caused by the difference in hours worked between full- and part-time employees. 
 
 ```{r min_wage_yr}
+min_wage_url <- "https://raw.githubusercontent.com/dorseytf/Blog-Replication-Scripts/master/Taiwan%20Min%20Wage%20Dataset.csv"
+
+min_wage_monthly <- read_csv(url(min_wage_url))
+
 min_wage_table <- min_wage_monthly %>%
   mutate(Year = year(quarterly_date)) %>%
   filter(Year >= 2005) %>%
@@ -599,7 +617,7 @@ jg_phase_in_yrs <- 3
 jg_wage_rate <- 28000
 
 #JG Equations
-jjg_eqn <- JJG ~ NU_x_PHASE_NU
+jjg_eqn <- JJG ~ NU * PHASE_NU
 wjg_eqn <- WJG ~ WJG_1 + PHASE_WG
 yjg_eqn <- YJG ~ JJG*WJG*3 #turn monthly wages into quarterly value
 spend_jg_eqn <- SPENDJG ~ YJG + CJG
@@ -616,8 +634,8 @@ for(p in 1:length(jg_phase_in_qtrs)){
 }
 jg_emp_df <- jg_emp_df %>%
   mutate(PHASE_NU = ifelse(quarterly_date > jg_phase_end_qtr, 1, PHASE_NU)) %>%
-  mutate(NU_x_PHASE = NU * PHASE_NU,
-         JJG = NU * PHASE_NU)
+  mutate(JJG_cons = NU * PHASE_NU,
+         JJG_real = (JOIN_LF+NU) * PHASE_NU)
 
 jg_dataset <- econ_data %>%
   mutate(PHASE_WG = case_when(year(quarterly_date) < jg_start_yr ~ 0,
@@ -626,14 +644,20 @@ jg_dataset <- econ_data %>%
                               year(quarterly_date) == jg_start_yr + 2 ~ 3*phase_in_addtl,
                               year(quarterly_date) >= jg_start_yr + 3 ~ 4*phase_in_addtl,
                               TRUE ~ 0),
+         jg_start_MINWGM = MINWGM[which(quarterly_date == jg_start_qtr)],
          `(Intercept)` = 1) %>%
   left_join(jg_emp_df, by = "quarterly_date") %>%
-  mutate(WJG     = MINWGM + PHASE_WG,
-         YJG     = ((1000*JJG)*MINWGM*3)/1000000,
-         CJG     = 0.15 * YJG,
-         SPENDJG = YJG + CJG) %>%
-  mutate(ECON_AFFAIRS = ECON_AFFAIRS + SPENDJG,
-         NE           = NE + JJG) 
+  mutate(WJG          = ifelse(year(quarterly_date) < jg_start_yr, MINWGM, jg_start_MINWGM + PHASE_WG),
+         YJG_cons     = ((1000*JJG_cons)*WJG*3)/1000000,
+         YJG_real     = ((1000*JJG_real)*WJG*3)/1000000,
+         CJG_cons     = 0.15 * YJG_cons,
+         CJG_real     = 0.15 * YJG_real,
+         SPENDJG_cons = YJG_cons + CJG_cons,
+         SPENDJG_real = YJG_real + CJG_real) %>%
+  mutate(ECON_AFFAIRS_cons = ECON_AFFAIRS + SPENDJG_cons,
+         ECON_AFFAIRS_real = ECON_AFFAIRS + SPENDJG_real,
+         NE_cons           = NE + JJG_cons,
+         NE_real           = NE + JJG_real) 
 
 long_jg_dataset <- jg_dataset %>%
   gather("metric", "value", -quarterly_date) %>%
@@ -652,13 +676,13 @@ for(v in 1:length(jg_vars_used)){
   names(jg_data_list)[v] <- jg_vars_used[v]
 }
 
-# Create TS to adjust NE by the number of ppl employed by JG and WG$ by the JG Wage phase in
-constant_adj_list <- list(NE = TIMESERIES(jg_data_list$JJG['2012-01-01/2018-12-31'], START = c(2012,1), FREQ = 4),
-                          WG_nom = TIMESERIES(jg_data_list$PHASE_WG['2012-01-01/2018-12-31'], START = c(2012,1), FREQ = 4))
+### Conservative JG simulation
+# Create TS to adjust NE by the number of ppl employed by JG and MINWGM by the JG Wage phase in
+constant_adj_list <- list(NE = TIMESERIES(jg_data_list$JJG_cons['2012-01-01/2018-12-31'], START = c(2012,1), FREQ = 4))
 
 # Adjust ECON_AFFAIRS and MINWGM to reflect JG spending and wage level
-taiwan_bimets_model$modelData$ECON_AFFAIRS <- jg_data_list$ECON_AFFAIRS
-# taiwan_bimets_model$modelData$MINWGM <- jg_data_list$MINWGM
+taiwan_bimets_model$modelData$ECON_AFFAIRS <- jg_data_list$ECON_AFFAIRS_cons
+taiwan_bimets_model$modelData$MINWGM <- jg_data_list$WJG
 
 taiwan_jg_model <- SIMULATE(taiwan_bimets_model,
                             TSRANGE = c(2012, 1, 2018, 4),
@@ -669,7 +693,7 @@ taiwan_jg_model <- SIMULATE(taiwan_bimets_model,
                             ConstantAdjustment = constant_adj_list,
                             quietly = TRUE)
 
-taiwan_jg_model$simulation[[48]] <- NULL
+taiwan_jg_model$simulation[[41]] <- NULL
 
 taiwan_jg_preds <- vector("list", length = length(taiwan_jg_model$simulation))
 for(p in 1:length(taiwan_jg_preds)){
@@ -698,56 +722,15 @@ taiwan_jg_preds_vs_actuals <- taiwan_jg_preds %>%
 ```
 
 ```{r jg_realistic_model}
-pct_rejoining_lf <- 1
-
-jg_emp_df_realistic <- jg_emp_df %>%
-  mutate(JG_REJOIN_LF = JOIN_LF * pct_rejoining_lf) %>%
-  mutate(JJG = (JG_REJOIN_LF + NU)*PHASE_NU)
-
-jg_dataset_realistic <- econ_data %>%
-  mutate(PHASE_WG = case_when(year(quarterly_date) < jg_start_yr ~ 0,
-                              year(quarterly_date) == jg_start_yr ~ phase_in_addtl,
-                              year(quarterly_date) == jg_start_yr + 1 ~ 2*phase_in_addtl,
-                              year(quarterly_date) == jg_start_yr + 2 ~ 3*phase_in_addtl,
-                              year(quarterly_date) >= jg_start_yr + 3 ~ 4*phase_in_addtl,
-                              TRUE ~ 0),
-         `(Intercept)` = 1) %>%
-  left_join(jg_emp_df_realistic, by = "quarterly_date") %>%
-  mutate(WJG     = MINWGM + PHASE_WG,
-         YJG     = ((1000*JJG)*MINWGM*3)/1000000,
-         CJG     = 0.15 * YJG,
-         SPENDJG = YJG + CJG) %>%
-  mutate(ECON_AFFAIRS = ECON_AFFAIRS + SPENDJG,
-         NE           = NE + JJG) 
-
-long_jg_dataset_realistic <- jg_dataset_realistic %>%
-  gather("metric", "value", -quarterly_date) %>%
-  mutate(metric = str_replace_all(metric, "\\$", "_nom")) %>%
-  mutate(metric = str_remove_all(metric, "`"))
-
-jg_vars_used_realistic <- unique(long_jg_dataset_realistic$metric)
-
-jg_data_list_realistic <- vector("list", length = length(jg_vars_used_realistic))
-for(v in 1:length(jg_vars_used_realistic)){
-  vals_to_ts <- long_jg_dataset_realistic$value[which(long_jg_dataset_realistic$metric == jg_vars_used_realistic[v])]
-  start_yr <- min(year(long_jg_dataset_realistic$quarterly_date))
-  start_qtr <- min(quarter(long_jg_dataset_realistic$quarterly_date[1]))
-  
-  jg_data_list_realistic[[v]] <- TIMESERIES(vals_to_ts, START = c(start_yr, start_qtr), FREQ = 4)
-  names(jg_data_list_realistic)[v] <- jg_vars_used_realistic[v]
-}
-
-
+### Realistic JG Simulation
 # Create TS to adjust NE by the number of ppl employed by JG and WG$ by the JG Wage phase in
-real_constant_adj_list <- list(NE = TIMESERIES(jg_data_list_realistic$JJG['2012-01-01/2018-12-31'], 
+real_constant_adj_list <- list(NE = TIMESERIES(jg_data_list$JJG_real['2012-01-01/2018-12-31'], 
                                                START = c(2012,1), 
-                                               FREQ = 4),
-                               WG_nom = TIMESERIES(jg_data_list_realistic$PHASE_WG['2012-01-01/2018-12-31'], 
-                                                   START = c(2012,1), 
-                                                   FREQ = 4))
+                                               FREQ = 4))
 
 # Adjust ECON_AFFAIRS and MINWGM to reflect JG spending and wage level
-taiwan_bimets_model$modelData$ECON_AFFAIRS <- jg_data_list_realistic$ECON_AFFAIRS
+taiwan_bimets_model$modelData$ECON_AFFAIRS <- jg_data_list$ECON_AFFAIRS_real
+taiwan_bimets_model$modelData$MINWGM <- jg_data_list$WJG
 
 taiwan_jg_model_realistic <- SIMULATE(taiwan_bimets_model,
                                       TSRANGE = c(2012, 1, 2018, 4),
@@ -757,7 +740,7 @@ taiwan_jg_model_realistic <- SIMULATE(taiwan_bimets_model,
                                       ConstantAdjustment = real_constant_adj_list,
                                       quietly = TRUE)
 
-taiwan_jg_model_realistic$simulation[[48]] <- NULL
+taiwan_jg_model_realistic$simulation[[41]] <- NULL
 
 taiwan_jg_preds_realistic <- vector("list", length = length(taiwan_jg_model_realistic$simulation))
 for(p in 1:length(taiwan_jg_preds_realistic)){
@@ -787,7 +770,7 @@ taiwan_jg_preds_vs_actuals_realistic <- taiwan_jg_preds_realistic %>%
 ```{r plot_jg_fcast}
 taiwan_jg_preds_vs_actuals %>%
   bind_rows(filter(taiwan_jg_preds_vs_actuals_realistic, type != "Actual")) %>%
-  filter(metric %in% c("C", "GDP$", "CPI", "NE", "WG$")) %>%
+  filter(metric %in% c("C", "GDP", "CPI", "NE", "WG$")) %>%
   ggplot(aes(x = quarterly_date, y = value, color = type)) +
   geom_line() +
   facet_grid(metric ~ ., scales = "free") +
@@ -798,41 +781,28 @@ taiwan_jg_preds_vs_actuals %>%
        y = "")
 ```
 
-In addition to increasing employment, implementing a JG in Taiwan would also increase the average monthly wages for everyone in Taiwan by over 16%, increase real GDP by approximately 5%, and only increase CPI by about 2.5%, all within the span of a few years. 
+In addition to increasing employment, implementing a JG in Taiwan would also increase the average monthly wages for everyone in Taiwan by nearly 5%, increase real GDP by approximately 6%, and only increase CPI by 1%, all within the span of a few years. 
 
 *Simulated JG Impacts - Seasonally Adjusted*
 ```{r jg_results_tbl}
-library(seasonal)
-library(timetk)
-library(sweep)
-
 taiwan_jg_preds_vs_actuals %>%
   bind_rows(filter(taiwan_jg_preds_vs_actuals_realistic, type != "Actual")) %>%
   filter(metric %in% c("C", "GDP", "CPI", "NE", "WG$")) %>%
   select(-RMSE) %>%
-  group_by(metric, type) %>%
-  nest() %>%
-  mutate(data.ts = map(.x = data,
-                       .f = tk_ts,
-                       start = 2012,
-                       freq = 4)) %>%
-  mutate(seas_adj = map(data.ts, .f = function(x) as.data.frame(seas(x)$data)$final)) %>%
-  select(-c(data, data.ts)) %>%
-  mutate(date = list(unique(taiwan_jg_preds_vs_actuals$quarterly_date[which(taiwan_jg_preds_vs_actuals$metric=="C")]))) %>%
-  unnest(cols = c(seas_adj, date)) %>%
-  spread(type, seas_adj) %>%
+  spread(type, value) %>%
+  group_by(metric, quarterly_date) %>%
   mutate(pct_chg_cons = (`Conservative JG Model` - Actual)/Actual,
          pct_chg_real = (`Realistic JG Model` - Actual)/Actual) %>%
   group_by(metric) %>%
-  summarize(`Conservative Model - Average Change for 2018` = paste0(round(mean(pct_chg_cons),3)*100, "%"),
-            `Conservative Model - Max Change for 2018` = paste0(round(max(pct_chg_cons),3)*100, "%"),
-            `Realistic Model - Average Change for 2018` = paste0(round(mean(pct_chg_real),3)*100, "%"),
-            `Realistic Model - Max Change for 2018` = paste0(round(max(pct_chg_real), 3)*100, "%")) %>%
+  summarize(`Conservative Model - Change by 2018Q4` = paste0(round(mean(pct_chg_cons[which(quarterly_date == as_date("2018-10-01"))]),3)*100, "%"),
+            `Conservative Model - Max Change` = paste0(round(max(pct_chg_cons),3)*100, "%"),
+            `Realistic Model - Change by 2018Q4` = paste0(round(mean(pct_chg_real[which(quarterly_date == as_date("2018-10-01"))]),3)*100, "%"),
+            `Realistic Model - Max Change` = paste0(round(max(pct_chg_real), 3)*100, "%")) %>%
   kable('html', align = c("l", "c", "c", "c", "c"),
-        col.names = c("Metric", "Average Change for 2018", "Max Change for 2018", 
-                      "Average Change for 2018", "Max Change for 2018")) %>%
+        col.names = c("Metric", "Percent Change in 2018Q4", "2012-2018 Largest Percent Change", 
+                      "Percent Change in 2018Q4", "2012-2018 Largest Percent Change")) %>%
   kable_styling(bootstrap_options = c("striped", "condensed"), full_width = F, font_size = 12) %>%
-  add_header_above(c(" " = 1, "Conservative Model" = 2, "Realistic Model" = 2))
+  add_header_above(c(" " = 1, "Conservative JG Model" = 2, "Realistic JG Model" = 2))
   
 ```
 

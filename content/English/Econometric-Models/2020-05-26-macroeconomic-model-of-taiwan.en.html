@@ -968,18 +968,12 @@ CPI = CPI_{base} * (0.2972 * \frac{PF}{PF_{base}} + 0.7027 * \frac{PO}{PO_{base}
 <p><strong>Real Private Fixed Investment</strong> :
 <span class="math display">\[IBF = 57543.98 + \underset{(****)}{0.763*TSLAG(IBF,1)} + \underset{(n.s.)}{-0.038*TSLAG(IG,1)} + \\  \underset{(**)}{-8769.262*(TDR1Y-TSDELTAP(CPI))} + \underset{(***)}{258071.226*(STKVLE^{nom}/CAPSTOCK^{nom})} + \underset{(**)}{-53719.803*SPIKE2008}\]</span>
 <span class="math inline">\(R^{2}: 0.7556\)</span> , <span class="math inline">\(Adj. R^{2}: 0.7347\)</span></p>
-<p><strong>Real Exports of Goods, Transportation, and Insurance</strong> :
-<span class="math display">\[EXG = -3403887.596 + \underset{(**)}{19094433.951*(PX/(WPX*RX))} + \underset{(****)}{42714.203*GDPMAJOR} + \\  \underset{(****)}{3186.908*ICSALES^{nom}} + \underset{(****)}{320272.812*STEP2008} + \underset{(****)}{-197855.647*Q1} + \underset{(**)}{-76009.307*Q2}\]</span>
-<span class="math inline">\(R^{2}: 0.975\)</span> , <span class="math inline">\(Adj. R^{2}: 0.9728\)</span></p>
-<p><strong>Real Other Exports</strong> :
-<span class="math display">\[EXS = 23337.972 + \underset{(****)}{0.342*TSLAG(EXS,1)} + \underset{(****)}{0.066*OVERSEAREV^{nom}} + \\  \underset{(****)}{0.011*VISITORS} + \underset{(n.s.)}{53.055*RX} + \underset{(n.s.)}{-1809.099*Q2} + \underset{(**)}{4898.309*Q4}\]</span>
-<span class="math inline">\(R^{2}: 0.9886\)</span> , <span class="math inline">\(Adj. R^{2}: 0.9876\)</span></p>
-<p><strong>Real Imports of Goods, Transportation, and Insurance</strong> :
-<span class="math display">\[IMG = 290822.224 + \underset{(****)}{0.476*EXG} + \underset{(n.s.)}{-0.032*C} + \\  \underset{(****)}{0.64*(IPC+IBF+JJ)}\]</span>
-<span class="math inline">\(R^{2}: 0.9869\)</span> , <span class="math inline">\(Adj. R^{2}: 0.9864\)</span></p>
-<p><strong>Real Other Imports</strong> :
-<span class="math display">\[IMS = 13775.979 + \\  \underset{(****)}{0.706*TSLAG(IMS,1)} + \underset{(***)}{0.008*OUTBOUND}\]</span>
-<span class="math inline">\(R^{2}: 0.9475\)</span> , <span class="math inline">\(Adj. R^{2}: 0.9453\)</span></p>
+<p><strong>Real Exports of Goods and Services</strong> :
+<span class="math display">\[EX = -1641019.189 + \underset{(****)}{31613781.32*(PX/(WPX*RX))} + \underset{(***)}{15618.5*GDPMAJOR} + \\  \underset{(n.s.)}{767.333*ICSALES^{nom}} + \underset{(****)}{137872.611*STEP2008} + \underset{(****)}{-82135.593*Q1} + \underset{(****)}{2.105*OVERSEAREV^{nom}} + \underset{(****)}{0.042*VISITORS}\]</span>
+<span class="math inline">\(R^{2}: 0.9916\)</span> , <span class="math inline">\(Adj. R^{2}: 0.9908\)</span></p>
+<p><strong>Real Imports of Goods and Services</strong> :
+<span class="math display">\[IM = 96046.175 + \underset{(****)}{0.465*EX} + \underset{(***)}{0.226*C} + \\  \underset{(****)}{0.797*(IPC+IBF+JJ)} + \underset{(***)}{-0.016*OUTBOUND}\]</span>
+<span class="math inline">\(R^{2}: 0.9915\)</span> , <span class="math inline">\(Adj. R^{2}: 0.991\)</span></p>
 <p><strong>Import Price Index</strong> :
 <span class="math display">\[PM = 23.323 + \underset{(****)}{1.372*RX} + \underset{(n.s.)}{-0.028*JPNRX} + \\  \underset{(****)}{0.356*NONFUEL} + \underset{(****)}{0.242*POIL} + \underset{(n.s.)}{-0.074*WPX}\]</span>
 <span class="math inline">\(R^{2}: 0.9691\)</span> , <span class="math inline">\(Adj. R^{2}: 0.9669\)</span></p>
@@ -1344,7 +1338,7 @@ $137.3
 <div id="results-1" class="section level3">
 <h3><span class="header-section-number">3.1.2</span> Results</h3>
 <p><img src="/English/Econometric-Models/2020-05-26-macroeconomic-model-of-taiwan.en_files/figure-html/plot_jg_fcast-1.png" width="672" /></p>
-<p>In addition to increasing employment, implementing a JG in Taiwan would also increase the average monthly wages for everyone in Taiwan by over 16%, increase real GDP by approximately 5%, and only increase CPI by about 2.5%, all within the span of a few years.</p>
+<p>In addition to increasing employment, implementing a JG in Taiwan would also increase the average monthly wages for everyone in Taiwan by nearly 5%, increase real GDP by approximately 6%, and only increase CPI by 1%, all within the span of a few years.</p>
 <em>Simulated JG Impacts - Seasonally Adjusted</em>
 <table class="table table-striped table-condensed" style="font-size: 12px; width: auto !important; margin-left: auto; margin-right: auto;">
 <thead>
@@ -1353,12 +1347,12 @@ $137.3
 </th>
 <th style="border-bottom:hidden; padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="2">
 <div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">
-Conservative Model
+Conservative JG Model
 </div>
 </th>
 <th style="border-bottom:hidden; padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="2">
 <div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">
-Realistic Model
+Realistic JG Model
 </div>
 </th>
 </tr>
@@ -1367,16 +1361,16 @@ Realistic Model
 Metric
 </th>
 <th style="text-align:center;">
-Average Change for 2018
+Percent Change in 2018Q4
 </th>
 <th style="text-align:center;">
-Max Change for 2018
+2012-2018 Largest Percent Change
 </th>
 <th style="text-align:center;">
-Average Change for 2018
+Percent Change in 2018Q4
 </th>
 <th style="text-align:center;">
-Max Change for 2018
+2012-2018 Largest Percent Change
 </th>
 </tr>
 </thead>
@@ -1386,16 +1380,16 @@ Max Change for 2018
 C
 </td>
 <td style="text-align:center;">
-8.4%
+7.7%
 </td>
 <td style="text-align:center;">
-10.6%
+8.5%
 </td>
 <td style="text-align:center;">
-8.6%
+8%
 </td>
 <td style="text-align:center;">
-10.8%
+8.7%
 </td>
 </tr>
 <tr>
@@ -1403,16 +1397,16 @@ C
 CPI
 </td>
 <td style="text-align:center;">
-2.6%
+0.9%
 </td>
 <td style="text-align:center;">
-5.4%
+0.9%
 </td>
 <td style="text-align:center;">
-2.7%
+1%
 </td>
 <td style="text-align:center;">
-5.5%
+1%
 </td>
 </tr>
 <tr>
@@ -1420,16 +1414,16 @@ CPI
 GDP
 </td>
 <td style="text-align:center;">
-4.9%
+5.5%
 </td>
 <td style="text-align:center;">
-7.3%
+5.8%
 </td>
 <td style="text-align:center;">
-5.2%
+5.9%
 </td>
 <td style="text-align:center;">
-7.5%
+6.3%
 </td>
 </tr>
 <tr>
@@ -1437,16 +1431,16 @@ GDP
 NE
 </td>
 <td style="text-align:center;">
-16%
+23.8%
 </td>
 <td style="text-align:center;">
-24%
+23.8%
 </td>
 <td style="text-align:center;">
-20.8%
+31.3%
 </td>
 <td style="text-align:center;">
-31.5%
+31.3%
 </td>
 </tr>
 <tr>
@@ -1454,16 +1448,16 @@ NE
 WG$
 </td>
 <td style="text-align:center;">
-16.6%
+4.6%
 </td>
 <td style="text-align:center;">
-23%
+8%
 </td>
 <td style="text-align:center;">
-16.7%
+4.9%
 </td>
 <td style="text-align:center;">
-23.2%
+8.3%
 </td>
 </tr>
 </tbody>

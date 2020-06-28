@@ -19,7 +19,7 @@ tags:
   - 資料
 ---
 
-[第一篇](/中文版/積極保護民主的政策/第一篇民粹主義浪潮如何來台/)結識了近幾十年來的經濟和媒體趨勢如何讓各國的公民變得很不滿，甚至讓民粹政客越來越接人氣。 不過， [上一集](/中文版/積極保護民主的政策/第二篇台灣避免粹主義/)有結識台灣是靠這兩招避免了同樣的命運：1) 利用不利於民粹政客的外來因素， 2) 積極面對這些經濟和媒體的原因。 在這篇我會結識台灣應該要採取的保護民主政策。
+[第一篇](/中文版/積極保護民主的政策/第一篇民粹主義浪潮如何來台/)解釋了近幾十年來的經濟和媒體趨勢如何讓各國的公民變得很不滿，甚至讓民粹政客越來越接人氣。 不過， [上一集](/中文版/積極保護民主的政策/第二篇台灣避免粹主義/)有解釋台灣是靠這兩招避免了同樣的命運：1) 利用不利於民粹政客的外來因素， 2) 積極面對這些經濟和媒體的原因。 在這篇我會解釋台灣應該要採取的保護民主政策。
 
 # 複習民粹主義的經濟因素
 首先要複習一下利於民粹主義的經濟因素。
@@ -43,7 +43,116 @@ tags:
 
 ![圖 3: 台灣人每月實際收入已停滯](/zh/2020-04-02-_files/Real Monthly Earnings in Taiwan_zh.jpg)
 
-收入停滯趨勢是一個多方面又艱難的問題，尤其是因為在高收入的國家解決收入停滯的研究較少。 因此，我會專門討論一個能夠
+收入停滯趨勢是一個多方面又艱難的問題，尤其是因為在高收入的國家解決收入停滯的研究較少。 因此，我將在這篇文章中專門為收入停滯和失業相關問題提供解決方案：就業保證政策。 首先，我會討論就業保證的理論依據，然後來解釋台灣性的就業保證制度以及提供此政策對台灣經濟影響的估計，再來討論為什麼就業保證政策比普遍基本收入(UBI)更可取。 
+
+***
+
+# 到底什麼是就業保證政策？
+
+## 就業保證概觀
+基本上，就業保證政策就是說政府會保證所有想要工作的人都能夠找到一份工作。 這項政策並不取代傳統的社會安全等機構或者一般的私人就業。 其實該政策的目的就是為了消除失業和就業不足而讓政府成為求職者的最後一步。^[@tcherneva_se_model]
+
+![*圖 1: 美國失業與就業不足人數（藍色線）比職位空缺（紅色線）. 來至 Tcherneva (2014)*](/English/Proactive-Policies-for-Safeguarding-Democracy/2020-05-15-part-3-policies-to-strengthen-taiwan-s-democracy/Unemployed vs Job Openings.png)
+
+```{r tw_unemp, echo=FALSE, message=FALSE, warning=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(message = FALSE)
+
+## Load required libraries
+library(tidyverse)
+library(lubridate)
+library(janitor)
+library(showtext)
+
+zh_theme <- theme_get()
+zh_theme$text$family <- "PingFang TC"
+theme_set(zh_theme)
+
+tw_unemp_url <- "https://raw.githubusercontent.com/dorseytf/Blog-Replication-Scripts/master/TW%20Unemployment%20Data.csv"
+tw_unemp_df <- read_csv(url(tw_unemp_url)) %>%
+  clean_names() %>%
+  filter(month != "Ave.") %>%
+  mutate(month = str_sub(str_replace(month, "[:punct:]", ""), 1, 3)) %>%
+  mutate(date = ymd(paste(year, month, '01', sep = "-"))) %>%
+  select(date, total, new_jobseekers, experienced_jobseekers) %>%
+  gather("metric", "value", -date) %>%
+  mutate(metric = str_replace(metric, "_", " ")) %>%
+  mutate(metric = str_to_title(metric)) %>%
+  filter(metric == "Total") %>%
+  mutate(metric = "Officially Unemployed") %>%
+  spread(metric, value)
+
+tw_non_lf_url <- "https://raw.githubusercontent.com/dorseytf/Blog-Replication-Scripts/master/TW%20Not%20in%20Labor%20Force.csv"
+tw_non_lf_df <- read_csv(url(tw_non_lf_url)) %>%
+  clean_names() %>%
+  filter(month != "Ave.") %>%
+  mutate(month = str_sub(str_replace(month, "[:punct:]", ""), 1, 3)) %>%
+  mutate(date = ymd(paste(year, month, '01', sep = "-"))) %>%
+  select(-c(year, month, x9)) %>%
+  gather("metric", "value", -date) %>%
+  mutate(value = as.numeric(str_replace_all(value, "[:space:]", ""))) %>%
+  filter(metric == "intend_and_be_available_to_work_but_not_seeking") %>%
+  mutate(metric = "Discouraged Workers") %>%
+  spread(metric, value) 
+
+tw_labor_shortage_url <- "https://raw.githubusercontent.com/dorseytf/Blog-Replication-Scripts/master/TW%20Labor%20Shortage.csv"
+
+tw_labor_short_df <- read_csv(url(tw_labor_shortage_url)) %>%
+  clean_names() %>%
+  mutate(date = ymd(paste(year, month, '01', sep = "-"))) %>%
+  mutate(`勞動力短缺總額 (工業及服務業)` = total_labor_shortage/1000) %>%
+  select(date, `勞動力短缺總額 (工業及服務業)`) 
+
+tw_unemp_df %>%
+  left_join(tw_non_lf_df, by = "date") %>%
+  mutate(`失業人數 + 灰心勞動人數` = `Officially Unemployed` + `Discouraged Workers`) %>%
+  select(date, `失業人數 + 灰心勞動人數`) %>%
+  gather("metric", "value", -date) %>%
+  filter(date >= as.Date("2005-01-01")) %>%
+  bind_rows(gather(tw_labor_short_df, "metric", "value", -date)) %>%
+  ggplot(aes(x = date, y = value, color = metric)) +
+  geom_line() +
+  annotate("text", x = as.Date("2017-01-01"), y = 800, label = "所需職位數") +
+  annotate("segment", x = as.Date("2017-01-01"), xend = as.Date("2018-05-01"), 
+           y = 780, yend = 620, color = "black", size = 0.5, arrow = arrow()) +
+  annotate("text", x = as.Date("2016-05-01"), y = 400, label = "可用職位數") +
+  annotate("segment", x = as.Date("2016-05-01"), xend = as.Date("2017-10-01"), 
+           y = 380, yend = 260, color = "black", size = 0.5, arrow = arrow()) +
+  scale_color_manual(values = c("#440154FF", "#35B779FF"), name = "") +
+  theme(legend.position = "top") +
+  labs(x = " ",
+       y = "千人/職位",
+       caption = "來源: 主計總處")
+
+```
+
+*圖 2: 台灣每月的失業人數 + 灰心勞動人數. 灰心勞動為想要工作不過目前沒在找的不算在失業人數中的人*
+
+
+無輪在哪個國家或經濟的狀況，一直都有願意上班卻找不到工作的人（經濟學所謂的[結構性失業](http://www.levyinstitute.org/pubs/pn_14_1.pdf)）如以上的圖1和2。 更何況，近幾十年來越來越多失業者陷入了[長期失業](http://media.wix.com/ugd/f4c1a3_a2f9d44a1a754ae2a542ca6a88c1d5f5.pdf)。 長期失業對返回就業機率，擺脫貧困，以及健康的負面影響很強。^[@tcherneva_fiscal_policy]
+
+因為就業保證政策會給所有願意做的人一份維生工資的工作，所以該政策特別適合消除失業導致的這些問題。
+
+## 就業保證的機構
+
+
+## 就業保證的影響
+
+
+### 消除失業的好處
+
+
+### 對收入，分配不均，勞權的影響
+
+
+### 經濟增長
+
+
+### 經濟和社會目標一致
+
+
+***
+# 就業保證 vs 普遍基本收入(UBI)
 
 
 ***
