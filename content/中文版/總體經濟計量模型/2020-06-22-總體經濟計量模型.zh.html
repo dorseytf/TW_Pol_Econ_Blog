@@ -720,22 +720,15 @@ C = f(\underset{+}{C_{-1}}, \underset{+}{\frac{YDD^{nominal}}{PGDP}}, \underset{
 IBF = f(\underset{+}{IBF_{-1}}, \underset{+}{IG_{-1}}, \underset{-}{TDR1Y - \Delta(CPI)},\\ \underset{+}{EXG_{-1}},
 \underset{+}{\frac{STKVLE^{nominal}}{CAPSTOCK^{nominal}}}, \underset{-}{SPIKE2008})
 \]</span>
-實質商品、運輸與保險輸出 (EXG):
+實質商品及服務輸出 (EX):
 <span class="math display">\[
-EXG = f(\underset{-}{\frac{PX}{WPX * RX}}, \underset{+}{GDPMAJOR}, \underset{+}{ICSALES^{nominal}},\\
+EX = f(\underset{-}{\frac{PX}{WPX * RX}}, \underset{+}{GDPMAJOR}, \underset{+}{ICSALES^{nominal}},\\
+\underset{+}{OVERSEAREV^{nominal}}, \underset{+}{VISITORS}\\
 \underset{-}{STEP2008}, \underset{-}{Q1}, \underset{-}{Q2})
 \]</span></p>
-<p>實質其他輸出 (EXS):
+<p>實質商品及服務輸入 (IM):
 <span class="math display">\[
-EXS = f(\underset{+}{EXS_{-1}}, \underset{+}{OVERSEAREV^{nominal}},\\ \underset{+}{VISITORS}, \underset{+}{RX}, \underset{-}{Q2}, \underset{+}{Q4})
-\]</span></p>
-<p>實質商品、運輸與保險輸入 (IMG):
-<span class="math display">\[
-IMG = f(\underset{+}{EXG}, \underset{+}{C}, \underset{+}{IPC + IBF + JJ})
-\]</span>
-實質其他輸入 (IMS):
-<span class="math display">\[
-IMS = f(\underset{+}{IMS_{-1}}, \underset{+}{OUTBOUND})
+IMG = f(\underset{+}{EX}, \underset{+}{C}, \underset{+}{IPC + IBF + JJ}, \underset{+}{OUTBOUND})
 \]</span></p>
 </div>
 <div id="物價" class="section level3">
@@ -861,14 +854,6 @@ GCF^{nominal} = IG^{nom} + IPC^{nom} + IBF^{nom} + JJ^{nom}
 <p>實質資本形成毛額 (GCF):
 <span class="math display">\[
 GCF = \frac{GCF^{nom}}{PGCF}*100
-\]</span>
-實質商品及服務輸出 (EX):
-<span class="math display">\[
-EX = EX_{-1} * (1 + (\frac{\frac{EXG^{nom}_{-1}}{GDP^{nom}_{-1}}* \Delta{EXG} + \frac{EXS^{nom}_{-1}}{GDP^{nom}_{-1}}* \Delta{EXS}}{\frac{EX^{nom}_{-1}}{GDP^{nom}_{-1}}*100}))
-\]</span>
-實質商品及服務輸入 (IM):
-<span class="math display">\[
-IM = IM_{-1} * (1 + (\frac{\frac{IMG^{nom}_{-1}}{GDP^{nom}_{-1}}* \Delta{IMG} + \frac{IMS^{nom}_{-1}}{GDP^{nom}_{-1}}* \Delta{IMS}}{\frac{IM^{nom}_{-1}}{GDP^{nom}_{-1}}*100}))
 \]</span></p>
 <p>名目商品及服務輸出 (EX$):
 <span class="math display">\[
@@ -878,23 +863,7 @@ EX^{nominal} = EX * \frac{PEX}{100}
 <span class="math display">\[
 IM^{nominal} = IM * \frac{PIM}{100}
 \]</span></p>
-<p>名目商品、運輸與保險輸出 (EXG$):
-<span class="math display">\[
-EXG^{nominal} = EX^{nom} * WEIGHTEXG^{nom}
-\]</span>
-名目商品、運輸與保險輸入 (IMG$):
-<span class="math display">\[
-IMG^{nominal} = IM^{nom} * WEIGHTIMG^{nom}
-\]</span>
-名目其他輸出 (EXS$):
-<span class="math display">\[
-EXS^{nominal} = EX^{nom} - EXG^{nom}
-\]</span>
-名目其他輸入 (IMS$):
-<span class="math display">\[
-IMS^{nominal} = IM^{nom} - IMG^{nom}
-\]</span>
-經濟成長率 (PCH_GDP):
+<p>經濟成長率 (PCH_GDP):
 <span class="math display">\[
 \Delta{GDP}\% = \frac{C^{nom}_{-1}}{GDP^{nom}_{-1}}*\Delta{C}\% + \frac{CG^{nom}_{-1}}{GDP^{nom}_{-1}}*\Delta{CG}\% + \\
 \frac{EX^{nom}_{-1}}{GDP^{nom}_{-1}}*\Delta{EX}\% - \frac{IM^{nom}_{-1}}{GDP^{nom}_{-1}}*\Delta{IM}\%
@@ -967,18 +936,12 @@ CPI = CPI_{base} * (0.2972 * \frac{PF}{PF_{base}} + 0.7027 * \frac{PO}{PO_{base}
 <p><strong>Real Private Fixed Investment</strong> :
 <span class="math display">\[IBF = 57543.98 + \underset{(****)}{0.763*TSLAG(IBF,1)} + \underset{(n.s.)}{-0.038*TSLAG(IG,1)} + \\  \underset{(**)}{-8769.262*(TDR1Y-TSDELTAP(CPI))} + \underset{(***)}{258071.226*(STKVLE^{nom}/CAPSTOCK^{nom})} + \underset{(**)}{-53719.803*SPIKE2008}\]</span>
 <span class="math inline">\(R^{2}: 0.7556\)</span> , <span class="math inline">\(Adj. R^{2}: 0.7347\)</span></p>
-<p><strong>Real Exports of Goods, Transportation, and Insurance</strong> :
-<span class="math display">\[EXG = -3403887.596 + \underset{(**)}{19094433.951*(PX/(WPX*RX))} + \underset{(****)}{42714.203*GDPMAJOR} + \\  \underset{(****)}{3186.908*ICSALES^{nom}} + \underset{(****)}{320272.812*STEP2008} + \underset{(****)}{-197855.647*Q1} + \underset{(**)}{-76009.307*Q2}\]</span>
-<span class="math inline">\(R^{2}: 0.975\)</span> , <span class="math inline">\(Adj. R^{2}: 0.9728\)</span></p>
-<p><strong>Real Other Exports</strong> :
-<span class="math display">\[EXS = 23337.972 + \underset{(****)}{0.342*TSLAG(EXS,1)} + \underset{(****)}{0.066*OVERSEAREV^{nom}} + \\  \underset{(****)}{0.011*VISITORS} + \underset{(n.s.)}{53.055*RX} + \underset{(n.s.)}{-1809.099*Q2} + \underset{(**)}{4898.309*Q4}\]</span>
-<span class="math inline">\(R^{2}: 0.9886\)</span> , <span class="math inline">\(Adj. R^{2}: 0.9876\)</span></p>
-<p><strong>Real Imports of Goods, Transportation, and Insurance</strong> :
-<span class="math display">\[IMG = 290822.224 + \underset{(****)}{0.476*EXG} + \underset{(n.s.)}{-0.032*C} + \\  \underset{(****)}{0.64*(IPC+IBF+JJ)}\]</span>
-<span class="math inline">\(R^{2}: 0.9869\)</span> , <span class="math inline">\(Adj. R^{2}: 0.9864\)</span></p>
-<p><strong>Real Other Imports</strong> :
-<span class="math display">\[IMS = 13775.979 + \\  \underset{(****)}{0.706*TSLAG(IMS,1)} + \underset{(***)}{0.008*OUTBOUND}\]</span>
-<span class="math inline">\(R^{2}: 0.9475\)</span> , <span class="math inline">\(Adj. R^{2}: 0.9453\)</span></p>
+<p><strong>Real Exports of Goods and Services</strong> :
+<span class="math display">\[EX = -1641019.189 + \underset{(****)}{31613781.32*(PX/(WPX*RX))} + \underset{(***)}{15618.5*GDPMAJOR} + \\  \underset{(n.s.)}{767.333*ICSALES^{nom}} + \underset{(****)}{137872.611*STEP2008} + \underset{(****)}{-82135.593*Q1} + \underset{(****)}{2.105*OVERSEAREV^{nom}} + \underset{(****)}{0.042*VISITORS}\]</span>
+<span class="math inline">\(R^{2}: 0.9916\)</span> , <span class="math inline">\(Adj. R^{2}: 0.9908\)</span></p>
+<p><strong>Real Imports of Goods and Services</strong> :
+<span class="math display">\[IM = 96046.175 + \underset{(****)}{0.465*EX} + \underset{(***)}{0.226*C} + \\  \underset{(****)}{0.797*(IPC+IBF+JJ)} + \underset{(***)}{-0.016*OUTBOUND}\]</span>
+<span class="math inline">\(R^{2}: 0.9915\)</span> , <span class="math inline">\(Adj. R^{2}: 0.991\)</span></p>
 <p><strong>Import Price Index</strong> :
 <span class="math display">\[PM = 23.323 + \underset{(****)}{1.372*RX} + \underset{(n.s.)}{-0.028*JPNRX} + \\  \underset{(****)}{0.356*NONFUEL} + \underset{(****)}{0.242*POIL} + \underset{(n.s.)}{-0.074*WPX}\]</span>
 <span class="math inline">\(R^{2}: 0.9691\)</span> , <span class="math inline">\(Adj. R^{2}: 0.9669\)</span></p>
@@ -1060,7 +1023,7 @@ CPI = CPI_{base} * (0.2972 * \frac{PF}{PF_{base}} + 0.7027 * \frac{PO}{PO_{base}
 <h1><span class="header-section-number">3</span> 測試政策建議</h1>
 <div id="就業保證" class="section level2">
 <h2><span class="header-section-number">3.1</span> 就業保證</h2>
-<p>就業保證的重點就是給所有的公民一個宜居工資。 因為大部分的就業保證研究以美國為主（常聽到的每小時$15 USD）， 因此我們需要先決定台灣的宜居工資有多少。</p>
+<p>就業保證的重點就是給所有的公民一個維生工資。 因為大部分的就業保證研究以美國為主（常聽到的每小時$15 USD）， 因此我們需要先決定台灣的維生工資有多少。</p>
 <p>在台灣現在的基本工資制度下有兩種基本工資： 月薪跟時薪。 這兩種基本工資卻不一定要一起調整， 近年來時薪以更快的速度提高，以解決由全職和兼職員工之間的工作時數差異引起的總收入差異。</p>
 <table class="table table-striped table-condensed" style="font-size: 12px; width: auto !important; margin-left: auto; margin-right: auto;">
 <thead>
@@ -1332,16 +1295,16 @@ $137.3
 <li>全職和兼職的每時工資率是一樣的</li>
 <li><p>創造的工作數量</p>
 <ul>
-<li><strong>較保守的模型:</strong> 就業保證只會僱用失業者，而不會讓灰心喪氣的工人重返勞動力<br />
+<li><strong>較保守的模型:</strong> 就業保證只會僱用失業者，而不會讓灰心喪氣的勞動重返勞動力<br />
 </li>
-<li><strong>較實在的模型:</strong> 將僱用失業者，並將沮喪的工人帶回勞動力 (假設有100％的灰心喪氣的工人會受到激勵加入就業保證)</li>
+<li><strong>較實在的模型:</strong> 將僱用失業者，並將沮喪的勞動帶回勞動力 (假設有100％的灰心喪氣的工人會受到激勵加入就業保證)</li>
 </ul></li>
 </ol>
 </div>
 <div id="測試結果" class="section level3">
 <h3><span class="header-section-number">3.1.2</span> 測試結果</h3>
 <p><img src="/中文版/總體經濟計量模型/2020-06-22-%E7%B8%BD%E9%AB%94%E7%B6%93%E6%BF%9F%E8%A8%88%E9%87%8F%E6%A8%A1%E5%9E%8B.zh_files/figure-html/plot_jg_fcast-1.png" width="672" /></p>
-<p>除了增加就業人數，在台灣實施就業保證的話，至第六年還可以使台灣每個人的平均月工資提高16.6％，實質GDP增長差不多5％，並且把CPI只提高2.6%。</p>
+<p>除了增加就業人數，在台灣實施就業保證的話，至第六年還可以使台灣每個人的平均月工資提高快5％，實質GDP增長快6％，並且把CPI只提高1%。</p>
 <em>模擬的就業保證影響 - 季節性調整後</em>
 <table class="table table-striped table-condensed" style="font-size: 12px; width: auto !important; margin-left: auto; margin-right: auto;">
 <thead>
@@ -1364,16 +1327,16 @@ $137.3
 變數
 </th>
 <th style="text-align:center;">
-2018年的平均變化
+2018年底的差異
 </th>
 <th style="text-align:center;">
-2018年的最大變化
+2012-2018年的最大變化
 </th>
 <th style="text-align:center;">
-2018年的平均變化
+2018年底的差異
 </th>
 <th style="text-align:center;">
-2018年的最大變化
+2012-2018年的最大變化
 </th>
 </tr>
 </thead>
@@ -1383,16 +1346,16 @@ $137.3
 C
 </td>
 <td style="text-align:center;">
-8.4%
+7.7%
 </td>
 <td style="text-align:center;">
-10.6%
+8.5%
 </td>
 <td style="text-align:center;">
-8.6%
+8%
 </td>
 <td style="text-align:center;">
-10.8%
+8.7%
 </td>
 </tr>
 <tr>
@@ -1400,16 +1363,16 @@ C
 CPI
 </td>
 <td style="text-align:center;">
-2.6%
+0.9%
 </td>
 <td style="text-align:center;">
-5.4%
+0.9%
 </td>
 <td style="text-align:center;">
-2.7%
+1%
 </td>
 <td style="text-align:center;">
-5.5%
+1%
 </td>
 </tr>
 <tr>
@@ -1417,16 +1380,16 @@ CPI
 GDP
 </td>
 <td style="text-align:center;">
-4.9%
+5.5%
 </td>
 <td style="text-align:center;">
-7.3%
+5.8%
 </td>
 <td style="text-align:center;">
-5.2%
+5.9%
 </td>
 <td style="text-align:center;">
-7.5%
+6.3%
 </td>
 </tr>
 <tr>
@@ -1434,16 +1397,16 @@ GDP
 NE
 </td>
 <td style="text-align:center;">
-16%
+23.8%
 </td>
 <td style="text-align:center;">
-24%
+23.8%
 </td>
 <td style="text-align:center;">
-20.8%
+31.3%
 </td>
 <td style="text-align:center;">
-31.5%
+31.3%
 </td>
 </tr>
 <tr>
@@ -1451,16 +1414,16 @@ NE
 WG$
 </td>
 <td style="text-align:center;">
-16.6%
+4.6%
 </td>
 <td style="text-align:center;">
-23%
+8%
 </td>
 <td style="text-align:center;">
-16.7%
+4.9%
 </td>
 <td style="text-align:center;">
-23.2%
+8.3%
 </td>
 </tr>
 </tbody>
