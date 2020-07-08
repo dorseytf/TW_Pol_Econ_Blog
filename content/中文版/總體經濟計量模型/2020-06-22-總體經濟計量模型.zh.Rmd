@@ -1,8 +1,8 @@
 ---
-title: Building an Initial Macroeconomic Model of Taiwan
-author: Travis Dorsey
-date: '2020-06-19'
-slug: initial-macroeconomic-model-of-taiwan
+title: 製作基本的台灣總體經濟計量模型
+author: 杜欣川
+date: '2020-06-22'
+slug: 總體經濟計量模型
 bibliography: econ_models_bib.bib
 biblio-style: "apalike"
 nocite: |
@@ -14,10 +14,11 @@ output:
     toc: true
     toc_depth: 2
     number_sections: true
-categories: [Econometric Models]
+categories:
+  - 總體經濟計量模
 tags:
-  - economics
-  - data
+  - 經濟
+  - 資料
 ---
 
 ```{r setup, include=FALSE}
@@ -35,6 +36,12 @@ library(equatiomatic)
 library(systemfit)
 library(lubridate)
 library(bimets)
+library(showtext)
+font_install(source_han_serif())
+
+zh_theme <- theme_get()
+zh_theme$text$family <- "PingFang TC"
+theme_set(zh_theme)
 
 options(scipen=999)
 
@@ -106,9 +113,9 @@ get_bimets_preds <- function(fcast_simulation) {
   return(preds)
 }
 
-```
+rescale_vars <- function(x) x/1000000
 
-```{r load_econ_data}
+
 ######################
 ##  Data Wrangling  ##
 ######################
@@ -156,7 +163,7 @@ for(v in 1:length(metric_list)){
 ```
 
 ```{r fit_bimets}
-bimets_tol <- 2*10^-24
+bimets_tol <- 2*10^-22
 
 taiwan_bimets_model <- LOAD_MODEL("/Users/sharedcomputer/MMT in Taiwan/Analysis Replication Files/Taiwan Macro Model v2.txt",
                                   quietly = TRUE)
@@ -195,278 +202,247 @@ print_bimet_formula_df <- bimet_formula_df %>%
 
 ```
 
-Following the methodology laid out by the [Directorate-General of Budget, Accounting, and Statistics](https://www.stat.gov.tw/public/Attachment/6531914262FZ3FA2L.pdf)^[@dgbas_econ], I build an econometric model of Taiwan's macroeconomy that I can utilize to test the impact of policy proposals as in [Fullwiler (2006)](simulating_jg_us).^[@simulating_jg_us] This approach is based on the Cowles Commission methodology of simultaneous equations (similar to the well known [Fairmodel](https://fairmodel.econ.yale.edu/mmm2/mm2018.pdf)^[@fairmodel] used to study the US economy and that of [Lin (2007)](http://www.econ.ntu.edu.tw/ter/new/data/new/TER38-1/TER381-1.pdf)^[@lin_2007_tw_macro] which models the Taiwanese economy) and has been shown to outperform VAR and other time series approaches for macroeconomic forecasts, while also providing a more useful framework for testing policy options than dynamic stochastic generalized equilibrium models, which have [their own issues](https://www.federalreserve.gov/econresdata/ifdp/2016/files/ifdp1175.pdf).^[@frb_dsge] 
-
+根據[主計總處](https://www.stat.gov.tw/public/Attachment/6531914262FZ3FA2L.pdf)^[@dgbas_econ] 的總體經濟計量模型方法，我會製作一個能夠測試各種政策的台灣總體計量模型如[Fullwiler (2006)](simulating_jg_us)。^[@simulating_jg_us] 此模型是依據 Cowles Commission 的聯立方程方式 (如常用來學美國經濟的[Fairmodel](https://fairmodel.econ.yale.edu/mmm2/mm2018.pdf)^[@fairmodel] 和[林 (2007)](http://www.econ.ntu.edu.tw/ter/new/data/new/TER38-1/TER381-1.pdf)^[@lin_2007_tw_macro] 的台灣經濟模型)，這種方法不只比VAR 等方式還要準，卻還能給比較仔細又有用的政策測試結構。
 
 ***
-# Variables and Equations
-The model will consist of 25 stochastic equations and 23 identities. The data were compiled from various Taiwanese government agencies, including the Central Bank, the Directorate-General of Budget, Accounting, and Statistics, and the Ministry of Economics. This quarterly dataset covers the period 1997Q2-2018Q4 (87 periods), with the final 8 quarters being used as a holdout sample to test the results of the model fit.
+# 變數及方程式
 
-## Variables 
 
-### Endogenous Variables
+## 變數
+
+### 內生變數
 ```{r endog_vars}
 econ_vars %>%
   filter(Exogenous == "N") %>%
-  select(-c(Description_zh, Exogenous, `Equations Used`)) %>%
-  kable('html', align = c("l", "c")) %>%
+  select(-c(Description, Exogenous, `Equations Used`)) %>%
+  kable('html', align = c("l", "c"), col.names = c("變數名字", "說明")) %>%
   kable_styling(bootstrap_options = c("striped", "condensed"), full_width = F, font_size = 12) %>%
   row_spec(0, bold = TRUE, background = "grey", color = "white") 
 ```
 
-### Exogenous Variables
+### 外生變數
 ```{r exog_vars}
 econ_vars %>%
   filter(Exogenous == "Y") %>%
-  select(-c(Description_zh, Exogenous, `Equations Used`)) %>%
-  kable('html', align = c("l", "c")) %>%
+  select(-c(Description, Exogenous, `Equations Used`)) %>%
+  kable('html', align = c("l", "c"), col.names = c("變數名字", "說明")) %>%
   kable_styling(bootstrap_options = c("striped", "condensed"), full_width = F, font_size = 12) %>%
   row_spec(0, bold = TRUE, background = "grey", color = "white") 
 ```
 
+## 方程式
 
-## Equations
-Here I show the equations that make up this macroeconometric model of Taiwan. While the methodology laid out in this note from the [Directorate-General of Budget, Accounting, and Statistics](https://www.stat.gov.tw/public/Attachment/6531914262FZ3FA2L.pdf)^[@dgbas_econ] provided a starting point, I have adapted the equations to better handle a quarterly dataset, as well as adding in the hourly minimum wage rate to the formulation for Nominal Monthly Wages per Worker in Industry and Service Sectors to allow for easier testing of policy options later on. 
-
-### Commodity Market
-Real Private Consumption (C):
+### 商品市場
+實質民間消費 (C):
 $$
 C = f(\underset{+}{C_{-1}}, \underset{+}{\frac{YDD^{nominal}}{PGDP}}, \underset{+}{\frac{STKVLE^{nominal}}{CPI}})
 $$
-Real Private Fixed Investment (IBF):
+實質民間固定投資 (IBF):
 $$
 IBF = f(\underset{+}{IBF_{-1}}, \underset{+}{IG_{-1}}, \underset{-}{TDR1Y - \Delta(CPI)},\\ \underset{+}{EXG_{-1}},
 \underset{+}{\frac{STKVLE^{nominal}}{CAPSTOCK^{nominal}}}, \underset{-}{SPIKE2008})
 $$
-
-Real Exports of Goods, Transportation, and Insurance (EXG):
+實質商品及服務輸出 (EX):
 $$
-EXG = f(\underset{-}{\frac{PX}{WPX * RX}}, \underset{+}{GDPMAJOR}, \underset{+}{ICSALES^{nominal}},\\
+EX = f(\underset{-}{\frac{PX}{WPX * RX}}, \underset{+}{GDPMAJOR}, \underset{+}{ICSALES^{nominal}},\\
+\underset{+}{OVERSEAREV^{nominal}}, \underset{+}{VISITORS}\\
 \underset{-}{STEP2008}, \underset{-}{Q1}, \underset{-}{Q2})
 $$
 
-Real Other Exports (EXS):
+實質商品及服務輸入 (IM):
 $$
-EXS = f(\underset{+}{EXS_{-1}}, \underset{+}{OVERSEAREV^{nominal}},\\ \underset{+}{VISITORS}, \underset{+}{RX}, \underset{-}{Q2}, \underset{+}{Q4})
-$$
-Real Imports of Goods, Transportation, and Insurance (IMG):
-$$
-IMG = f(\underset{+}{EXG}, \underset{+}{C}, \underset{+}{IPC + IBF + JJ})
-$$
-Real Other Imports (IMS):
-$$
-IMS = f(\underset{+}{IMS_{-1}}, \underset{+}{OUTBOUND})
+IMG = f(\underset{+}{EX}, \underset{+}{C}, \underset{+}{IPC + IBF + JJ}, \underset{+}{OUTBOUND})
 $$
 
-### Price Indices
 
-Import Price Index (PM):
+### 物價
+進口物價指數 (PM):
 $$
 PM = f(\underset{+}{RX}, \underset{-}{JPNRX}, \underset{+}{NONFUEL},\\ \underset{+}{POIL}, \underset{+}{WPX})
 $$
-
-Export Price Index (PX):
+出口物價指數 (PX):
 $$
 PX = f(\underset{+}{PX_{-1}}, \underset{+}{RX}, \underset{+}{PM}, \underset{+}{WTVG})
 $$
 
-Domestic Production Price Index (PD):
+國產內銷物價指數 (PD):
 $$
 PD = f(\underset{+}{PD_{-1}}, \underset{+}{PM}, \underset{+}{GDP}, \underset{+}{SPIKE2008})
 $$
 
-Food Consumer Price Index (PF):
+食物類消費者物價指數 (PF):
 $$
 PF = f(\underset{+}{PF_{-1}}, \underset{+}{FOOD}, \underset{+}{WG^{nominal}_{-1}}, \underset{+}{TYPH_T}, \underset{-}{Q1})
 $$
-Non-Food Consumer Price Index (PO):
+
+非食物類消費者物價指數 (PO):
 $$
 PO = f(\underset{+}{PO_{-1}}, \underset{+}{PM_{-1}}, \underset{+}{PM}, \underset{+}{WG^{nominal}},\\
  \underset{-}{Q1}, \underset{+}{Q2}, \underset{-}{Q3})
 $$
-
-Private Consumption Deflator (PC):
+民間消費物價平減指數 (PC):
 $$
 PC = f(\underset{+}{PF}, \underset{+}{PO})
 $$
-
-Government Consumption Deflator (PCG):
+政府消費物價平減指數 (PCG):
 $$
 PCG = f(\underset{+}{PCG_{-1}},\underset{+}{PO}, \underset{+}{WGP}, \underset{+}{PIG}, \underset{-}{PD})
 $$
-Private Fixed Investment Deflator (PIBF):
+
+民間固定投資物價平減指數 (PIBF):
 $$
 PIBF = f(\underset{+}{PIBF_{-1}}, \underset{+}{PCON}, \underset{+}{PCA},\\ \underset{+}{WGST^{nominal}}, \underset{-}{SPIKE2008}, \underset{+}{Q1}, \underset{-}{Q2})
 $$
-Government Fixed Investment Deflator (PIG):
+
+政府固定投資物價平減指數 (PIG):
 $$
 PIG = f(\underset{+}{PIG_{-1}}, \underset{+}{PCON}, \underset{+}{WGST^{nominal}}, \underset{-}{SPIKE2008})
 $$
 
-Public Enterprise Fixed Investment Deflator (PIPC)
+公營事業固定投資物價平減指數 (PIPC):
 $$
 PIPC = f(\underset{+}{PCON}, \underset{+}{PCA}, \underset{-}{SPIKE2008})
 $$
 
-Gross Capital Formation Deflator (PGCF):
+資本形成毛額物價平減指數 (PGCF):
 $$
 PGCF = f(\underset{+}{PCON}, \underset{-}{PCA}, \underset{-}{SPIKE2008})
 $$
-Exports of Goods and Services Deflator (PEX):
+
+商品及服務輸出物價平減指數 (PEX):
 $$
 PEX = f(\underset{+}{PX}, \underset{+}{CPI})
 $$
 
-Imports of Goods and Services Deflator (PIM):
+商品及服務輸入物價平減指數 (PIM):
 $$
 PIM = f(\underset{+}{PM}, \underset{+}{CPI})
 $$
 
-### Financial Money Market
-M1B:
+
+### 金融貨幣市場
+狹義貨幣總計數 (M1B):
 $$
 M1B = f(\underset{-}{CPI}, \underset{+}{GDP}, \underset{+}{\frac{VSTOCK^{nominal}}{CPI}},\\ \underset{-}{TDR1Y - NOTERATE})
 $$
-
-One-year Fixed Deposit Rate (TDR1Y):
+一年期定存利率 (TDR1Y):
 $$
 TDR1Y = f(\underset{+}{REQ}, \underset{+}{IR}, \underset{+}{GDP_{-1}})
 $$
-
-Total Market Capitalization of Listed Stocks (STKVLE$):
+上市櫃股票總市值 (STKVLE$):
 $$
 STKVLE$ = f(\underset{+}{M1B}, \underset{+}{VSTOCK^{nominal}}, \underset{-}{SPIKE2009})
 $$
 
-### Labor Market
 
-Number of Employed (NE):
+### 勞動市場
+就業人數 (NE):
 $$
 NE = f(\underset{+}{NE_{-1}}, \underset{-}{\frac{WG^{nominal}}{CPI}}, \underset{+}{GDP})
 $$
 
-Monthly Wages per Worker in Industry and Service Sectors (WG$):
+工業及服務業受僱員工每人每月薪資 (WG$):
 $$
 WG^{nominal} = f(\underset{+}{MINWGM^{nominal}}, \underset{+}{(GDP^{nom}_{-1} - DEP^{nom}_{-1})}, \\  \underset{+}{Q1}, \underset{-}{DIP2007}, \underset{+}{ELBOW2009})
 $$
 
-### Tax Revenues
-Tax Revenues (TAX$):
+### 賦稅收入
+賦稅收入 (TAX$):
 $$
 TAX^{nominal} = f(\underset{+}{GDP^{nominal}_{-1}}, \underset{+}{EX^{nominal}+C^{nominal}},\\ \underset{+}{VSTOCK^{nominal}}, \underset{-}{Q1}, \underset{+}{Q2})
 $$
 
-## Identities
+## 定義式
 
-Nominal Private Consumption (C$):
+名目民間消費 (C$):
 $$
 C^{nominal} = C * \frac{PC}{100}
 $$
-Nominal Government Consumption (CG$):
+
+名目政府消費 (CG$):
 $$
 CG^{nominal} = Community Services + Culture + \\Economic Affairs + Education + \\Environment Protection + Public Affairs +\\ National Health Insurance + National Defense +\\ Public Safety + Social Security
 $$
 
-Real Government Consumption (CG):
+實質政府消費 (CG):
 $$
 CG = \frac{CG^{nom}}{PCG}*100
 $$
 
-Real Government Fixed Investment (IG):
+實質政府固定投資 (IG):
 $$
 IG = \frac{IG^{nom}}{PIG}*100
 $$
-Real Fixed Investment in Public Enterprises (IPC):
+
+實質公營事業固定投資 (IPC):
 $$
 IPC = \frac{IPC^{nom}}{PIPC}*100
 $$
-Nominal Private Fixed Investment (IBF$):
+
+名目民間固定投資 (IBF$):
 $$
 IBF^{nominal} = IBF * \frac{PIBF}{100}
 $$
-
-Nominal Gross Capital Formation (GCF$):
+名目資本形成毛額 (GCF$):
 $$
 GCF^{nominal} = IG^{nom} + IPC^{nom} + IBF^{nom} + JJ^{nom}
 $$
-Real Gross Captial Formation (GCF):
+
+實質資本形成毛額 (GCF):
 $$
 GCF = \frac{GCF^{nom}}{PGCF}*100
 $$
 
-Real Exports of Goods and Services (EX):
-$$
-EX = EX_{-1} * (1 + (\frac{\frac{EXG^{nom}_{-1}}{GDP^{nom}_{-1}}* \Delta{EXG} + \frac{EXS^{nom}_{-1}}{GDP^{nom}_{-1}}* \Delta{EXS}}{\frac{EX^{nom}_{-1}}{GDP^{nom}_{-1}}*100}))
-$$
-
-Real Imports of Goods and Services (IM):
-$$
-IM = IM_{-1} * (1 + (\frac{\frac{IMG^{nom}_{-1}}{GDP^{nom}_{-1}}* \Delta{IMG} + \frac{IMS^{nom}_{-1}}{GDP^{nom}_{-1}}* \Delta{IMS}}{\frac{IM^{nom}_{-1}}{GDP^{nom}_{-1}}*100}))
-$$
-Nominal Exports of Goods and Services (EX$):
+名目商品及服務輸出 (EX$):
 $$
 EX^{nominal} = EX * \frac{PEX}{100}
 $$
-Nominal Imports of Goods and Services (IM$):
+
+名目商品及服務輸入 (IM$):
 $$
 IM^{nominal} = IM * \frac{PIM}{100}
 $$
-Nominal Exports of Goods, Transportation, and Insurance (EXG$):
-$$
-EXG^{nominal} = EX^{nom} * WEIGHTEXG^{nom}
-$$
-Nominal Imports of Goods, Transportation, and Insurance (IMG$):
-$$
-IMG^{nominal} = IM^{nom} * WEIGHTIMG^{nom}
-$$
-Nominal Other Exports (EXS$):
-$$
-EXS^{nominal} = EX^{nom} - EXG^{nom}
-$$
-Nominal Other Imports (IMS$):
-$$
-IMS^{nominal} = IM^{nom} - IMG^{nom}
-$$
-GDP Growth Rate (PCH GDP):
+
+經濟成長率 (PCH_GDP):
 $$
 \Delta{GDP}\% = \frac{C^{nom}_{-1}}{GDP^{nom}_{-1}}*\Delta{C}\% + \frac{CG^{nom}_{-1}}{GDP^{nom}_{-1}}*\Delta{CG}\% + \\
 \frac{EX^{nom}_{-1}}{GDP^{nom}_{-1}}*\Delta{EX}\% - \frac{IM^{nom}_{-1}}{GDP^{nom}_{-1}}*\Delta{IM}\%
 $$
-Real GDP
+實質國內生產毛額 (GDP):
 $$
 GDP = C + CG + GCF + EX - IM
 $$
-
-Nominal GDP (GDP$):
+名目國內生產毛額 (GDP$):
 $$
 GDP^{nominal} = C^{nom} + CG^{nom} + GCF^{nom} + EX^{nom} - IM^{nom}
 $$
-GDP Deflator (PGDP):
+
+國內生產毛額物價平減指數 (PGDP):
 $$
 PGDP = \frac{GDP^{nom}}{GDP} * 100
 $$
-Nominal Disposable Income (YDD$):
+名目可支配所得 (YDD$):
 $$
 YDD^{nominal} = GNI^{nom} - DEP^{nom} - TAX^{nom}
 $$
-Nominal GNI (GNI$):
+
+名目國民所得毛額 (GNI$):
 $$
 GNI^{nominal} = GDP^{nom} + FIA^{nom}
 $$
-Consumer Price Index (CPI):
+
+消費者物價指數 (CPI):
 $$
 CPI = CPI_{base} * (0.2972 * \frac{PF}{PF_{base}} + 0.7027 * \frac{PO}{PO_{base}})
 $$
 
-
-
 ***
-# Results
+# 模型結果
 
-## Estimation Results
-Below are the results of the system used to model Taiwan's macroeconomy. The significance level of each term is given in parentheses. The R^2 and Adjusted R^2 for each model in the system are also reported. 
+## 估算結果
+以下為台灣總體經濟計量模型估算結果。 每個變數的顯著性水平在括號中給出。 還報告了系統中每個模型的R ^ 2和調整後的R ^ 2。
 
-Symbol | P-value
+符號 | P值
 ------------- | -------------
  (n.s.) | >= 0.1
  (*) | < 0.1
@@ -474,7 +450,6 @@ Symbol | P-value
  (***) | < 0.01
  (****) | < 0.001
  
-
 ```{r result_formulae, results="asis"}
 
 for(i in 1:nrow(print_bimet_formula_df)){
@@ -487,11 +462,11 @@ for(i in 1:nrow(print_bimet_formula_df)){
 
 ```
 
-## Some Key Takeaways
+## 一些重點
 
-Some of the most interesting and important things to note from this model include:
+此模型比較有興趣的重點為：
 
-1. **Monthly Wages per Worker**: The almost comically large seasonal swings in wage data from Taiwan are actually due to the traditional custom of employers giving out large bonuses (typically the equivalent of 1-2 months worth of wages) leading up to the Lunar New Year celebrations, which fall in Q1 (usually late-January to mid-February).
+1. **每人每月總薪水**: 季節性的大波動是台灣過年給獎金的習慣導致的。
 
 ```{r wage_seasonality}
 econ_data %>%
@@ -499,19 +474,18 @@ econ_data %>%
   ggplot(aes(x = quarterly_date, y = `WG$`)) +
   geom_line() +
   scale_y_continuous(labels = scales::dollar) +
-  labs(title = "Nominal Monthly Wages per Worker in Taiwan",
+  labs(title = "台灣每人每月總薪水",
        x = "",
-       y = "Nominal Monthly Wages (NT$)")
+       y = "名目每人每月總薪水 (NT$)")
 ```
 
+2. **就業人數**： 原本的就業人數方程認為總薪水會有負係數（傳統經濟理論說勞動越貴就業人數就會越低），不過估算時，總薪水在回歸中並不顯著。 此結果其實是根據近年顯示提高薪水導致的經濟增長勝過就業的負面影響之研究。 因此該變數已從模型中刪除。
 
-2. **Number of Employed**: The original theoretical specification included a Nominal Monthly Wage term which would have a negative coefficient (traditional economic theory suggests wage increases drive down employment). While fitting the model, this term had the expected negative coefficient, but it was not actually significant, which aligns with empirical research on wages that shows that the increase in economic activity that results from wage increases outweigh any marginal employment effects. Therefore, this term was removed.
-
-3. **Real Private Fixed Investment**: The interest rate term is not significant, which also aligns with more modern research that shows firms make investment decisions based mostly on their expectations for future growth, and things like interest rates and tax policy have only limited influence. 
+3. **實質民間固定投資**： 利率的變數卻不顯著，也是根據近年的研究結果。 大部分的投資決策主要基於對未來增長的期望，稅策和利率的影響有限。
 
 
-## Predicting on Test Data
-Using the holdout sample from Q1 2017 to Q4 2018 we can see that the model performs reasonably well at modeling the various aspects of Taiwan's macroeconomy. 
+## 測試模型
+利用2017Q1至2018Q4的資料為保留數據我們可以測試此模型的準確性。 結果顯示此模型蠻準確的。
 
 ```{r model_preds}
 long_test_data <- econ_data %>%
@@ -522,12 +496,11 @@ long_test_data <- econ_data %>%
 
 taiwan_bimets_fcast <- SIMULATE(taiwan_bimets_model,
                                 TSRANGE = c(2017,1,2018,4),
-                                simConvergence = 0.000001,
-                                simIterLimit = 100,
+                                simConvergence = 0.00001,
+                                simIterLimit = 500,
                                 simType = "FORECAST",
                                 quietly = TRUE)
 taiwan_bimets_fcast$simulation[[41]] <- NULL
-
 
 taiwan_bimets_preds <- vector("list", length = length(taiwan_bimets_fcast$simulation))
 for(p in 1:length(taiwan_bimets_preds)){
@@ -553,21 +526,19 @@ taiwan_macro_preds %>%
   facet_grid(metric ~ ., scales = "free") +
   scale_color_viridis_d(name = " ") +
   theme(legend.position = "top") +
-  labs(title="Performance of Macroeconomic Model for Taiwan",
+  labs(title="台灣總體經濟計量模型的準確測試",
        x = "",
        y = "")
 ```
 
-
 ***
 
-# Testing Policy Proposals
-With a reasonable model of Taiwan's economy, we can now test various policy proposals to see their impact on the economy.
+# 測試政策建議
 
-## Job Guarantee
-At the heart of a Job Guarantee (JG) is the promise of a liveable wage for everyone. Most proposals and estimates of the impacts of a JG are based on the US case and use USD\$15/hour liveable wage, however, given that the hourly minimum wage in Taiwan for part-time workers is only ~ USD\$5.32/hour (NT$158 as of Jan-2020), we need to determine a more appropriate wage rate for a Taiwanese Job Guarantee. 
+## 就業保證
+就業保證的重點就是給所有的公民一個維生工資。 因為大部分的就業保證研究以美國為主（常聽到的每小時$15 USD），  因此我們需要先決定台灣的維生工資有多少。 
 
-Under Taiwan's current minimum wage system, there is both a Monthly Minimum Wage and an Hourly Minimum Wage to cover full- and part-time workers. These two minimum wage rates are not necessarily tied to each other though, and indeed, in recent years the Hourly Minimum Wage rate has been increased at a faster pace to account for difference in total earnings caused by the difference in hours worked between full- and part-time employees. 
+在台灣現在的基本工資制度下有兩種基本工資： 月薪跟時薪。 這兩種基本工資卻不一定要一起調整， 近年來時薪以更快的速度提高，以解決由全職和兼職員工之間的工作時數差異引起的總收入差異。
 
 ```{r min_wage_yr}
 min_wage_url <- "https://raw.githubusercontent.com/dorseytf/Blog-Replication-Scripts/master/Taiwan%20Min%20Wage%20Dataset.csv"
@@ -578,38 +549,38 @@ min_wage_table <- min_wage_monthly %>%
   mutate(Year = year(quarterly_date)) %>%
   filter(Year >= 2005) %>%
   group_by(Year) %>%
-  summarize(`Monthly Minimum Wage` = last(MINWGM),
-            `Hourly Minimum Wage`  = last(MINWGH)) %>%
-  mutate(`Hourly Rate of Monthly Minimum Wage` = paste0("$", round(`Monthly Minimum Wage`/((40*52)/12),1))) %>%
-  mutate(`Monthly Minimum Wage` = paste0("$", str_sub(`Monthly Minimum Wage`, 1, 2), ",", 
-                                         str_sub(`Monthly Minimum Wage`, 3, -1)),
-         `Hourly Minimum Wage` = paste0("$", `Hourly Minimum Wage`)) 
+  summarize(`每月基本工資` = last(MINWGM),
+            `每時基本工資` = last(MINWGH)) %>%
+  mutate(`每月基本工資的小時率` = paste0("$", round(`每月基本工資`/((40*52)/12),1))) %>%
+  mutate(`每月基本工資` = paste0("$", str_sub(`每月基本工資`, 1, 2), ",", 
+                                         str_sub(`每月基本工資`, 3, -1)),
+         `每時基本工資` = paste0("$", `每時基本工資`)) 
 names(min_wage_table)[4] <- paste0(names(min_wage_table)[4], footnote_marker_symbol(1))
 
 min_wage_table %>%
   kable("html", align = c("c", "c", "c", "c"), escape = "F") %>%
   kable_styling(bootstrap_options = c("striped", "condensed"), full_width = F, font_size = 12) %>%
   row_spec(0, bold = TRUE, background = "grey", color = "white") %>%
-  add_header_above(c("Wage Rates are End of Year values in NT$" = 4), align = "r", background = "white") %>%
-  footnote(symbol = c("Hourly Rate of Monthly Minimum Wage is calculated as Monthly Min. Wage / (40 Hours per week * 52 weeks / 12 months)"))
+  add_header_above(c("基本工資為年低價值(NT$)" = 4), align = "r", background = "white") %>%
+  footnote(symbol = c("每月基本工資的小時率計算為 每月基本工資 / (40小時每禮拜 * 52個禮拜 / 12個月)"))
 ```
 
-Despite the fact that this wage differential is reasonable, given that most people [qualify under the Monthly Minimum Wage](https://www.taiwannews.com.tw/en/news/3523557)^[@twnews_min_wage] and for ease of estimation in this initial model, I will follow the approach used in Tcherneva (2018)^[@tcherneva_jg_design] and set the JG wage rate at the same level for both full- and part-time workers. In future work, I hope to be able to more explicitly model the impacts on full- and part-time workers separately. 
+隨然此工資差異是很合理的，但是鑑於大多數的人是賺[月性的基本工資](https://www.taiwannews.com.tw/en/news/3523557)^[@twnews_min_wage]，也為了簡化估算，我會跟Tcherneva (2018)^[@tcherneva_jg_design] 一樣假設月性跟時性的工資都ㄧ樣。 
 
-Using a monthly minimum wage of $28,000 (as proposed in various places, including by 3rd Parties [such as the NPP](https://www.facebook.com/newpowerparty/photos/%E6%9C%80%E4%BD%8E%E5%B7%A5%E8%B3%87%E6%87%89%E6%BB%BF%E8%B6%B3%E5%8B%9E%E5%B7%A5%E5%9F%BA%E6%9C%AC%E7%94%9F%E6%B4%BB%E9%9C%80%E8%A6%81%E5%8F%B0%E7%81%A3%E5%8B%9E%E5%8B%95%E5%B8%82%E5%A0%B4%E9%95%B7%E6%9C%9F%E5%AD%98%E5%9C%A8%E4%BD%8E%E8%96%AA%E5%8C%96%E5%95%8F%E9%A1%8C%E8%BF%91%E4%BE%86%E5%84%98%E7%AE%A1gdp%E6%9C%89%E6%89%80%E6%88%90%E9%95%B7%E4%BD%86%E5%AF%A6%E8%B3%AA%E8%96%AA%E5%8D%BB%E4%B8%8D%E6%96%B7%E4%B8%8B%E9%99%8D%E8%B2%A7%E5%AF%8C%E5%B7%AE%E8%B7%9D%E6%8C%81%E7%BA%8C%E6%83%A1%E5%8C%96%E4%BD%BF%E5%BE%97%E6%89%80%E5%BE%97%E5%88%86%E9%85%8D%E4%B8%8D%E5%85%AC%E7%9A%84%E5%95%8F%E9%A1%8C%E6%9B%B4%E7%82%BA%E5%9A%B4%E9%87%8D%E4%BD%8E%E8%96%AA%E7%9A%84%E5%95%8F%E9%A1%8C%E4%B9%9F%E9%80%A3/1028666937204662/)) as the JG wage rate, we can test what impact such a plan would have on Taiwan's economy.
+就業保證的工資為NT$28,000，根據各方的推薦（甚至台灣的[各小黨](https://www.facebook.com/newpowerparty/photos/%E6%9C%80%E4%BD%8E%E5%B7%A5%E8%B3%87%E6%87%89%E6%BB%BF%E8%B6%B3%E5%8B%9E%E5%B7%A5%E5%9F%BA%E6%9C%AC%E7%94%9F%E6%B4%BB%E9%9C%80%E8%A6%81%E5%8F%B0%E7%81%A3%E5%8B%9E%E5%8B%95%E5%B8%82%E5%A0%B4%E9%95%B7%E6%9C%9F%E5%AD%98%E5%9C%A8%E4%BD%8E%E8%96%AA%E5%8C%96%E5%95%8F%E9%A1%8C%E8%BF%91%E4%BE%86%E5%84%98%E7%AE%A1gdp%E6%9C%89%E6%89%80%E6%88%90%E9%95%B7%E4%BD%86%E5%AF%A6%E8%B3%AA%E8%96%AA%E5%8D%BB%E4%B8%8D%E6%96%B7%E4%B8%8B%E9%99%8D%E8%B2%A7%E5%AF%8C%E5%B7%AE%E8%B7%9D%E6%8C%81%E7%BA%8C%E6%83%A1%E5%8C%96%E4%BD%BF%E5%BE%97%E6%89%80%E5%BE%97%E5%88%86%E9%85%8D%E4%B8%8D%E5%85%AC%E7%9A%84%E5%95%8F%E9%A1%8C%E6%9B%B4%E7%82%BA%E5%9A%B4%E9%87%8D%E4%BD%8E%E8%96%AA%E7%9A%84%E5%95%8F%E9%A1%8C%E4%B9%9F%E9%80%A3/1028666937204662/)）。
 
-While implementation strategies differ in the literature, we will use a simple 3 year phase-in for the new JG wage rate beginning in 2012 (the full JG wage rate will start in Q1 of 2015). Because a JG is funded by the central government and administered at a local level, the funds for the JG will come from an increase to the Economic Affairs line item of Nominal Government Consumption. 
+就業保證的實施策略不少，此測試會假設計畫實施要分三年逐漸提高薪水，2012年為第一年。因為就業保證的財源來至中央政府，就業保證會提高名目政府消費的經濟事務。
 
-### Assumptions
+### 模型假設
 
-1. JG Monthly Wage Rate = $28,000
-2. Total costs for the JG program are wages + materials and other costs (an additional 15% of wages)
-3. The JG wage rate will be raised gradually to the full $28,000/month with a one-time adjustment each Q1 for 3 years
-4. No difference in the JG wage rate between full- and part-time workers
-5. Number of Jobs Created
+1. 就業保證每月工資 = $28,000
+2. 就業保證的總費用為工資加材料和其他費用(算為工資的15%)
+3. 就業保證每月工資會逐步提高到每月2萬8，每年的Q1會調整一次，期間為3年
+4. 全職和兼職的每時工資率是一樣的
+5. 創造的工作數量  
 
-  + **More Conservative Model:** The JG will only hire those who are unemployed, not bring discouraged workers back into the labor force
-  + **More Realistic Model:** The JG will hire the unemployed as well as bring discouraged workers back into the labor force (assume 100% of those who would like to work but are not currently looking will be incentivized to join the JG)
+    + **較保守的模型:** 就業保證只會僱用失業者，而不會讓灰心喪氣的勞動重返勞動力  
+    + **較實在的模型:** 將僱用失業者，並將沮喪的勞動帶回勞動力 (假設有100％的灰心喪氣的工人會受到激勵加入就業保證)
 
 ```{r jg_forecast}
 jg_start_yr <- 2012
@@ -717,7 +688,7 @@ taiwan_jg_preds_vs_actuals <- taiwan_jg_preds %>%
   group_by(quarterly_date, metric) %>%
   mutate(RMSE = sqrt(mean((Prediction - Actual)^2))) %>%
   gather("type", "value", -c(quarterly_date, metric, RMSE)) %>%
-  mutate(type = ifelse(type == "Prediction", "Conservative JG Model", type))
+  mutate(type = ifelse(type == "Prediction", "較保守的模型", type))
 
 ```
 
@@ -758,55 +729,52 @@ taiwan_jg_preds_vs_actuals_realistic <- taiwan_jg_preds_realistic %>%
   group_by(quarterly_date, metric) %>%
   mutate(RMSE = sqrt(mean((Prediction - Actual)^2))) %>%
   gather("type", "value", -c(quarterly_date, metric, RMSE)) %>%
-  mutate(type = ifelse(type == "Prediction", "Realistic JG Model", type))
-
-
+  mutate(type = ifelse(type == "Prediction", "較實在的模型", type))
 ```
 
 
-
-### Results
-
+### 測試結果
 ```{r plot_jg_fcast}
 taiwan_jg_preds_vs_actuals %>%
   bind_rows(filter(taiwan_jg_preds_vs_actuals_realistic, type != "Actual")) %>%
   filter(metric %in% c("C", "GDP", "CPI", "NE", "WG$")) %>%
+  mutate(type = ifelse(type == "Actual", "實際", type)) %>%
   ggplot(aes(x = quarterly_date, y = value, color = type)) +
   geom_line() +
   facet_grid(metric ~ ., scales = "free") +
   scale_color_viridis_d(name = " ") +
   theme(legend.position = "top") +
-  labs(title="Job Guarantee Simulation Results",
+  labs(title="就業保證模擬結果",
        x = "",
        y = "")
 ```
 
-In addition to increasing employment, implementing a JG in Taiwan would also increase the average monthly wages for everyone in Taiwan by nearly 5%, increase real GDP by approximately 6%, and only increase CPI by 1%, all within the span of a few years. 
+除了增加就業人數，在台灣實施就業保證的話，至第六年還可以使台灣每個人的平均月工資提高快5％，實質GDP增長快6％，並且把CPI只提高1%。
 
-*Simulated JG Impacts - Seasonally Adjusted*
+
+*模擬的就業保證影響 - 季節性調整後*
 ```{r jg_results_tbl}
+
 taiwan_jg_preds_vs_actuals %>%
   bind_rows(filter(taiwan_jg_preds_vs_actuals_realistic, type != "Actual")) %>%
   filter(metric %in% c("C", "GDP", "CPI", "NE", "WG$")) %>%
   select(-RMSE) %>%
   spread(type, value) %>%
   group_by(metric, quarterly_date) %>%
-  mutate(pct_chg_cons = (`Conservative JG Model` - Actual)/Actual,
-         pct_chg_real = (`Realistic JG Model` - Actual)/Actual) %>%
+  mutate(pct_chg_cons = (`較保守的模型` - Actual)/Actual,
+         pct_chg_real = (`較實在的模型` - Actual)/Actual) %>%
   group_by(metric) %>%
   summarize(`Conservative Model - Change by 2018Q4` = paste0(round(mean(pct_chg_cons[which(quarterly_date == as_date("2018-10-01"))]),3)*100, "%"),
             `Conservative Model - Max Change` = paste0(round(max(pct_chg_cons),3)*100, "%"),
             `Realistic Model - Change by 2018Q4` = paste0(round(mean(pct_chg_real[which(quarterly_date == as_date("2018-10-01"))]),3)*100, "%"),
             `Realistic Model - Max Change` = paste0(round(max(pct_chg_real), 3)*100, "%")) %>%
   kable('html', align = c("l", "c", "c", "c", "c"),
-        col.names = c("Metric", "Percent Change in 2018Q4", "2012-2018 Largest Percent Change", 
-                      "Percent Change in 2018Q4", "2012-2018 Largest Percent Change")) %>%
+        col.names = c("變數", "2018年底的差異", "2012-2018年的最大變化", 
+                      "2018年底的差異", "2012-2018年的最大變化")) %>%
   kable_styling(bootstrap_options = c("striped", "condensed"), full_width = F, font_size = 12) %>%
-  add_header_above(c(" " = 1, "Conservative JG Model" = 2, "Realistic JG Model" = 2))
+  add_header_above(c(" " = 1, "較保守的模型" = 2, "較實在的模型" = 2))
   
 ```
 
-
-
-***
-# References
+*** 
+# 參考文獻
