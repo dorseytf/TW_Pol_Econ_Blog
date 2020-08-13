@@ -23,7 +23,7 @@ If you ask someone what they know about Taiwan's politics, the answer will most 
 
 While known for their friendly, welcoming attitude, Taiwanese people take their laws and democracy quite seriously. But how does this play out when legislators are not trying out for the WWE?
 
-Ask any typical Taiwanese person and the answer will fall into one of two groups: 
+Ask any typical Taiwanese person and the answer will fall into one of two categories:
 
 1. Politicians are all pretty lame
 2. If it weren't for [insert disliked party here], Taiwan would be perfect!
@@ -506,6 +506,7 @@ block_model$blockOmega %>%
   left_join(party_en, by = c("Party"="party_zh")) %>%
   select(-Party) %>%
   gather("col_party", "omega", -party_en) %>%
+  mutate(omega = round(omega, 3)) %>%
   rename(Party = party_en) %>%
   left_join(party_en, by = c("col_party"="party_zh")) %>%
   select(Party, party_en, omega) %>%
