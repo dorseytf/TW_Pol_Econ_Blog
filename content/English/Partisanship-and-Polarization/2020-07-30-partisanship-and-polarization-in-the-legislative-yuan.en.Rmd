@@ -506,6 +506,7 @@ block_model$blockOmega %>%
   left_join(party_en, by = c("Party"="party_zh")) %>%
   select(-Party) %>%
   gather("col_party", "omega", -party_en) %>%
+  mutate(omega = round(omega, 3)) %>%
   rename(Party = party_en) %>%
   left_join(party_en, by = c("col_party"="party_zh")) %>%
   select(Party, party_en, omega) %>%
