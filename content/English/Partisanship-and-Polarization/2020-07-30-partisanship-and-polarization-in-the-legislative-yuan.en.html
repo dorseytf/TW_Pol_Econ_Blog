@@ -1,0 +1,488 @@
+---
+title: Partisanship and Polarization in the Legislative Yuan
+author: Travis Dorsey
+date: '2020-08-13'
+slug: partisanship-and-polarization-in-the-legislative-yuan
+categories:
+  - Partisanship and Polarization
+tags:
+  - data
+  - politics
+---
+
+<script src="/rmarkdown-libs/kePrint/kePrint.js"></script>
+
+
+<hr />
+<div id="partisanship-in-taiwan" class="section level1">
+<h1>Partisanship in Taiwan</h1>
+<p>If you ask someone what they know about Taiwan’s politics, the answer will most likely be some combination of the terms “democracy”, “development”, and “China-US Relations” followed quickly by “Isn’t that also the place where this happened?”</p>
+<div class="figure">
+<img src="https://i.cbc.ca/1.2539453.1392567310!/fileImage/httpImage/image.jpg_gen/derivatives/16x9_780/taiwan.jpg" alt="Brawls in the Legislative Yuan, like this one from July 2010, are not uncommon" />
+<p class="caption">Brawls in the Legislative Yuan, like this one from July 2010, are not uncommon</p>
+</div>
+<div class="figure">
+<img src="https://thumbs.gfycat.com/BeautifulActualKob-size_restricted.gif" alt="Another Classic" />
+<p class="caption">Another Classic</p>
+</div>
+<p>While known for their friendly, welcoming attitude, Taiwanese people take their laws and democracy quite seriously. But how does this play out when legislators are not trying out for the WWE?</p>
+<p>Ask any typical Taiwanese person and the answer will fall into one of two groups:</p>
+<ol style="list-style-type: decimal">
+<li>Politicians are all pretty lame</li>
+<li>If it weren’t for [insert disliked party here], Taiwan would be perfect!</li>
+</ol>
+<p>Here, I will attempt to obtain a more nuanced view of this topic by looking at how legislators interact and collaborate on bills. Is one party more likely to cross the aisle? How do Taiwan’s 3rd parties interact with the two larger ones?</p>
+</div>
+<div id="background-on-the-legislative-yuan" class="section level1">
+<h1>Background on the Legislative Yuan</h1>
+<p>The Legislative Yuan is the formal name of Taiwan’s unicameral legislature. Currently, there are 113 members that serve 4-year terms. This is all pretty standard, but where it gets interesting is how these members are elected.</p>
+<ul>
+<li>73 are first-past-the-post elections in single-member constituencies</li>
+<li>34 are proportional representation elections based on nation-wide votes (must get 5% of the vote to enter parliament, and half of the legislators from each party must be female)</li>
+<li>6 are elected by indigenous peoples voters through single non-transferable vote in two three-member constituencies.</li>
+</ul>
+<p>Because of this mixed voting structure, Taiwan currently has 5 different parties represented in the Legislative Yuan (plus one independent legislator) and is the <a href="https://www.aljazeera.com/news/2020/01/taiwan-female-politicians-forge-path-equality-200131033602459.html">most gender equitable legislature in Asia</a> with 42% of seats held by women.</p>
+</div>
+<div id="data-and-methodology" class="section level1">
+<h1>Data and Methodology</h1>
+<p>The data on proposed bills and cosignatories, as well as each legislator’s party affiliation, sex, and committees they served on, come directly from the <a href="https://data.ly.gov.tw/getds.action?id=20">Legislative Yuan</a>.</p>
+<p>In all honesty, this post is largely just an excuse to test out a cool new technique I found called <a href="https://cran.r-project.org/web/packages/ghypernet/vignettes/Tutorial_NRM.html">generalized hypergeometric ensembles (gHypEG) regressions</a>, but I think this is a perfect application that can give some interesting new context to Taiwan’s Legislative arena (or should I say battle dome).</p>
+</div>
+<div id="exploring-co-sponsorship-in-the-legislative-yuan" class="section level1">
+<h1>Exploring Co-Sponsorship in the Legislative Yuan</h1>
+<div id="visualizing-the-network" class="section level2">
+<h2>Visualizing the Network</h2>
+<p>Just a cursory look at the co-sponsorship activities in the Legislative Yuan suggests a great deal of partisanship, with most activity occurring within parties or parties in the same camp. (The Pan-Green Coalition includes parties typically aligned with the DPP, such as the New Power Party, Taiwan Statebuilding Party, etc. The Pan-Blue Camp includes parties typically aligned with the KMT, such as the People First Party and New Party).</p>
+<p><img src="/English/Partisanship-and-Polarization/2020-07-30-partisanship-and-polarization-in-the-legislative-yuan.en_files/figure-html/unnamed-chunk-1-1.png" width="672" /></p>
+<p><img src="/English/Partisanship-and-Polarization/2020-07-30-partisanship-and-polarization-in-the-legislative-yuan.en_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
+</div>
+<div id="ghypeg-regression" class="section level2">
+<h2>gHypEG Regression</h2>
+<p>Here I fit a few gHypEG regressions to estimate how various legislator attributes impact the likelihood of co-sponsoring a bill. In addition to looking at reciprocity, which has been shown to be an important part of many legislative networks, I also test whether legislators of the same sex, region, and party affiliation are more likely to co-sponsor bills in the Legislative Yuan.</p>
+<table class="table table-condensed table-bordered" style="width: auto !important; margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="border-bottom:hidden" colspan="1">
+</th>
+<th style="border-bottom:hidden; padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="2">
+<div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">
+Coefficient Estimates
+</div>
+</th>
+<th style="border-bottom:hidden; padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="2">
+<div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">
+Goodness of Fit
+</div>
+</th>
+</tr>
+<tr>
+<th style="text-align:center;">
+Model
+</th>
+<th style="text-align:center;">
+Variable
+</th>
+<th style="text-align:center;">
+Estimate
+</th>
+<th style="text-align:center;">
+AIC
+</th>
+<th style="text-align:center;">
+R^2
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center;">
+Reciprocity-Only Model
+</td>
+<td style="text-align:center;">
+reciprocity
+</td>
+<td style="text-align:center;">
+0.304 ***
+</td>
+<td style="text-align:center;">
+973426.5
+</td>
+<td style="text-align:center;">
+0.32
+</td>
+</tr>
+<tr>
+<td style="text-align:center;vertical-align: middle !important;" rowspan="3">
+Covariates Model
+</td>
+<td style="text-align:center;">
+Party
+</td>
+<td style="text-align:center;">
+0.825 ***
+</td>
+<td style="text-align:center;vertical-align: middle !important;" rowspan="3">
+936064.5
+</td>
+<td style="text-align:center;vertical-align: middle !important;" rowspan="3">
+0.35
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Place
+</td>
+<td style="text-align:center;">
+0.045 ***
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Sex
+</td>
+<td style="text-align:center;">
+-0.006 ***
+</td>
+</tr>
+<tr>
+<td style="text-align:center;vertical-align: middle !important;" rowspan="3">
+No Degree Correlation Model
+</td>
+<td style="text-align:center;">
+Party
+</td>
+<td style="text-align:center;">
+1.077 ***
+</td>
+<td style="text-align:center;vertical-align: middle !important;" rowspan="3">
+2570160.7
+</td>
+<td style="text-align:center;vertical-align: middle !important;" rowspan="3">
+0.27
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Place
+</td>
+<td style="text-align:center;">
+-0.136 ***
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Sex
+</td>
+<td style="text-align:center;">
+0.025 ***
+</td>
+</tr>
+</tbody>
+<tfoot>
+<tr>
+<td style="padding: 0; border: 0;" colspan="100%">
+<span style="font-style: italic;">Note: </span>
+</td>
+</tr>
+<tr>
+<td style="padding: 0; border: 0;" colspan="100%">
+<sup></sup> *** - p &lt; 0.001, ** - p &lt; 0.01, * - p &lt; 0.05
+</td>
+</tr>
+</tfoot>
+</table>
+<p>Based on the above results, we can see that two legislators being from the same party increases the odds of co-sponsoring a bill by a factor of <span class="math inline">\((10^{0.825})/(1^{0.825}) =\)</span> 6.68. In contrast, being from the same city/county only increases the odds by a factor of 1.1. This suggests that partisanship does indeed play a large role in determining co-sponsorship of bills.</p>
+<p>Given this strong clustering effect, we can also try another type of model known as a Block-Constrained Configuration Model to see if this improves our fit. Essentially, the BCCM treats each party as a block and looks at interactions at this level rather than an individual legislator level.</p>
+<table class="table table-condensed table-bordered" style="width: auto !important; margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:center;">
+Model
+</th>
+<th style="text-align:center;">
+AIC
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center;">
+Block-Constrained Configuration Model
+</td>
+<td style="text-align:center;">
+668107.4
+</td>
+</tr>
+</tbody>
+</table>
+<p>Given the lower AIC score, we can definitely say the Block-Constrained Configuration Model provides a better fit to the data, and again suggests that co-sponsorship operates largely along party lines. Digging into the estimates for the block-matrix, we again see that these results align with the typical Pan-Green vs Pan-Blue political narrative.</p>
+<table class="table table-condensed table-bordered" style="width: auto !important; margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+Party
+</th>
+<th style="text-align:center;">
+DPP
+</th>
+<th style="text-align:center;">
+Independent
+</th>
+<th style="text-align:center;">
+KMT
+</th>
+<th style="text-align:center;">
+LYT
+</th>
+<th style="text-align:center;">
+NPP
+</th>
+<th style="text-align:center;">
+PFP
+</th>
+<th style="text-align:center;">
+TPP
+</th>
+<th style="text-align:center;">
+TSU
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+DPP
+</td>
+<td style="text-align:center;">
+0.0205642
+</td>
+<td style="text-align:center;">
+0.0160869
+</td>
+<td style="text-align:center;">
+0.0012280
+</td>
+<td style="text-align:center;">
+0.0046516
+</td>
+<td style="text-align:center;">
+0.0150566
+</td>
+<td style="text-align:center;">
+0.0068348
+</td>
+<td style="text-align:center;">
+0.0018119
+</td>
+<td style="text-align:center;">
+0.0188195
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Independent
+</td>
+<td style="text-align:center;">
+0.0170935
+</td>
+<td style="text-align:center;">
+0.4194928
+</td>
+<td style="text-align:center;">
+0.0065235
+</td>
+<td style="text-align:center;">
+0.0080526
+</td>
+<td style="text-align:center;">
+0.8082052
+</td>
+<td style="text-align:center;">
+0.0127653
+</td>
+<td style="text-align:center;">
+0.0647405
+</td>
+<td style="text-align:center;">
+0.0004603
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+KMT
+</td>
+<td style="text-align:center;">
+0.0012347
+</td>
+<td style="text-align:center;">
+0.0027985
+</td>
+<td style="text-align:center;">
+0.0449958
+</td>
+<td style="text-align:center;">
+0.0372615
+</td>
+<td style="text-align:center;">
+0.0059653
+</td>
+<td style="text-align:center;">
+0.0347707
+</td>
+<td style="text-align:center;">
+0.0048846
+</td>
+<td style="text-align:center;">
+0.0036512
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+LYT
+</td>
+<td style="text-align:center;">
+0.0068655
+</td>
+<td style="text-align:center;">
+0.0011977
+</td>
+<td style="text-align:center;">
+0.0281379
+</td>
+<td style="text-align:center;">
+0.0221830
+</td>
+<td style="text-align:center;">
+0.0000000
+</td>
+<td style="text-align:center;">
+0.0366107
+</td>
+<td style="text-align:center;">
+0.0000000
+</td>
+<td style="text-align:center;">
+0.0132321
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+NPP
+</td>
+<td style="text-align:center;">
+0.0117807
+</td>
+<td style="text-align:center;">
+0.6924999
+</td>
+<td style="text-align:center;">
+0.0046726
+</td>
+<td style="text-align:center;">
+0.0000000
+</td>
+<td style="text-align:center;">
+1.0000000
+</td>
+<td style="text-align:center;">
+0.0134115
+</td>
+<td style="text-align:center;">
+0.0000000
+</td>
+<td style="text-align:center;">
+0.0000000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+PFP
+</td>
+<td style="text-align:center;">
+0.0053880
+</td>
+<td style="text-align:center;">
+0.0073261
+</td>
+<td style="text-align:center;">
+0.0298611
+</td>
+<td style="text-align:center;">
+0.0078702
+</td>
+<td style="text-align:center;">
+0.0295363
+</td>
+<td style="text-align:center;">
+0.0300932
+</td>
+<td style="text-align:center;">
+0.0000000
+</td>
+<td style="text-align:center;">
+0.0146420
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+TPP
+</td>
+<td style="text-align:center;">
+0.0040375
+</td>
+<td style="text-align:center;">
+0.0524218
+</td>
+<td style="text-align:center;">
+0.0446336
+</td>
+<td style="text-align:center;">
+0.0000000
+</td>
+<td style="text-align:center;">
+0.1813364
+</td>
+<td style="text-align:center;">
+0.0000000
+</td>
+<td style="text-align:center;">
+0.0000000
+</td>
+<td style="text-align:center;">
+0.0000000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+TSU
+</td>
+<td style="text-align:center;">
+0.0194133
+</td>
+<td style="text-align:center;">
+0.0000000
+</td>
+<td style="text-align:center;">
+0.0020511
+</td>
+<td style="text-align:center;">
+0.0249095
+</td>
+<td style="text-align:center;">
+0.0000000
+</td>
+<td style="text-align:center;">
+0.0208262
+</td>
+<td style="text-align:center;">
+0.0000000
+</td>
+<td style="text-align:center;">
+0.0280357
+</td>
+</tr>
+</tbody>
+</table>
+<p>In a block-constraint configuration model, estimates along the diagonal show how dense each block is, while the off-diagonal values show how likely cross-party ties are. For instance, the first row shows that the DPP is most likely to co-sponsor bills with other DPP members (0.02 is the max of the row), but also works closely with the TSU (0.019), Independents (0.016), and the NPP (0.015). These are all significantly higher than the values for parties in the Pan-Blue camp, such as the KMT (0.0012). The KMT is simliarly focused on its own Pan-Blue camp member parties.</p>
+</div>
+</div>
