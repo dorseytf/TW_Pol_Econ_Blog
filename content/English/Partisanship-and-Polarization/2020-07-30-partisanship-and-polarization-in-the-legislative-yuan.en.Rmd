@@ -1,0 +1,519 @@
+---
+title: Partisanship and Polarization in the Legislative Yuan
+author: Travis Dorsey
+date: '2020-08-13'
+slug: partisanship-and-polarization-in-the-legislative-yuan
+categories:
+  - Partisanship and Polarization
+tags:
+  - data
+  - politics
+---
+
+
+***
+
+# Partisanship in Taiwan
+
+If you ask someone what they know about Taiwan's politics, the answer will most likely be some combination of the terms "democracy", "development", and "China-US Relations" followed quickly by "Isn't that also the place where this happened?"
+
+![Brawls in the Legislative Yuan, like this one from July 2010, are not uncommon](https://i.cbc.ca/1.2539453.1392567310!/fileImage/httpImage/image.jpg_gen/derivatives/16x9_780/taiwan.jpg)
+
+![Another Classic](https://thumbs.gfycat.com/BeautifulActualKob-size_restricted.gif)
+
+While known for their friendly, welcoming attitude, Taiwanese people take their laws and democracy quite seriously. But how does this play out when legislators are not trying out for the WWE?
+
+Ask any typical Taiwanese person and the answer will fall into one of two groups: 
+
+1. Politicians are all pretty lame
+2. If it weren't for [insert disliked party here], Taiwan would be perfect!
+
+Here, I will attempt to obtain a more nuanced view of this topic by looking at how legislators interact and collaborate on bills. Is one party more likely to cross the aisle? How do Taiwan's 3rd parties interact with the two larger ones? 
+
+# Background on the Legislative Yuan
+The Legislative Yuan is the formal name of Taiwan's unicameral legislature. Currently, there are 113 members that serve 4-year terms. This is all pretty standard, but where it gets interesting is how these members are elected.
+
+  - 73 are first-past-the-post elections in single-member constituencies
+  - 34 are proportional representation elections based on nation-wide votes (must get 5% of the vote to enter parliament, and half of the legislators from each party must be female)
+  - 6 are elected by indigenous peoples voters through single non-transferable vote in two three-member constituencies.
+  
+Because of this mixed voting structure, Taiwan currently has 5 different parties represented in the Legislative Yuan (plus one independent legislator) and is the [most gender equitable legislature in Asia](https://www.aljazeera.com/news/2020/01/taiwan-female-politicians-forge-path-equality-200131033602459.html) with 42% of seats held by women. 
+
+
+# Data and Methodology
+
+The data on proposed bills and cosignatories, as well as each legislator's party affiliation, sex, and committees they served on, come directly from the [Legislative Yuan](https://data.ly.gov.tw/getds.action?id=20).
+
+```{r get_leg_bills, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(warning = FALSE)
+knitr::opts_chunk$set(message = FALSE)
+
+library(tidyverse)
+library(scales)
+library(janitor)
+library(ggraph)
+library(ghypernet)
+library(kableExtra)
+library(igraph)
+library(showtext)
+
+
+### Get data on proposed bills
+leg_bills <- read_csv("/Users/sharedcomputer/MMT in Taiwan/Analysis Replication Files/Raw Leg Proposals Data.csv") %>%
+  filter(!is.na(billProposer)) %>%
+  mutate(new_bill_num = paste0(term, sessionPeriod, sessionTimes)) %>%
+  group_by(term) %>%
+  mutate(new_row = 10000 + row_number()) %>%
+  ungroup() %>%
+  mutate(billNo = paste0(new_bill_num, new_row)) %>%
+  select(-c(new_bill_num, new_row)) %>%
+  group_by(billNo) %>%
+  mutate(billProposer = str_trim(billProposer),
+         billCosignatory = str_trim(billCosignatory)) %>%
+  mutate(billProposer = str_split(billProposer, "\\s\\s"),
+         billCosignatory = str_split(billCosignatory, "\\s\\s")) %>%
+  distinct() %>%
+  ungroup()
+
+bill_proposer_df <- leg_bills %>%
+  select(billNo, billName, term, billStatus, billOrg, billProposer) %>%
+  unnest(billProposer) %>%
+  filter(billProposer != "") %>%
+  rename(leg_member = billProposer) %>%
+  mutate(leg_member = str_trim(leg_member)) %>%
+  mutate(leg_member = str_replace(leg_member, "鄭天財 Sra Kacaw Sra Kacaw", "鄭天財 Sra Kacaw　　")) %>%
+  mutate(leg_member = str_replace(leg_member, "鄭天財Sra Kacaw", "鄭天財 Sra Kacaw　　")) %>%
+  mutate(leg_member = str_replace(leg_member, "鄭天財Sra　　Kacaw", "鄭天財 Sra Kacaw　　")) %>%
+  mutate(leg_member = str_replace(leg_member, "鄭天財Sra　Kacaw", "鄭天財 Sra Kacaw　　")) %>%
+  mutate(leg_member = str_replace(leg_member, "鄭天財 Sra KacawSra Kacaw", "鄭天財 Sra Kacaw　　")) %>%
+  mutate(leg_member = str_replace(leg_member, "鄭天財 Sra Kacaw ", "鄭天財 Sra Kacaw　　")) %>%
+  mutate(leg_member = str_replace(leg_member, "Kolas Yotaka", "Kolas Yotaka　　")) %>%
+  mutate(leg_member = str_replace_all(leg_member, "　", "　　")) %>% 
+  mutate(leg_member = str_split(leg_member, "　　")) %>%
+  unnest(leg_member) %>%
+  mutate(bill_role = "Proposer") %>%
+  filter(!str_detect(leg_member, "本院委員")) %>%
+  mutate(leg_member = case_when(leg_member == "鄭天財" ~ "鄭天財 Sra Kacaw",
+                                leg_member == "王惠美廖正井" ~ "王惠美　　廖正井",
+                                leg_member == "陳曼麗 劉世芳" ~ "陳曼麗　　劉世芳",
+                                leg_member == "吳焜裕Kolas Yotaka" ~ "吳焜裕　　Kolas Yotaka",
+                                leg_member == "鄭寶清 陳明文" ~ "鄭寶清　　陳明文",
+                                leg_member == "吳秉叡Kolas Yotaka" ~ "吳秉叡　　Kolas Yotaka",
+                                leg_member == "鄭天財 Sra Kacaw 王惠美" ~ "鄭天財 Sra Kacaw　　王惠美",
+                                leg_member == "鄭天財 Sra Kacaw 曾銘宗" ~ "鄭天財 Sra Kacaw　　曾銘宗",
+                                leg_member == "吳秉叡Kolas Yotaka" ~ "吳秉叡　　Kolas Yotaka",
+                                leg_member == "段宜康 邱泰源" ~ "段宜康　　邱泰源",
+                                leg_member == "江啟臣 曾銘宗" ~ "江啟臣　　曾銘宗",
+                                leg_member == "江啟臣 曾銘宗" ~ "江啟臣　　曾銘宗",
+                                leg_member == "黃偉哲Kolas Yotaka" ~ "黃偉哲　　Kolas Yotaka",
+                                leg_member == "江啟臣 鄭天財 Sra Kacaw" ~ "江啟臣　　鄭天財 Sra Kacaw",
+                                leg_member == "陳曼麗 王定宇" ~ "陳曼麗　　王定宇",
+                                leg_member == "伍麗華 Saidhai Tahovecahe" ~ "伍麗華Saidhai‧Tahovecahe",
+                                leg_member == "伍麗華" ~ "伍麗華Saidhai‧Tahovecahe",
+                                leg_member == "Kolas" ~ "Kolas Yotaka",
+                                leg_member == "Kolas Yotaka" ~ "Kolas Yotaka",
+                                leg_member == "高潞‧以用‧巴魕剌" ~ "高潞．以用．巴魕剌Kawlo．Iyun．Pacidal",
+                                leg_member == "李俊俋 陳曼麗" ~ "李俊俋　　陳曼麗",
+                                leg_member == "鄭天財Sra" ~ "鄭天財 Sra Kacaw",
+                                leg_member == "鄭天財 Sra Kacaw" ~ "鄭天財 Sra Kacaw",
+                                leg_member == "高金素" ~ "高金素梅",
+                                leg_member == "簡東明" ~ "簡東明Uliw．Qaljupayare",
+                                leg_member == "廖國棟" ~ "廖國棟Sufin‧Siluko",
+                                leg_member == "顏寬恆" ~ "顏寬恒",
+                                leg_member == "邱文" ~ "邱文彥",
+                                leg_member == "潘維綱" ~ "潘維剛",
+                                leg_member == "陳賴素" ~ "陳賴素美",
+                                leg_member == "王惠" ~ "王惠美",
+                                leg_member == "林麗嬋" ~ "林麗蟬",
+                                leg_member == "周陳秀" ~ "周陳秀霞",
+                                leg_member == "吳志楊" ~ "吳志揚",
+                                leg_member == "陳秀寶" ~ "陳秀寳",
+                                leg_member == "謝衣" ~ "謝衣鳳",
+                                leg_member == "傅萁" ~ "傅崐萁",
+                                leg_member == "陳柏維" ~ "陳柏惟",
+                                TRUE ~ leg_member)) %>%
+  mutate(leg_member = str_split(leg_member, "　　")) %>%
+  unnest(leg_member) %>%
+  mutate(leg_member = str_trim(leg_member)) %>%
+  filter(!leg_member %in% c("Yotaka", "Kacaw"))
+
+bill_cosigner_df <- leg_bills %>%
+  select(billNo, billName, term, billStatus, billOrg, billCosignatory) %>%
+  unnest(billCosignatory) %>%
+  filter(billCosignatory != "") %>%
+  rename(leg_member = billCosignatory) %>%
+  mutate(leg_member = str_trim(leg_member)) %>%
+  mutate(leg_member = str_replace(leg_member, "鄭天財 Sra Kacaw Sra Kacaw", "鄭天財 Sra Kacaw　　")) %>%
+  mutate(leg_member = str_replace(leg_member, "鄭天財Sra Kacaw", "鄭天財 Sra Kacaw　　")) %>%
+  mutate(leg_member = str_replace(leg_member, "鄭天財Sra　　Kacaw", "鄭天財 Sra Kacaw　　")) %>%
+  mutate(leg_member = str_replace(leg_member, "鄭天財Sra　Kacaw", "鄭天財 Sra Kacaw　　")) %>%
+  mutate(leg_member = str_replace(leg_member, "鄭天財 Sra KacawSra Kacaw", "鄭天財 Sra Kacaw　　")) %>%
+  mutate(leg_member = str_replace(leg_member, "鄭天財 Sra Kacaw ", "鄭天財 Sra Kacaw　　")) %>%
+  mutate(leg_member = str_replace(leg_member, "Kolas Yotaka", "Kolas Yotaka　　")) %>%
+  mutate(leg_member = str_replace_all(leg_member, "　", "　　")) %>% 
+  mutate(leg_member = str_split(leg_member, "　　")) %>%
+  unnest(leg_member) %>%
+  mutate(bill_role = "Cosignatory") %>%
+  filter(!str_detect(leg_member, "本院委員")) %>%
+  mutate(leg_member = case_when(leg_member == "鄭天財" ~ "鄭天財 Sra Kacaw",
+                                leg_member == "王惠美廖正井" ~ "王惠美　　廖正井",
+                                leg_member == "陳曼麗 劉世芳" ~ "陳曼麗　　劉世芳",
+                                leg_member == "吳焜裕Kolas Yotaka" ~ "吳焜裕　　Kolas Yotaka",
+                                leg_member == "鄭寶清 陳明文" ~ "鄭寶清　　陳明文",
+                                leg_member == "吳秉叡Kolas Yotaka" ~ "吳秉叡　　Kolas Yotaka",
+                                leg_member == "鄭天財 Sra Kacaw 王惠美" ~ "鄭天財 Sra Kacaw　　王惠美",
+                                leg_member == "鄭天財 Sra Kacaw 曾銘宗" ~ "鄭天財 Sra Kacaw　　曾銘宗",
+                                leg_member == "吳秉叡Kolas Yotaka" ~ "吳秉叡　　Kolas Yotaka",
+                                leg_member == "段宜康 邱泰源" ~ "段宜康　　邱泰源",
+                                leg_member == "江啟臣 曾銘宗" ~ "江啟臣　　曾銘宗",
+                                leg_member == "江啟臣 曾銘宗" ~ "江啟臣　　曾銘宗",
+                                leg_member == "黃偉哲Kolas Yotaka" ~ "黃偉哲　　Kolas Yotaka",
+                                leg_member == "江啟臣 鄭天財 Sra Kacaw" ~ "江啟臣　　鄭天財 Sra Kacaw",
+                                leg_member == "陳曼麗 王定宇" ~ "陳曼麗　　王定宇",
+                                leg_member == "伍麗華 Saidhai Tahovecahe" ~ "伍麗華Saidhai‧Tahovecahe",
+                                leg_member == "伍麗華" ~ "伍麗華Saidhai‧Tahovecahe",
+                                leg_member == "Kolas" ~ "Kolas Yotaka",
+                                leg_member == "Kolas Yotaka" ~ "Kolas Yotaka",
+                                leg_member == "高潞‧以用‧巴魕剌" ~ "高潞．以用．巴魕剌Kawlo．Iyun．Pacidal",
+                                leg_member == "李俊俋 陳曼麗" ~ "李俊俋　　陳曼麗",
+                                leg_member == "鄭天財Sra" ~ "鄭天財 Sra Kacaw",
+                                leg_member == "鄭天財 Sra Kacaw" ~ "鄭天財 Sra Kacaw",
+                                leg_member == "高金素" ~ "高金素梅",
+                                leg_member == "簡東明" ~ "簡東明Uliw．Qaljupayare",
+                                leg_member == "廖國棟" ~ "廖國棟Sufin‧Siluko",
+                                leg_member == "顏寬恆" ~ "顏寬恒",
+                                leg_member == "邱文" ~ "邱文彥",
+                                leg_member == "潘維綱" ~ "潘維剛",
+                                leg_member == "陳賴素" ~ "陳賴素美",
+                                leg_member == "王惠" ~ "王惠美",
+                                leg_member == "林麗嬋" ~ "林麗蟬",
+                                leg_member == "周陳秀" ~ "周陳秀霞",
+                                leg_member == "吳志楊" ~ "吳志揚",
+                                leg_member == "陳秀寶" ~ "陳秀寳",
+                                leg_member == "謝衣" ~ "謝衣鳳",
+                                leg_member == "傅萁" ~ "傅崐萁",
+                                leg_member == "陳柏維" ~ "陳柏惟",
+                                TRUE ~ leg_member)) %>%
+  mutate(leg_member = str_split(leg_member, "　　")) %>%
+  unnest(leg_member) %>%
+  mutate(leg_member = str_trim(leg_member)) %>%
+  filter(!leg_member %in% c("Yotaka", "Kacaw"))
+
+cleaned_leg_bills <- bind_rows(bill_proposer_df, bill_cosigner_df) %>%
+  mutate(term = as.integer(term)) %>%
+  filter(leg_member != "")
+
+### Get data on legislators
+legislator_data <- read_csv("/Users/sharedcomputer/MMT in Taiwan/Analysis Replication Files/Legislator Data.csv") %>%
+  mutate(zh_name = str_extract_all(name, "[\U3000-\UFE4F]")) %>%
+  rowwise() %>%
+  mutate(zh_name = str_c(zh_name, collapse = "")) %>%
+  mutate(name = case_when(name == "廖國棟" ~ "廖國棟Sufin‧Siluko",
+                          name == "廖國棟Sufin．Siluko" ~ "廖國棟Sufin‧Siluko",
+                          name == "簡東明" ~ "簡東明Uliw．Qaljupayare",
+                          TRUE ~ name),
+         place = str_sub(areaName, 1, 2))
+
+### Create Covariate dfs
+most_recent_legislator_data <- legislator_data %>%
+  group_by(name) %>%
+  arrange(name, desc(term)) %>%
+  filter(row_number() == 1)
+
+### Combine into one df
+combined_leg_data <- cleaned_leg_bills %>%
+  left_join(legislator_data, by = c("leg_member"="name", "term"="term")) %>%
+  filter(!is.na(party))
+
+### Create Adjacency Matrix and Edge List
+new_proposer_df <- bill_proposer_df %>%
+  select(billNo, Proposer = leg_member) %>%
+  distinct() %>%
+  filter(Proposer != "")
+
+new_cosigner_df <- bill_cosigner_df %>%
+  select(billNo, Cosignatory = leg_member) %>%
+  distinct() %>%
+  filter(Cosignatory != "")
+
+directed_edge_list <- new_proposer_df %>%
+  left_join(new_cosigner_df, by = "billNo") %>%
+  left_join(select(most_recent_legislator_data, name, partyGroup, party, place), by = c("Proposer"="name")) %>%
+  rename(proposer_party = party, proposer_partyGroup = partyGroup, proposer_place = place) %>%
+  left_join(select(most_recent_legislator_data, name, partyGroup, party, place), by = c("Cosignatory"="name")) %>%
+  rename(cosigner_party = party, cosigner_partyGroup = partyGroup, cosigner_place = place) %>%
+  mutate(same_party = ifelse(proposer_party == cosigner_party, TRUE, FALSE),
+         same_partyGroup = ifelse(proposer_partyGroup == cosigner_partyGroup, TRUE, FALSE),
+         same_place = ifelse(proposer_place == cosigner_place, TRUE, FALSE))
+
+summed_edge_list <- directed_edge_list %>%
+  group_by(Proposer, Cosignatory) %>%
+  summarize(n_conn = n_distinct(billNo))
+
+leg_adj_matrix <- expand.grid(unique(combined_leg_data$leg_member), unique(combined_leg_data$leg_member)) %>%
+  rename(Proposer = Var1, Cosignatory = Var2) %>%
+  filter(Proposer != Cosignatory) %>%
+  left_join(summed_edge_list, by = c("Proposer", "Cosignatory")) %>%
+  # replace_na(list(n_conn = 0)) %>%
+  filter(!is.na(n_conn)) %>%
+  el2adj(nodes = unique(combined_leg_data$leg_member))
+
+leg_data_overall <- tibble(leg_member = rownames(leg_adj_matrix)) %>%
+  left_join(most_recent_legislator_data, by = c("leg_member"="name"))
+
+
+### Clean up files
+rm(bill_cosigner_df, bill_proposer_df, leg_bills, new_cosigner_df, new_proposer_df)
+```
+
+In all honesty, this post is largely just an excuse to test out a cool new technique I found called [generalized hypergeometric ensembles (gHypEG) regressions](https://cran.r-project.org/web/packages/ghypernet/vignettes/Tutorial_NRM.html), but I think this is a perfect application that can give some interesting new context to Taiwan's Legislative arena (or should I say battle dome). 
+
+
+# Exploring Co-Sponsorship in the Legislative Yuan
+
+## Visualizing the Network
+Just a cursory look at the co-sponsorship activities in the Legislative Yuan suggests a great deal of partisanship, with most activity occurring within parties or parties in the same camp. (The Pan-Green Coalition includes parties typically aligned with the DPP, such as the New Power Party, Taiwan Statebuilding Party, etc. The Pan-Blue Camp includes parties typically aligned with the KMT, such as the People First Party and New Party).
+
+```{r}
+leg_graph <- graph_from_adjacency_matrix(leg_adj_matrix)
+
+coords <- layout_in_circle(leg_graph)
+
+coord_adj_scalar <- 5
+
+network_parties <- tibble(leg_name = V(leg_graph)$name) %>%
+  left_join(most_recent_legislator_data, by = c("leg_name"="name")) %>%
+  mutate(party_color = case_when(partyGroup == "民主進步黨" ~ "green",
+                                 partyGroup == "中國國民黨" ~ "blue",
+                                 partyGroup == "親民黨" ~ "orange",
+                                 partyGroup == "時代力量" ~ "yellow",
+                                 partyGroup == "台灣民眾黨" ~ "cyan",
+                                 partyGroup == "台灣團結聯盟" ~ "lightblue",
+                                 partyGroup %in% c("0無", "立院新聯盟") ~ "gray")) %>%
+  arrange(partyGroup) %>%
+  mutate(x = coords[,1]*coord_adj_scalar,
+         y = coords[,2]*coord_adj_scalar)
+  
+V(leg_graph)$label <- V(leg_graph)$name
+V(leg_graph)$label.color <- network_parties$party_color
+V(leg_graph)$shape <- "none"
+
+alt_coords <- layout.fruchterman.reingold(leg_graph)
+alt_coords <- layout.norm(alt_coords, ymin = -3, ymax = 3, xmin = -3, xmax = 3)
+
+network_edges_df <- expand.grid(unique(combined_leg_data$leg_member), unique(combined_leg_data$leg_member)) %>%
+  rename(Proposer = Var1, Cosignatory = Var2) %>%
+  filter(Proposer != Cosignatory) %>%
+  left_join(summed_edge_list, by = c("Proposer", "Cosignatory")) %>%
+  filter(!is.na(n_conn)) %>%
+  left_join(select(network_parties, leg_name, from_x = x, from_y = y), by = c("Proposer"="leg_name")) %>%
+  left_join(select(network_parties, leg_name, to_x = x, to_y = y), by = c("Cosignatory"="leg_name")) %>%
+  arrange(desc(n_conn)) %>%
+  filter(row_number() <= 3600)
+
+showtext_auto()
+ggplot(network_parties, aes(x = x, y = y, color = partyGroup)) +
+  geom_curve(data = network_edges_df, 
+             aes(x = from_x, y = from_y, xend = to_x, yend = to_y), 
+             color = "lightgrey",
+             alpha = 0.4) +
+  geom_point() +
+  scale_color_manual(values = c("forestgreen", "blue", "orange", "yellow", "cyan", "lightblue", "white", "gray"),
+                     breaks = c("民主進步黨", "中國國民黨", "親民黨", "時代力量", "台灣民眾黨", "台灣團結聯盟",
+                                "0無", "立院新聯盟"),
+                     labels = c("DPP", "KMT", "PFP", "NPP", "TPP", "TSU", "Independent", "LYT"),
+                     name = "") +
+  theme(panel.background = element_blank(),
+        panel.grid.major = element_blank(),
+        axis.title = element_blank(),
+        axis.text = element_blank(),
+        axis.ticks = element_blank(),
+        title = element_text(size = 12, face = "bold")) +
+  labs(title = "Co-Sponsorship in the Legislative Yuan")
+
+```
+
+
+```{r}
+party_en <- tibble(party_zh = c("0無", "中國國民黨", "台灣團結聯盟", "台灣民眾黨", "時代力量", "民主進步黨",
+                                "立院新聯盟", "親民黨"),
+                   party_en = c("Independent", "KMT", "TSU", "TPP", "NPP", "DPP", "LYT", "PFP"))
+
+source_of_support <- directed_edge_list %>%
+  group_by(proposer_partyGroup, cosigner_partyGroup) %>%
+  summarize(n_conn = n_distinct(billNo)) %>%
+  filter(!is.na(proposer_partyGroup) & !is.na(cosigner_partyGroup)) %>%
+  left_join(party_en, by = c("proposer_partyGroup"="party_zh")) %>%
+  mutate(proposer_partyGroup = party_en) %>%
+  select(-party_en) %>%
+  left_join(party_en, by = c("cosigner_partyGroup"="party_zh")) %>%
+  mutate(cosigner_partyGroup = party_en) %>%
+  select(-party_en) 
+
+source_of_support %>%
+  ggplot(aes(x = proposer_partyGroup, y = n_conn, group = cosigner_partyGroup)) +
+  geom_bar(aes(fill = cosigner_partyGroup), stat = "identity", position = "fill") +
+  scale_fill_manual(values = c("forestgreen", "blue", "orange", "yellow", "cyan", "lightblue", "white", "gray"),
+                     breaks = c("DPP", "KMT", "PFP", "NPP", "TPP", "TSU", "Independent", "LYT"),
+                     labels = c("DPP", "KMT", "PFP", "NPP", "TPP", "TSU", "Independent", "LYT"),
+                     name = "Cosignatory Party") +
+  scale_y_continuous(labels = percent) +
+  labs(title = "Party Breakdown of Cosignatories",
+       x = "Proposer's Party",
+       y = "Proportion of Cosignatories")
+```
+
+
+
+## gHypEG Regression
+Here I fit a few gHypEG regressions to estimate how various legislator attributes impact the likelihood of co-sponsoring a bill. In addition to looking at reciprocity, which has been shown to be an important part of many legislative networks, I also test whether legislators of the same sex, region, and party affiliation are more likely to co-sponsor bills in the Legislative Yuan.
+
+```{r get_covariates}
+### Get reciprocity stats
+reciprocity_overall <- reciprocity_stat(leg_adj_matrix)
+
+# shared_partner_overall <- sharedPartner_stat(leg_adj_matrix, directed = TRUE, weighted = FALSE)
+# shared_partner_overall_w <- sharedPartner_stat(leg_adj_matrix, directed = TRUE, weighted = TRUE)
+
+
+### Get Homophily stats by Categorical Variables
+
+## Party
+party_homophily_overall <- homophily_stat(leg_data_overall$party,
+                                          type = 'categorical',
+                                          nodes = leg_data_overall$leg_member)
+
+## Camp
+camp_homophily_overall <- homophily_stat(leg_data_overall$partyGroup,
+                                         type = 'categorical',
+                                         nodes = leg_data_overall$leg_member)
+
+## Sex
+sex_homophily_overall <- homophily_stat(leg_data_overall$sex,
+                                        type = 'categorical',
+                                        nodes = leg_data_overall$leg_member)
+
+## City/County/Special District
+place_homophily_overall <- homophily_stat(leg_data_overall$place,
+                                        type = 'categorical',
+                                        nodes = leg_data_overall$leg_member)
+
+```
+
+```{r}
+ghype_results_table <- function(model) {
+  model_coef_df <- tibble(Variable = names(model$coef),
+                          coeff = round(as.numeric(model$coef),3),
+                          `Std Error` = round((model$confint[,2] - model$confint[,1])/5.15, 4),
+                          tvalues = coeff/`Std Error`,
+                          pvalue = exp(-0.717*tvalues - 0.416*tvalues^2),
+                          `P-Value` = case_when(pvalue < 0.001 ~ "***",
+                                                pvalue < 0.01 ~ "**",
+                                                pvalue < 0.05 ~ "*"),
+                          Estimate = paste(coeff, `P-Value`),
+                          AIC = model$AIC,
+                          `R^2` = round(model$R2, 2)) %>%
+    select(Variable, Estimate, AIC, `R^2`)
+  
+  # model_se <- tibble(Variable = names(model$coef),
+  #                    Estimate = paste0("(",round((model$confint[,2] - model$confint[,1])/5.15, 4), ")"),
+  #                    AIC = model$AIC,
+  #                    `R^2` = round(model$R2, 2))
+  
+  output_df <- model_coef_df %>%
+    # bind_rows(model_se) %>%
+    arrange(Variable)
+  
+  return(output_df)
+}
+```
+
+
+```{r run_gHypEG}
+
+## Reciprocity-Only Model
+recip_model <- nrm(adj = leg_adj_matrix,
+                   w = list(reciprocity = reciprocity_overall),
+                   directed = TRUE,
+                   selfloops = FALSE,
+                   regular = FALSE)
+
+## Covariates Model
+covar_model <- nrm(adj = leg_adj_matrix,
+                   w = list(Party = party_homophily_overall,
+                            Place = place_homophily_overall,
+                            Sex = sex_homophily_overall),
+                   directed = TRUE,
+                   selfloops = FALSE,
+                   regular = FALSE)
+
+## Without Degree Correction Model
+no_deg_cor_model <- nrm(adj = leg_adj_matrix,
+                        w = list(Party = party_homophily_overall,
+                                 Place = place_homophily_overall,
+                                 Sex = sex_homophily_overall),
+                        directed = TRUE,
+                        selfloops = FALSE,
+                        regular = TRUE)
+
+
+recip_model_table <- ghype_results_table(recip_model) %>%
+  mutate(Model = "Reciprocity-Only Model") %>%
+  select(Model, everything())
+covar_model_table <- ghype_results_table(covar_model) %>%
+  mutate(Model = "Covariates Model") %>%
+  select(Model, everything())
+no_deg_cor_model_table <- ghype_results_table(no_deg_cor_model) %>%
+  mutate(Model = "No Degree Correlation Model") %>%
+  select(Model, everything())
+
+bind_rows(recip_model_table, covar_model_table, no_deg_cor_model_table) %>% 
+  kable(format = "html", align = "c") %>%
+  kable_styling(bootstrap_options = c("condensed", "bordered"), full_width = FALSE) %>%
+  add_header_above(c(" " = 1, "Coefficient Estimates" = 2, "Goodness of Fit" = 2)) %>%
+  collapse_rows(columns = c(1:2, 4:5)) %>%
+  footnote(general = "*** - p < 0.001, ** - p < 0.01, * - p < 0.05")
+
+```
+
+Based on the above results, we can see that two legislators being from the same party increases the odds of co-sponsoring a bill by a factor of $(10^{0.825})/(1^{0.825}) =$ 6.68. In contrast, being from the same city/county only increases the odds by a factor of 1.1. This suggests that partisanship does indeed play a large role in determining co-sponsorship of bills. 
+
+Given this strong clustering effect, we can also try another type of model known as a Block-Constrained Configuration Model to see if this improves our fit. Essentially, the BCCM treats each party as a block and looks at interactions at this level rather than an individual legislator level.
+
+```{r}
+## Block-Constrained Configuration Model
+block_model <- bccm(adj = leg_adj_matrix,
+                    labels = leg_data_overall$partyGroup,
+                    directed = TRUE,
+                    directedBlocks = TRUE,
+                    selfloops = FALSE)
+
+block_model_table <- tibble(Model = "Block-Constrained Configuration Model",
+                            AIC = AIC(block_model))
+
+block_model_table %>%
+  kable("html", align = "c") %>%
+  kable_styling(bootstrap_options = c("condensed", "bordered"), full_width = FALSE)
+```
+
+Given the lower AIC score, we can definitely say the Block-Constrained Configuration Model provides a better fit to the data, and again suggests that co-sponsorship operates largely along party lines. Digging into the estimates for the block-matrix, we again see that these results align with the typical Pan-Green vs Pan-Blue political narrative.
+
+```{r}
+block_model$blockOmega %>%
+  as.data.frame() %>%
+  rownames_to_column(var = "Party") %>%
+  left_join(party_en, by = c("Party"="party_zh")) %>%
+  select(-Party) %>%
+  gather("col_party", "omega", -party_en) %>%
+  rename(Party = party_en) %>%
+  left_join(party_en, by = c("col_party"="party_zh")) %>%
+  select(Party, party_en, omega) %>%
+  spread(party_en, omega) %>%
+  kable("html", align = c("l", "c", "c", "c", "c", "c", "c", "c", "c")) %>%
+  kable_styling(bootstrap_options = c("condensed", "bordered"), full_width = FALSE)
+```
+
+In a block-constraint configuration model, estimates along the diagonal show how dense each block is, while the off-diagonal values show how likely cross-party ties are. For instance, the first row shows that the DPP is most likely to co-sponsor bills with other DPP members (0.02 is the max of the row), but also works closely with the TSU (0.019), Independents (0.016), and the NPP (0.015). These are all significantly higher than the values for parties in the Pan-Blue camp, such as the KMT (0.0012). The KMT is simliarly focused on its own Pan-Blue camp member parties.
+
+
