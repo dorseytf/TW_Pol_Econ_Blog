@@ -429,7 +429,6 @@ ghype_results_table <- function(model) {
 }
 ```
 
-
 ```{r run_gHypEG}
 
 ## Reciprocity-Only Model
