@@ -2,7 +2,7 @@
 title: 製作基本的台灣總體經濟計量模型
 author: 杜欣川
 date: '2020-06-22'
-slug: 總體經濟計量模型
+slug: econ-model-tw-zh
 bibliography: econ_models_bib.bib
 biblio-style: "apalike"
 nocite: |

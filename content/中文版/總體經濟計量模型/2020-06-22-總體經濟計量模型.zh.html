@@ -2,7 +2,7 @@
 title: 製作基本的台灣總體經濟計量模型
 author: 杜欣川
 date: '2020-06-22'
-slug: 總體經濟計量模型
+slug: econ-model-tw-zh
 bibliography: econ_models_bib.bib
 biblio-style: "apalike"
 nocite: |
@@ -42,7 +42,7 @@ tags:
 </ul>
 </div>
 
-<p>根據<a href="https://www.stat.gov.tw/public/Attachment/6531914262FZ3FA2L.pdf">主計總處</a><a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a> 的總體經濟計量模型方法，我會製作一個能夠測試各種政策的台灣總體計量模型如<a href="simulating_jg_us">Fullwiler (2006)</a>。<a href="#fn2" class="footnote-ref" id="fnref2"><sup>2</sup></a> 此模型是依據 Cowles Commission 的聯立方程方式 (如常用來學美國經濟的<a href="https://fairmodel.econ.yale.edu/mmm2/mm2018.pdf">Fairmodel</a><a href="#fn3" class="footnote-ref" id="fnref3"><sup>3</sup></a> 和<a href="http://www.econ.ntu.edu.tw/ter/new/data/new/TER38-1/TER381-1.pdf">林 (2007)</a><a href="#fn4" class="footnote-ref" id="fnref4"><sup>4</sup></a> 的台灣經濟模型)，這種方法不只比VAR 等方式還要準，卻還能給比較仔細又有用的政策測試結構。</p>
+<p>根據<a href="https://www.stat.gov.tw/public/Attachment/6531914262FZ3FA2L.pdf">主計總處</a><a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a> 的總體經濟計量模型方法，我會製作一個能夠測試各種政策的台灣總體計量模型如<a href="simulating_jg_us">Fullwiler (2006)</a>。<a href="#fn2" class="footnoteRef" id="fnref2"><sup>2</sup></a> 此模型是依據 Cowles Commission 的聯立方程方式 (如常用來學美國經濟的<a href="https://fairmodel.econ.yale.edu/mmm2/mm2018.pdf">Fairmodel</a><a href="#fn3" class="footnoteRef" id="fnref3"><sup>3</sup></a> 和<a href="http://www.econ.ntu.edu.tw/ter/new/data/new/TER38-1/TER381-1.pdf">林 (2007)</a><a href="#fn4" class="footnoteRef" id="fnref4"><sup>4</sup></a> 的台灣經濟模型)，這種方法不只比VAR 等方式還要準，卻還能給比較仔細又有用的政策測試結構。</p>
 <hr />
 <div id="變數及方程式" class="section level1">
 <h1><span class="header-section-number">1</span> 變數及方程式</h1>
@@ -711,185 +711,134 @@ CG
 <h2><span class="header-section-number">1.2</span> 方程式</h2>
 <div id="商品市場" class="section level3">
 <h3><span class="header-section-number">1.2.1</span> 商品市場</h3>
-<p>實質民間消費 (C):
-<span class="math display">\[
+<p>實質民間消費 (C): <span class="math display">\[
 C = f(\underset{+}{C_{-1}}, \underset{+}{\frac{YDD^{nominal}}{PGDP}}, \underset{+}{\frac{STKVLE^{nominal}}{CPI}})
-\]</span>
-實質民間固定投資 (IBF):
-<span class="math display">\[
+\]</span> 實質民間固定投資 (IBF): <span class="math display">\[
 IBF = f(\underset{+}{IBF_{-1}}, \underset{+}{IG_{-1}}, \underset{-}{TDR1Y - \Delta(CPI)},\\ \underset{+}{EXG_{-1}},
 \underset{+}{\frac{STKVLE^{nominal}}{CAPSTOCK^{nominal}}}, \underset{-}{SPIKE2008})
-\]</span>
-實質商品及服務輸出 (EX):
-<span class="math display">\[
+\]</span> 實質商品及服務輸出 (EX): <span class="math display">\[
 EX = f(\underset{-}{\frac{PX}{WPX * RX}}, \underset{+}{GDPMAJOR}, \underset{+}{ICSALES^{nominal}},\\
 \underset{+}{OVERSEAREV^{nominal}}, \underset{+}{VISITORS}\\
 \underset{-}{STEP2008}, \underset{-}{Q1}, \underset{-}{Q2})
 \]</span></p>
-<p>實質商品及服務輸入 (IM):
-<span class="math display">\[
+<p>實質商品及服務輸入 (IM): <span class="math display">\[
 IMG = f(\underset{+}{EX}, \underset{+}{C}, \underset{+}{IPC + IBF + JJ}, \underset{+}{OUTBOUND})
 \]</span></p>
 </div>
 <div id="物價" class="section level3">
 <h3><span class="header-section-number">1.2.2</span> 物價</h3>
-<p>進口物價指數 (PM):
-<span class="math display">\[
+<p>進口物價指數 (PM): <span class="math display">\[
 PM = f(\underset{+}{RX}, \underset{-}{JPNRX}, \underset{+}{NONFUEL},\\ \underset{+}{POIL}, \underset{+}{WPX})
-\]</span>
-出口物價指數 (PX):
-<span class="math display">\[
+\]</span> 出口物價指數 (PX): <span class="math display">\[
 PX = f(\underset{+}{PX_{-1}}, \underset{+}{RX}, \underset{+}{PM}, \underset{+}{WTVG})
 \]</span></p>
-<p>國產內銷物價指數 (PD):
-<span class="math display">\[
+<p>國產內銷物價指數 (PD): <span class="math display">\[
 PD = f(\underset{+}{PD_{-1}}, \underset{+}{PM}, \underset{+}{GDP}, \underset{+}{SPIKE2008})
 \]</span></p>
-<p>食物類消費者物價指數 (PF):
-<span class="math display">\[
+<p>食物類消費者物價指數 (PF): <span class="math display">\[
 PF = f(\underset{+}{PF_{-1}}, \underset{+}{FOOD}, \underset{+}{WG^{nominal}_{-1}}, \underset{+}{TYPH_T}, \underset{-}{Q1})
 \]</span></p>
-<p>非食物類消費者物價指數 (PO):
-<span class="math display">\[
+<p>非食物類消費者物價指數 (PO): <span class="math display">\[
 PO = f(\underset{+}{PO_{-1}}, \underset{+}{PM_{-1}}, \underset{+}{PM}, \underset{+}{WG^{nominal}},\\
  \underset{-}{Q1}, \underset{+}{Q2}, \underset{-}{Q3})
-\]</span>
-民間消費物價平減指數 (PC):
-<span class="math display">\[
+\]</span> 民間消費物價平減指數 (PC): <span class="math display">\[
 PC = f(\underset{+}{PF}, \underset{+}{PO})
-\]</span>
-政府消費物價平減指數 (PCG):
-<span class="math display">\[
+\]</span> 政府消費物價平減指數 (PCG): <span class="math display">\[
 PCG = f(\underset{+}{PCG_{-1}},\underset{+}{PO}, \underset{+}{WGP}, \underset{+}{PIG}, \underset{-}{PD})
 \]</span></p>
-<p>民間固定投資物價平減指數 (PIBF):
-<span class="math display">\[
+<p>民間固定投資物價平減指數 (PIBF): <span class="math display">\[
 PIBF = f(\underset{+}{PIBF_{-1}}, \underset{+}{PCON}, \underset{+}{PCA},\\ \underset{+}{WGST^{nominal}}, \underset{-}{SPIKE2008}, \underset{+}{Q1}, \underset{-}{Q2})
 \]</span></p>
-<p>政府固定投資物價平減指數 (PIG):
-<span class="math display">\[
+<p>政府固定投資物價平減指數 (PIG): <span class="math display">\[
 PIG = f(\underset{+}{PIG_{-1}}, \underset{+}{PCON}, \underset{+}{WGST^{nominal}}, \underset{-}{SPIKE2008})
 \]</span></p>
-<p>公營事業固定投資物價平減指數 (PIPC):
-<span class="math display">\[
+<p>公營事業固定投資物價平減指數 (PIPC): <span class="math display">\[
 PIPC = f(\underset{+}{PCON}, \underset{+}{PCA}, \underset{-}{SPIKE2008})
 \]</span></p>
-<p>資本形成毛額物價平減指數 (PGCF):
-<span class="math display">\[
+<p>資本形成毛額物價平減指數 (PGCF): <span class="math display">\[
 PGCF = f(\underset{+}{PCON}, \underset{-}{PCA}, \underset{-}{SPIKE2008})
 \]</span></p>
-<p>商品及服務輸出物價平減指數 (PEX):
-<span class="math display">\[
+<p>商品及服務輸出物價平減指數 (PEX): <span class="math display">\[
 PEX = f(\underset{+}{PX}, \underset{+}{CPI})
 \]</span></p>
-<p>商品及服務輸入物價平減指數 (PIM):
-<span class="math display">\[
+<p>商品及服務輸入物價平減指數 (PIM): <span class="math display">\[
 PIM = f(\underset{+}{PM}, \underset{+}{CPI})
 \]</span></p>
 </div>
 <div id="金融貨幣市場" class="section level3">
 <h3><span class="header-section-number">1.2.3</span> 金融貨幣市場</h3>
-<p>狹義貨幣總計數 (M1B):
-<span class="math display">\[
+<p>狹義貨幣總計數 (M1B): <span class="math display">\[
 M1B = f(\underset{-}{CPI}, \underset{+}{GDP}, \underset{+}{\frac{VSTOCK^{nominal}}{CPI}},\\ \underset{-}{TDR1Y - NOTERATE})
-\]</span>
-一年期定存利率 (TDR1Y):
-<span class="math display">\[
+\]</span> 一年期定存利率 (TDR1Y): <span class="math display">\[
 TDR1Y = f(\underset{+}{REQ}, \underset{+}{IR}, \underset{+}{GDP_{-1}})
-\]</span>
-上市櫃股票總市值 (STKVLE$):
-<span class="math display">\[
+\]</span> 上市櫃股票總市值 (STKVLE$): <span class="math display">\[
 STKVLE$ = f(\underset{+}{M1B}, \underset{+}{VSTOCK^{nominal}}, \underset{-}{SPIKE2009})
 \]</span></p>
 </div>
 <div id="勞動市場" class="section level3">
 <h3><span class="header-section-number">1.2.4</span> 勞動市場</h3>
-<p>就業人數 (NE):
-<span class="math display">\[
+<p>就業人數 (NE): <span class="math display">\[
 NE = f(\underset{+}{NE_{-1}}, \underset{-}{\frac{WG^{nominal}}{CPI}}, \underset{+}{GDP})
 \]</span></p>
-<p>工業及服務業受僱員工每人每月薪資 (WG$):
-<span class="math display">\[
+<p>工業及服務業受僱員工每人每月薪資 (WG$): <span class="math display">\[
 WG^{nominal} = f(\underset{+}{MINWGM^{nominal}}, \underset{+}{(GDP^{nom}_{-1} - DEP^{nom}_{-1})}, \\  \underset{+}{Q1}, \underset{-}{DIP2007}, \underset{+}{ELBOW2009})
 \]</span></p>
 </div>
 <div id="賦稅收入" class="section level3">
 <h3><span class="header-section-number">1.2.5</span> 賦稅收入</h3>
-<p>賦稅收入 (TAX$):
-<span class="math display">\[
+<p>賦稅收入 (TAX$): <span class="math display">\[
 TAX^{nominal} = f(\underset{+}{GDP^{nominal}_{-1}}, \underset{+}{EX^{nominal}+C^{nominal}},\\ \underset{+}{VSTOCK^{nominal}}, \underset{-}{Q1}, \underset{+}{Q2})
 \]</span></p>
 </div>
 </div>
 <div id="定義式" class="section level2">
 <h2><span class="header-section-number">1.3</span> 定義式</h2>
-<p>名目民間消費 (C$):
-<span class="math display">\[
+<p>名目民間消費 (C$): <span class="math display">\[
 C^{nominal} = C * \frac{PC}{100}
 \]</span></p>
-<p>名目政府消費 (CG$):
-<span class="math display">\[
+<p>名目政府消費 (CG$): <span class="math display">\[
 CG^{nominal} = Community Services + Culture + \\Economic Affairs + Education + \\Environment Protection + Public Affairs +\\ National Health Insurance + National Defense +\\ Public Safety + Social Security
 \]</span></p>
-<p>實質政府消費 (CG):
-<span class="math display">\[
+<p>實質政府消費 (CG): <span class="math display">\[
 CG = \frac{CG^{nom}}{PCG}*100
 \]</span></p>
-<p>實質政府固定投資 (IG):
-<span class="math display">\[
+<p>實質政府固定投資 (IG): <span class="math display">\[
 IG = \frac{IG^{nom}}{PIG}*100
 \]</span></p>
-<p>實質公營事業固定投資 (IPC):
-<span class="math display">\[
+<p>實質公營事業固定投資 (IPC): <span class="math display">\[
 IPC = \frac{IPC^{nom}}{PIPC}*100
 \]</span></p>
-<p>名目民間固定投資 (IBF$):
-<span class="math display">\[
+<p>名目民間固定投資 (IBF$): <span class="math display">\[
 IBF^{nominal} = IBF * \frac{PIBF}{100}
-\]</span>
-名目資本形成毛額 (GCF$):
-<span class="math display">\[
+\]</span> 名目資本形成毛額 (GCF$): <span class="math display">\[
 GCF^{nominal} = IG^{nom} + IPC^{nom} + IBF^{nom} + JJ^{nom}
 \]</span></p>
-<p>實質資本形成毛額 (GCF):
-<span class="math display">\[
+<p>實質資本形成毛額 (GCF): <span class="math display">\[
 GCF = \frac{GCF^{nom}}{PGCF}*100
 \]</span></p>
-<p>名目商品及服務輸出 (EX$):
-<span class="math display">\[
+<p>名目商品及服務輸出 (EX$): <span class="math display">\[
 EX^{nominal} = EX * \frac{PEX}{100}
 \]</span></p>
-<p>名目商品及服務輸入 (IM$):
-<span class="math display">\[
+<p>名目商品及服務輸入 (IM$): <span class="math display">\[
 IM^{nominal} = IM * \frac{PIM}{100}
 \]</span></p>
-<p>經濟成長率 (PCH_GDP):
-<span class="math display">\[
+<p>經濟成長率 (PCH_GDP): <span class="math display">\[
 \Delta{GDP}\% = \frac{C^{nom}_{-1}}{GDP^{nom}_{-1}}*\Delta{C}\% + \frac{CG^{nom}_{-1}}{GDP^{nom}_{-1}}*\Delta{CG}\% + \\
 \frac{EX^{nom}_{-1}}{GDP^{nom}_{-1}}*\Delta{EX}\% - \frac{IM^{nom}_{-1}}{GDP^{nom}_{-1}}*\Delta{IM}\%
-\]</span>
-實質國內生產毛額 (GDP):
-<span class="math display">\[
+\]</span> 實質國內生產毛額 (GDP): <span class="math display">\[
 GDP = C + CG + GCF + EX - IM
-\]</span>
-名目國內生產毛額 (GDP$):
-<span class="math display">\[
+\]</span> 名目國內生產毛額 (GDP$): <span class="math display">\[
 GDP^{nominal} = C^{nom} + CG^{nom} + GCF^{nom} + EX^{nom} - IM^{nom}
 \]</span></p>
-<p>國內生產毛額物價平減指數 (PGDP):
-<span class="math display">\[
+<p>國內生產毛額物價平減指數 (PGDP): <span class="math display">\[
 PGDP = \frac{GDP^{nom}}{GDP} * 100
-\]</span>
-名目可支配所得 (YDD$):
-<span class="math display">\[
+\]</span> 名目可支配所得 (YDD$): <span class="math display">\[
 YDD^{nominal} = GNI^{nom} - DEP^{nom} - TAX^{nom}
 \]</span></p>
-<p>名目國民所得毛額 (GNI$):
-<span class="math display">\[
+<p>名目國民所得毛額 (GNI$): <span class="math display">\[
 GNI^{nominal} = GDP^{nom} + FIA^{nom}
 \]</span></p>
-<p>消費者物價指數 (CPI):
-<span class="math display">\[
+<p>消費者物價指數 (CPI): <span class="math display">\[
 CPI = CPI_{base} * (0.2972 * \frac{PF}{PF_{base}} + 0.7027 * \frac{PO}{PO_{base}})
 \]</span></p>
 <hr />
@@ -930,75 +879,29 @@ CPI = CPI_{base} * (0.2972 * \frac{PF}{PF_{base}} + 0.7027 * \frac{PO}{PO_{base}
 </tr>
 </tbody>
 </table>
-<p><strong>Real Private Consumption</strong> :
-<span class="math display">\[C = 121474.091 + \underset{(****)}{0.826*TSLAG(C,1)} + \underset{(****)}{7.625*(YDD^{nom}/PGDP)} + \\  \underset{(n.s.)}{-0.045*(STKVLE^{nom}/CPI)}\]</span>
-<span class="math inline">\(R^{2}: 0.9871\)</span> , <span class="math inline">\(Adj. R^{2}: 0.9864\)</span></p>
-<p><strong>Real Private Fixed Investment</strong> :
-<span class="math display">\[IBF = 57543.98 + \underset{(****)}{0.763*TSLAG(IBF,1)} + \underset{(n.s.)}{-0.038*TSLAG(IG,1)} + \\  \underset{(**)}{-8769.262*(TDR1Y-TSDELTAP(CPI))} + \underset{(***)}{258071.226*(STKVLE^{nom}/CAPSTOCK^{nom})} + \underset{(**)}{-53719.803*SPIKE2008}\]</span>
-<span class="math inline">\(R^{2}: 0.7556\)</span> , <span class="math inline">\(Adj. R^{2}: 0.7347\)</span></p>
-<p><strong>Real Exports of Goods and Services</strong> :
-<span class="math display">\[EX = -1641019.189 + \underset{(****)}{31613781.32*(PX/(WPX*RX))} + \underset{(***)}{15618.5*GDPMAJOR} + \\  \underset{(n.s.)}{767.333*ICSALES^{nom}} + \underset{(****)}{137872.611*STEP2008} + \underset{(****)}{-82135.593*Q1} + \underset{(****)}{2.105*OVERSEAREV^{nom}} + \underset{(****)}{0.042*VISITORS}\]</span>
-<span class="math inline">\(R^{2}: 0.9916\)</span> , <span class="math inline">\(Adj. R^{2}: 0.9908\)</span></p>
-<p><strong>Real Imports of Goods and Services</strong> :
-<span class="math display">\[IM = 96046.175 + \underset{(****)}{0.465*EX} + \underset{(***)}{0.226*C} + \\  \underset{(****)}{0.797*(IPC+IBF+JJ)} + \underset{(***)}{-0.016*OUTBOUND}\]</span>
-<span class="math inline">\(R^{2}: 0.9915\)</span> , <span class="math inline">\(Adj. R^{2}: 0.991\)</span></p>
-<p><strong>Import Price Index</strong> :
-<span class="math display">\[PM = 23.323 + \underset{(****)}{1.372*RX} + \underset{(n.s.)}{-0.028*JPNRX} + \\  \underset{(****)}{0.356*NONFUEL} + \underset{(****)}{0.242*POIL} + \underset{(n.s.)}{-0.074*WPX}\]</span>
-<span class="math inline">\(R^{2}: 0.9691\)</span> , <span class="math inline">\(Adj. R^{2}: 0.9669\)</span></p>
-<p><strong>Export Price Index</strong> :
-<span class="math display">\[PX = -29.936 + \underset{(***)}{0.121*TSLAG(PX,1)} + \underset{(****)}{1.899*RX} + \\  \underset{(****)}{0.539*PM} + \underset{(**)}{0.059*WTVG}\]</span>
-<span class="math inline">\(R^{2}: 0.9832\)</span> , <span class="math inline">\(Adj. R^{2}: 0.982\)</span></p>
-<p><strong>Domestic Production Price Index</strong> :
-<span class="math display">\[PD = 16.227 + \underset{(*)}{0.122*TSLAG(PD,1)} + \underset{(****)}{0.61*PM} + \\  \underset{(***)}{0*GDP} + \underset{(n.s.)}{1.264*SPIKE2008}\]</span>
-<span class="math inline">\(R^{2}: 0.9912\)</span> , <span class="math inline">\(Adj. R^{2}: 0.9905\)</span></p>
-<p><strong>Food Consumer Price Index</strong> :
-<span class="math display">\[PF = -1.604 + \underset{(****)}{1.007*TSLAG(PF,1)} + \underset{(n.s.)}{0.007*FOOD} + \\  \underset{(n.s.)}{0*TSLAG(WG^{nom},1)} + \underset{(****)}{1.216*TYPH_T} + \underset{(***)}{-1.92*Q1}\]</span>
-<span class="math inline">\(R^{2}: 0.9794\)</span> , <span class="math inline">\(Adj. R^{2}: 0.9776\)</span></p>
-<p><strong>Non-food Consumer Price Index</strong> :
-<span class="math display">\[PO = 8.153 + \underset{(****)}{0.872*TSLAG(PO,1)} + \underset{(****)}{-0.059*TSLAG(PM,1)} + \\  \underset{(****)}{0.075*PM} + \underset{(*)}{0*WG^{nom}} + \underset{(**)}{-1.251*Q1} + \underset{(**)}{0.329*Q2} + \underset{(***)}{-0.413*Q3}\]</span>
-<span class="math inline">\(R^{2}: 0.9873\)</span> , <span class="math inline">\(Adj. R^{2}: 0.9858\)</span></p>
-<p><strong>Private Consumption Deflator</strong> :
-<span class="math display">\[PC = 33.471 + \\  \underset{(****)}{0.147*PF} + \underset{(****)}{0.521*PO}\]</span>
-<span class="math inline">\(R^{2}: 0.9867\)</span> , <span class="math inline">\(Adj. R^{2}: 0.9863\)</span></p>
-<p><strong>Government Consumption Deflator</strong> :
-<span class="math display">\[PCG = 140.276 + \underset{(****)}{-0.295*TSLAG(PCG,1)} + \underset{(n.s.)}{-1.021*PO} + \\  \underset{(n.s.)}{-0.185*WGP} + \underset{(****)}{1.8*PIG} + \underset{(****)}{-0.851*PD}\]</span>
-<span class="math inline">\(R^{2}: 0.6728\)</span> , <span class="math inline">\(Adj. R^{2}: 0.6497\)</span></p>
-<p><strong>Private Fixed Investment Deflator</strong> :
-<span class="math display">\[PIBF = 21.816 + \underset{(****)}{0.623*TSLAG(PIBF,1)} + \underset{(****)}{0.192*PCON} + \\  \underset{(n.s.)}{-0.002*PCA} + \underset{(n.s.)}{0*WGST^{nom}} + \underset{(n.s.)}{-0.286*SPIKE2008} + \underset{(***)}{1.889*Q1} + \underset{(****)}{-1.684*Q2}\]</span>
-<span class="math inline">\(R^{2}: 0.9886\)</span> , <span class="math inline">\(Adj. R^{2}: 0.9872\)</span></p>
-<p><strong>Government Fixed Investment Deflator</strong> :
-<span class="math display">\[PIG = 10.802 + \underset{(***)}{0.158*TSLAG(PIG,1)} + \underset{(****)}{0.597*PCON} + \\  \underset{(****)}{0*WGST^{nom}} + \underset{(***)}{-1.784*SPIKE2008}\]</span>
-<span class="math inline">\(R^{2}: 0.995\)</span> , <span class="math inline">\(Adj. R^{2}: 0.9947\)</span></p>
-<p><strong>Public Enterprise Fixed Investment Deflator</strong> :
-<span class="math display">\[PIPC = 68.39 + \underset{(****)}{0.4*PCON} + \underset{(***)}{-0.089*PCA} + \\  \underset{(****)}{-5.072*SPIKE2008}\]</span>
-<span class="math inline">\(R^{2}: 0.8356\)</span> , <span class="math inline">\(Adj. R^{2}: 0.8289\)</span></p>
-<p><strong>Gross Capital Formation Deflator</strong> :
-<span class="math display">\[PGCF = 49.294 + \underset{(****)}{0.54*PCON} + \underset{(***)}{-0.048*PCA} + \\  \underset{(****)}{-3.251*SPIKE2008}\]</span>
-<span class="math inline">\(R^{2}: 0.9718\)</span> , <span class="math inline">\(Adj. R^{2}: 0.9707\)</span></p>
-<p><strong>Exports of Goods and Services Deflator</strong> :
-<span class="math display">\[PEX = 67.501 + \\  \underset{(****)}{0.695*PX} + \underset{(****)}{-0.369*CPI}\]</span>
-<span class="math inline">\(R^{2}: 0.9371\)</span> , <span class="math inline">\(Adj. R^{2}: 0.9354\)</span></p>
-<p><strong>Imports of Goods and Services Deflator</strong> :
-<span class="math display">\[PIM = 75.973 + \\  \underset{(****)}{0.803*PM} + \underset{(****)}{-0.569*CPI}\]</span>
-<span class="math inline">\(R^{2}: 0.9632\)</span> , <span class="math inline">\(Adj. R^{2}: 0.9622\)</span></p>
-<p><strong>M1B</strong> :
-<span class="math display">\[M1B = 294740.656 + \underset{(n.s.)}{-320.636*CPI} + \underset{(**)}{-0.004*GDP} + \\  \underset{(****)}{0.148*(VSTOCK^{nom}/CPI)} + \underset{(n.s.)}{-1205.149*(TDR1Y-NOTERATE)}\]</span>
-<span class="math inline">\(R^{2}: 0.9978\)</span> , <span class="math inline">\(Adj. R^{2}: 0.9976\)</span></p>
-<p><strong>One-Year Fixed Deposit Rate</strong> :
-<span class="math display">\[TDR1Y = -0.326 + \underset{(n.s.)}{0.036*REQ} + \underset{(****)}{0.916*IR} + \\  \underset{(n.s.)}{0*TSLAG(GDP,1)} + \underset{(n.s.)}{0.002*Q3}\]</span>
-<span class="math inline">\(R^{2}: 0.9962\)</span> , <span class="math inline">\(Adj. R^{2}: 0.996\)</span></p>
-<p><strong>Total Market Capitalization of Listed Stocks</strong> :
-<span class="math display">\[STKVLE^{nom} = -2997069.782 + \underset{(****)}{168.038*M1B} + \underset{(****)}{2.698*VSTOCK^{nom}} + \\  \underset{(****)}{-2946210.998*SPIKE2009}\]</span>
-<span class="math inline">\(R^{2}: 0.9478\)</span> , <span class="math inline">\(Adj. R^{2}: 0.9457\)</span></p>
-<p><strong>Number of Employed</strong> :
-<span class="math display">\[NE = 1285.597 + \\  \underset{(****)}{0.823*TSLAG(NE,1)} + \underset{(****)}{0*GDP}\]</span>
-<span class="math inline">\(R^{2}: 0.9982\)</span> , <span class="math inline">\(Adj. R^{2}: 0.9981\)</span></p>
-<p><strong>Monthly Wages per Worker in Industry and Service Sectors</strong> :
-<span class="math display">\[WG^{nom} = 24941.577 + \underset{(n.s.)}{0.065*MINWGM} + \underset{(****)}{0.005*(GDP^{nom}-DEP^{nom})} + \\  \underset{(****)}{13549.085*Q1}\]</span>
-<span class="math inline">\(R^{2}: 0.9772\)</span> , <span class="math inline">\(Adj. R^{2}: 0.9762\)</span></p>
-<p><strong>Tax Revenue</strong> :
-<span class="math display">\[TAX^{nom} = -32529.547 + \underset{(****)}{0.052*TSLAG(GDP^{nom},1)} + \underset{(n.s.)}{-0.008*(EX^{nom}+ \\ C^{nom})} + \underset{(***)}{0.008*VSTOCK^{nom}} + \underset{(****)}{-27406.682*Q1} + \underset{(****)}{88127.881*Q2}\]</span>
-<span class="math inline">\(R^{2}: 0.8804\)</span> , <span class="math inline">\(Adj. R^{2}: 0.8701\)</span></p>
+<p><strong>Real Private Consumption</strong> : <span class="math display">\[C = 121474.091 + \underset{(****)}{0.826*TSLAG(C,1)} + \underset{(****)}{7.625*(YDD^{nom}/PGDP)} + \\  \underset{(n.s.)}{-0.045*(STKVLE^{nom}/CPI)}\]</span> <span class="math inline">\(R^{2}: 0.9871\)</span> , <span class="math inline">\(Adj. R^{2}: 0.9864\)</span></p>
+<p><strong>Real Private Fixed Investment</strong> : <span class="math display">\[IBF = 57543.98 + \underset{(****)}{0.763*TSLAG(IBF,1)} + \underset{(n.s.)}{-0.038*TSLAG(IG,1)} + \\  \underset{(**)}{-8769.262*(TDR1Y-TSDELTAP(CPI))} + \underset{(***)}{258071.226*(STKVLE^{nom}/CAPSTOCK^{nom})} + \underset{(**)}{-53719.803*SPIKE2008}\]</span> <span class="math inline">\(R^{2}: 0.7556\)</span> , <span class="math inline">\(Adj. R^{2}: 0.7347\)</span></p>
+<p><strong>Real Exports of Goods and Services</strong> : <span class="math display">\[EX = -1641019.189 + \underset{(****)}{31613781.32*(PX/(WPX*RX))} + \underset{(***)}{15618.5*GDPMAJOR} + \\  \underset{(n.s.)}{767.333*ICSALES^{nom}} + \underset{(****)}{137872.611*STEP2008} + \underset{(****)}{-82135.593*Q1} + \underset{(****)}{2.105*OVERSEAREV^{nom}} + \underset{(****)}{0.042*VISITORS}\]</span> <span class="math inline">\(R^{2}: 0.9916\)</span> , <span class="math inline">\(Adj. R^{2}: 0.9908\)</span></p>
+<p><strong>Real Imports of Goods and Services</strong> : <span class="math display">\[IM = 96046.175 + \underset{(****)}{0.465*EX} + \underset{(***)}{0.226*C} + \\  \underset{(****)}{0.797*(IPC+IBF+JJ)} + \underset{(***)}{-0.016*OUTBOUND}\]</span> <span class="math inline">\(R^{2}: 0.9915\)</span> , <span class="math inline">\(Adj. R^{2}: 0.991\)</span></p>
+<p><strong>Import Price Index</strong> : <span class="math display">\[PM = 23.323 + \underset{(****)}{1.372*RX} + \underset{(n.s.)}{-0.028*JPNRX} + \\  \underset{(****)}{0.356*NONFUEL} + \underset{(****)}{0.242*POIL} + \underset{(n.s.)}{-0.074*WPX}\]</span> <span class="math inline">\(R^{2}: 0.9691\)</span> , <span class="math inline">\(Adj. R^{2}: 0.9669\)</span></p>
+<p><strong>Export Price Index</strong> : <span class="math display">\[PX = -29.936 + \underset{(***)}{0.121*TSLAG(PX,1)} + \underset{(****)}{1.899*RX} + \\  \underset{(****)}{0.539*PM} + \underset{(**)}{0.059*WTVG}\]</span> <span class="math inline">\(R^{2}: 0.9832\)</span> , <span class="math inline">\(Adj. R^{2}: 0.982\)</span></p>
+<p><strong>Domestic Production Price Index</strong> : <span class="math display">\[PD = 16.227 + \underset{(*)}{0.122*TSLAG(PD,1)} + \underset{(****)}{0.61*PM} + \\  \underset{(***)}{0*GDP} + \underset{(n.s.)}{1.264*SPIKE2008}\]</span> <span class="math inline">\(R^{2}: 0.9912\)</span> , <span class="math inline">\(Adj. R^{2}: 0.9905\)</span></p>
+<p><strong>Food Consumer Price Index</strong> : <span class="math display">\[PF = -1.604 + \underset{(****)}{1.007*TSLAG(PF,1)} + \underset{(n.s.)}{0.007*FOOD} + \\  \underset{(n.s.)}{0*TSLAG(WG^{nom},1)} + \underset{(****)}{1.216*TYPH_T} + \underset{(***)}{-1.92*Q1}\]</span> <span class="math inline">\(R^{2}: 0.9794\)</span> , <span class="math inline">\(Adj. R^{2}: 0.9776\)</span></p>
+<p><strong>Non-food Consumer Price Index</strong> : <span class="math display">\[PO = 8.153 + \underset{(****)}{0.872*TSLAG(PO,1)} + \underset{(****)}{-0.059*TSLAG(PM,1)} + \\  \underset{(****)}{0.075*PM} + \underset{(*)}{0*WG^{nom}} + \underset{(**)}{-1.251*Q1} + \underset{(**)}{0.329*Q2} + \underset{(***)}{-0.413*Q3}\]</span> <span class="math inline">\(R^{2}: 0.9873\)</span> , <span class="math inline">\(Adj. R^{2}: 0.9858\)</span></p>
+<p><strong>Private Consumption Deflator</strong> : <span class="math display">\[PC = 33.471 + \\  \underset{(****)}{0.147*PF} + \underset{(****)}{0.521*PO}\]</span> <span class="math inline">\(R^{2}: 0.9867\)</span> , <span class="math inline">\(Adj. R^{2}: 0.9863\)</span></p>
+<p><strong>Government Consumption Deflator</strong> : <span class="math display">\[PCG = 140.276 + \underset{(****)}{-0.295*TSLAG(PCG,1)} + \underset{(n.s.)}{-1.021*PO} + \\  \underset{(n.s.)}{-0.185*WGP} + \underset{(****)}{1.8*PIG} + \underset{(****)}{-0.851*PD}\]</span> <span class="math inline">\(R^{2}: 0.6728\)</span> , <span class="math inline">\(Adj. R^{2}: 0.6497\)</span></p>
+<p><strong>Private Fixed Investment Deflator</strong> : <span class="math display">\[PIBF = 21.816 + \underset{(****)}{0.623*TSLAG(PIBF,1)} + \underset{(****)}{0.192*PCON} + \\  \underset{(n.s.)}{-0.002*PCA} + \underset{(n.s.)}{0*WGST^{nom}} + \underset{(n.s.)}{-0.286*SPIKE2008} + \underset{(***)}{1.889*Q1} + \underset{(****)}{-1.684*Q2}\]</span> <span class="math inline">\(R^{2}: 0.9886\)</span> , <span class="math inline">\(Adj. R^{2}: 0.9872\)</span></p>
+<p><strong>Government Fixed Investment Deflator</strong> : <span class="math display">\[PIG = 10.802 + \underset{(***)}{0.158*TSLAG(PIG,1)} + \underset{(****)}{0.597*PCON} + \\  \underset{(****)}{0*WGST^{nom}} + \underset{(***)}{-1.784*SPIKE2008}\]</span> <span class="math inline">\(R^{2}: 0.995\)</span> , <span class="math inline">\(Adj. R^{2}: 0.9947\)</span></p>
+<p><strong>Public Enterprise Fixed Investment Deflator</strong> : <span class="math display">\[PIPC = 68.39 + \underset{(****)}{0.4*PCON} + \underset{(***)}{-0.089*PCA} + \\  \underset{(****)}{-5.072*SPIKE2008}\]</span> <span class="math inline">\(R^{2}: 0.8356\)</span> , <span class="math inline">\(Adj. R^{2}: 0.8289\)</span></p>
+<p><strong>Gross Capital Formation Deflator</strong> : <span class="math display">\[PGCF = 49.294 + \underset{(****)}{0.54*PCON} + \underset{(***)}{-0.048*PCA} + \\  \underset{(****)}{-3.251*SPIKE2008}\]</span> <span class="math inline">\(R^{2}: 0.9718\)</span> , <span class="math inline">\(Adj. R^{2}: 0.9707\)</span></p>
+<p><strong>Exports of Goods and Services Deflator</strong> : <span class="math display">\[PEX = 67.501 + \\  \underset{(****)}{0.695*PX} + \underset{(****)}{-0.369*CPI}\]</span> <span class="math inline">\(R^{2}: 0.9371\)</span> , <span class="math inline">\(Adj. R^{2}: 0.9354\)</span></p>
+<p><strong>Imports of Goods and Services Deflator</strong> : <span class="math display">\[PIM = 75.973 + \\  \underset{(****)}{0.803*PM} + \underset{(****)}{-0.569*CPI}\]</span> <span class="math inline">\(R^{2}: 0.9632\)</span> , <span class="math inline">\(Adj. R^{2}: 0.9622\)</span></p>
+<p><strong>M1B</strong> : <span class="math display">\[M1B = 294740.656 + \underset{(n.s.)}{-320.636*CPI} + \underset{(**)}{-0.004*GDP} + \\  \underset{(****)}{0.148*(VSTOCK^{nom}/CPI)} + \underset{(n.s.)}{-1205.149*(TDR1Y-NOTERATE)}\]</span> <span class="math inline">\(R^{2}: 0.9978\)</span> , <span class="math inline">\(Adj. R^{2}: 0.9976\)</span></p>
+<p><strong>One-Year Fixed Deposit Rate</strong> : <span class="math display">\[TDR1Y = -0.326 + \underset{(n.s.)}{0.036*REQ} + \underset{(****)}{0.916*IR} + \\  \underset{(n.s.)}{0*TSLAG(GDP,1)} + \underset{(n.s.)}{0.002*Q3}\]</span> <span class="math inline">\(R^{2}: 0.9962\)</span> , <span class="math inline">\(Adj. R^{2}: 0.996\)</span></p>
+<p><strong>Total Market Capitalization of Listed Stocks</strong> : <span class="math display">\[STKVLE^{nom} = -2997069.782 + \underset{(****)}{168.038*M1B} + \underset{(****)}{2.698*VSTOCK^{nom}} + \\  \underset{(****)}{-2946210.998*SPIKE2009}\]</span> <span class="math inline">\(R^{2}: 0.9478\)</span> , <span class="math inline">\(Adj. R^{2}: 0.9457\)</span></p>
+<p><strong>Number of Employed</strong> : <span class="math display">\[NE = 1285.597 + \\  \underset{(****)}{0.823*TSLAG(NE,1)} + \underset{(****)}{0*GDP}\]</span> <span class="math inline">\(R^{2}: 0.9982\)</span> , <span class="math inline">\(Adj. R^{2}: 0.9981\)</span></p>
+<p><strong>Monthly Wages per Worker in Industry and Service Sectors</strong> : <span class="math display">\[WG^{nom} = 24941.577 + \underset{(n.s.)}{0.065*MINWGM} + \underset{(****)}{0.005*(GDP^{nom}-DEP^{nom})} + \\  \underset{(****)}{13549.085*Q1}\]</span> <span class="math inline">\(R^{2}: 0.9772\)</span> , <span class="math inline">\(Adj. R^{2}: 0.9762\)</span></p>
+<p><strong>Tax Revenue</strong> : <span class="math display">\[TAX^{nom} = -32529.547 + \underset{(****)}{0.052*TSLAG(GDP^{nom},1)} + \underset{(n.s.)}{-0.008*(EX^{nom}+ \\ C^{nom})} + \underset{(***)}{0.008*VSTOCK^{nom}} + \underset{(****)}{-27406.682*Q1} + \underset{(****)}{88127.881*Q2}\]</span> <span class="math inline">\(R^{2}: 0.8804\)</span> , <span class="math inline">\(Adj. R^{2}: 0.8701\)</span></p>
 </div>
 <div id="一些重點" class="section level2">
 <h2><span class="header-section-number">2.2</span> 一些重點</h2>
@@ -1283,7 +1186,7 @@ $137.3
 </tr>
 </tfoot>
 </table>
-<p>隨然此工資差異是很合理的，但是鑑於大多數的人是賺<a href="https://www.taiwannews.com.tw/en/news/3523557">月性的基本工資</a><a href="#fn5" class="footnote-ref" id="fnref5"><sup>5</sup></a>，也為了簡化估算，我會跟Tcherneva (2018)<a href="#fn6" class="footnote-ref" id="fnref6"><sup>6</sup></a> 一樣假設月性跟時性的工資都ㄧ樣。</p>
+<p>隨然此工資差異是很合理的，但是鑑於大多數的人是賺<a href="https://www.taiwannews.com.tw/en/news/3523557">月性的基本工資</a><a href="#fn5" class="footnoteRef" id="fnref5"><sup>5</sup></a>，也為了簡化估算，我會跟Tcherneva (2018)<a href="#fn6" class="footnoteRef" id="fnref6"><sup>6</sup></a> 一樣假設月性跟時性的工資都ㄧ樣。</p>
 <p>就業保證的工資為NT$28,000，根據各方的推薦（甚至台灣的<a href="https://www.facebook.com/newpowerparty/photos/%E6%9C%80%E4%BD%8E%E5%B7%A5%E8%B3%87%E6%87%89%E6%BB%BF%E8%B6%B3%E5%8B%9E%E5%B7%A5%E5%9F%BA%E6%9C%AC%E7%94%9F%E6%B4%BB%E9%9C%80%E8%A6%81%E5%8F%B0%E7%81%A3%E5%8B%9E%E5%8B%95%E5%B8%82%E5%A0%B4%E9%95%B7%E6%9C%9F%E5%AD%98%E5%9C%A8%E4%BD%8E%E8%96%AA%E5%8C%96%E5%95%8F%E9%A1%8C%E8%BF%91%E4%BE%86%E5%84%98%E7%AE%A1gdp%E6%9C%89%E6%89%80%E6%88%90%E9%95%B7%E4%BD%86%E5%AF%A6%E8%B3%AA%E8%96%AA%E5%8D%BB%E4%B8%8D%E6%96%B7%E4%B8%8B%E9%99%8D%E8%B2%A7%E5%AF%8C%E5%B7%AE%E8%B7%9D%E6%8C%81%E7%BA%8C%E6%83%A1%E5%8C%96%E4%BD%BF%E5%BE%97%E6%89%80%E5%BE%97%E5%88%86%E9%85%8D%E4%B8%8D%E5%85%AC%E7%9A%84%E5%95%8F%E9%A1%8C%E6%9B%B4%E7%82%BA%E5%9A%B4%E9%87%8D%E4%BD%8E%E8%96%AA%E7%9A%84%E5%95%8F%E9%A1%8C%E4%B9%9F%E9%80%A3/1028666937204662/">各小黨</a>）。</p>
 <p>就業保證的實施策略不少，此測試會假設計畫實施要分三年逐漸提高薪水，2012年為第一年。因為就業保證的財源來至中央政府，就業保證會提高名目政府消費的經濟事務。</p>
 <div id="模型假設" class="section level3">
@@ -1439,19 +1342,19 @@ WG$
 <p>Everington, Keoni. 2018. “Taiwan’s Monthly Minimum Wage to Increase by 5.” <em>Taiwan News</em>.</p>
 </div>
 <div id="ref-fairmodel">
-<p>Fair, Ray C. 2018. <em>Macroeconomic Modeling: 2018</em>. <a href="https://fairmodel.econ.yale.edu/mmm2/mm2018.pdf">https://fairmodel.econ.yale.edu/mmm2/mm2018.pdf</a>.</p>
+<p>Fair, Ray C. 2018. <em>Macroeconomic Modeling: 2018</em>. <a href="https://fairmodel.econ.yale.edu/mmm2/mm2018.pdf" class="uri">https://fairmodel.econ.yale.edu/mmm2/mm2018.pdf</a>.</p>
 </div>
 <div id="ref-simulating_jg_us">
-<p>Fullwiler, Scott T. 2006. “Simulating an Employment Guarantee Policy in the U.s.” Employment Guarantee Policies: Theory; Practice.</p>
+<p>Fullwiler, Scott T. 2006. “Simulating an Employment Guarantee Policy in the U.S.” Employment Guarantee Policies: Theory; Practice.</p>
 </div>
 <div id="ref-jp_gnp">
-<p>“Japan Gnp 1962-2020.” 2020. macrotrends. <a href="https://www.macrotrends.net/countries/JPN/japan/gnp-gross-national-product">https://www.macrotrends.net/countries/JPN/japan/gnp-gross-national-product</a>.</p>
+<p>“Japan Gnp 1962-2020.” 2020. macrotrends. <a href="https://www.macrotrends.net/countries/JPN/japan/gnp-gross-national-product" class="uri">https://www.macrotrends.net/countries/JPN/japan/gnp-gross-national-product</a>.</p>
 </div>
 <div id="ref-R-bimets">
-<p>Luciani, Andrea, and Roberto Stok. 2020. <em>Bimets: Time Series and Econometric Modeling</em>. <a href="https://CRAN.R-project.org/package=bimets">https://CRAN.R-project.org/package=bimets</a>.</p>
+<p>Luciani, Andrea, and Roberto Stok. 2020. <em>Bimets: Time Series and Econometric Modeling</em>. <a href="https://CRAN.R-project.org/package=bimets" class="uri">https://CRAN.R-project.org/package=bimets</a>.</p>
 </div>
 <div id="ref-tfp_dat">
-<p>Robert C. Feenstra, Marcel P. Timmer, Robert Inklaar. n.d. “The Next Generation of the Penn World Table.” <em>American Economic Review</em> 105 (10): 3150–82. <a href="www.ggdc.net/pwt">www.ggdc.net/pwt</a>.</p>
+<p>Robert C. Feenstra, Marcel P. Timmer, Robert Inklaar. n.d. “The Next Generation of the Penn World Table.” <em>American Economic Review</em> 105 (10): 3150–82. <a href="www.ggdc.net/pwt" class="uri">www.ggdc.net/pwt</a>.</p>
 </div>
 <div id="ref-tcherneva_jg_design">
 <p>Tcherneva, Pavlina R. 2018. “The Job Guarantee: Design, Jobs, and Implementation.” <em>Levy Economics Insitute Working Papers</em>.</p>
@@ -1460,18 +1363,18 @@ WG$
 <p>林建甫. 2010. “總體經濟計量模型的建立與應用.” <em>Taiwan Economic Review</em> 38 (1).</p>
 </div>
 <div id="ref-dgbas_econ">
-<p>“總體經濟計量模型.” n.d. 行政院主計總處 Directorate-General of Budget, Accounting,; Statistics, Executive Yuan. <a href="https://www.stat.gov.tw/public/Attachment/6531914262FZ3FA2L.pdf">https://www.stat.gov.tw/public/Attachment/6531914262FZ3FA2L.pdf</a>.</p>
+<p>“總體經濟計量模型.” n.d. 行政院主計總處 Directorate-General of Budget, Accounting,; Statistics, Executive Yuan. <a href="https://www.stat.gov.tw/public/Attachment/6531914262FZ3FA2L.pdf" class="uri">https://www.stat.gov.tw/public/Attachment/6531914262FZ3FA2L.pdf</a>.</p>
 </div>
 </div>
 </div>
 <div class="footnotes">
 <hr />
 <ol>
-<li id="fn1"><p><span class="citation">(“總體經濟計量模型,” n.d.)</span><a href="#fnref1" class="footnote-back">↩</a></p></li>
-<li id="fn2"><p><span class="citation">Fullwiler (2006)</span><a href="#fnref2" class="footnote-back">↩</a></p></li>
-<li id="fn3"><p><span class="citation">Fair (2018)</span><a href="#fnref3" class="footnote-back">↩</a></p></li>
-<li id="fn4"><p><span class="citation">林建甫 (2010)</span><a href="#fnref4" class="footnote-back">↩</a></p></li>
-<li id="fn5"><p><span class="citation">Everington (2018)</span><a href="#fnref5" class="footnote-back">↩</a></p></li>
-<li id="fn6"><p><span class="citation">Tcherneva (2018)</span><a href="#fnref6" class="footnote-back">↩</a></p></li>
+<li id="fn1"><p><span class="citation">(“總體經濟計量模型,” n.d.)</span><a href="#fnref1">↩</a></p></li>
+<li id="fn2"><p><span class="citation">Fullwiler (2006)</span><a href="#fnref2">↩</a></p></li>
+<li id="fn3"><p><span class="citation">Fair (2018)</span><a href="#fnref3">↩</a></p></li>
+<li id="fn4"><p><span class="citation">林建甫 (2010)</span><a href="#fnref4">↩</a></p></li>
+<li id="fn5"><p><span class="citation">Everington (2018)</span><a href="#fnref5">↩</a></p></li>
+<li id="fn6"><p><span class="citation">Tcherneva (2018)</span><a href="#fnref6">↩</a></p></li>
 </ol>
 </div>

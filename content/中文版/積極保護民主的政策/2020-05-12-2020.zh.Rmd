@@ -2,7 +2,7 @@
 title: 第二篇副刊：台灣2020年選舉地圖
 author: 杜欣川
 date: '2020-05-12'
-slug: '第二篇副刊-地圖'
+slug: populism-pt2-election-map-zh
 weight: 2.5
 bibliography: part1_bib.bib
 output:
