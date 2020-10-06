@@ -3,7 +3,7 @@ title: 第一篇：  民粹主義浪潮如何來台
 author: 杜欣川
 date: '2020-04-02'
 weight: 4
-slug: 第一篇＿民粹主義浪潮如何來台
+slug: populism-pt1-populist-wave-comes-to-tw-zh
 hidden: true
 bibliography: part1_bib.bib
 output:

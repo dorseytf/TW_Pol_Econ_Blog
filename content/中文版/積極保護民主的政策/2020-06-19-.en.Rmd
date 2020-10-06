@@ -2,7 +2,7 @@
 title: 第三篇： 能夠保護民主的經濟政策
 author: Travis Dorsey
 date: '2020-06-19'
-slug: 保護民主的經濟政策
+slug: protecting-dem-part3-zh
 weight: 1
 bibliography: part1_bib.bib
 output:

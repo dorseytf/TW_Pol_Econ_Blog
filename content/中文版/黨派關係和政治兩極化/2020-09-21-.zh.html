@@ -1,0 +1,547 @@
+---
+title: 台灣立委院的黨派關係和政治兩極化
+author: 杜欣川
+date: '2020-09-21'
+slug: partisanship-polarization-in-leg-yuan-zh
+categories:
+  - 黨派關係和政治兩極化
+tags:
+  - 政治
+  - 資料
+---
+
+<script src="/rmarkdown-libs/kePrint/kePrint.js"></script>
+
+
+<hr />
+<div id="台灣的黨派關係" class="section level1">
+<h1>台灣的黨派關係</h1>
+<p>如果問外國人對台灣政治的了解，答案通常會用到“民主”，“經濟發展”，和“中美關係”這幾個關鍵字，然後會加上“台灣不是那個立委員會打架的國家嗎？”</p>
+<div class="figure">
+<img src="https://i.cbc.ca/1.2539453.1392567310!/fileImage/httpImage/image.jpg_gen/derivatives/16x9_780/taiwan.jpg" alt="在美國和歐洲，立委員這麼衝動也是很少見的事情" />
+<p class="caption">在美國和歐洲，立委員這麼衝動也是很少見的事情</p>
+</div>
+<div class="figure">
+<img src="https://thumbs.gfycat.com/BeautifulActualKob-size_restricted.gif" alt="另一個經典的例子" />
+<p class="caption">另一個經典的例子</p>
+</div>
+<p>隨然台灣人最有名的是友善，熱情的態度，但是台灣人也非常重視自己血汗而得的民主。 不過，除了摔角之外，這種熱血對政治有哪些影響？</p>
+<p>一般來說有兩種答案：</p>
+<ol style="list-style-type: decimal">
+<li>政客都一樣爛</li>
+<li>如果沒有[不喜歡的黨]台灣就會有完美的未來</li>
+</ol>
+<p>在此文章我會對黨派關係和政治兩極化試著找出一個更細微的了解，以立委員互動和共同提案的資料來進行分析。 有沒有政黨比較願意跨黨派合作？ 小黨如何與兩個更大的政黨互動？</p>
+</div>
+<div id="立法院的簡介" class="section level1">
+<h1>立法院的簡介</h1>
+<p>台灣的立法院目前有113席，任期為四年。這些跟世界各民主國家差不多，有趣的是選舉方式。</p>
+<ul>
+<li>73席由單一選區直選產生</li>
+<li>34席由單一選區兩票制中的政黨得票比例按最大餘額方法分配席次（各黨全國不分區及僑居國外國民立法委員當選名單中需有半數婦女保障名額）</li>
+<li>6席由「平地原住民」、「山地原住民」2個複數選區選出，各選區選出三名立委</li>
+</ul>
+<p>因為這個特別選舉制度，所以台灣立法院目前有五個政黨提供立委員（還有無黨籍的立委員），也是亞洲<a href="https://www.aljazeera.com/news/2020/01/taiwan-female-politicians-forge-path-equality-200131033602459.html">性別平等程度最高的立法機關</a>因為42%的立委員是女性的。</p>
+</div>
+<div id="數據與方法" class="section level1">
+<h1>數據與方法</h1>
+<p>提案，政黨，性別等數據都來自<a href="https://data.ly.gov.tw/getds.action?id=20">立法院</a>。</p>
+<p>老實說，我寫這篇文章最大的原因是我想用用看最近發現到的新模型：<a href="https://cran.r-project.org/web/packages/ghypernet/vignettes/Tutorial_NRM.html">generalized hypergeometric ensembles (gHypEG) regressions</a>，但我認為這其實是一個完美的應用程序，可以為台灣的立法院提供一些有趣的新背景</p>
+</div>
+<div id="探索立委院的共同贊助" class="section level1">
+<h1>探索立委院的共同贊助</h1>
+<div id="可視化立委員的網絡" class="section level2">
+<h2>可視化立委員的網絡</h2>
+<p>粗略地看一下立法院的共同贊助活動，就可以看出黨派關係很多，大多數活動都發生在同一個政黨之內或者藍/綠營之內。</p>
+<p><img src="/中文版/黨派關係和政治兩極化/2020-09-21-.zh_files/figure-html/unnamed-chunk-1-1.png" width="672" /></p>
+<p><img src="/中文版/黨派關係和政治兩極化/2020-09-21-.zh_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
+</div>
+<div id="ghypeg-回歸分析" class="section level2">
+<h2>gHypEG 回歸分析</h2>
+<p>現在我要來設計幾個gHypEG回歸分析模型，估計各種的立委員屬性如何影響共同提法案的可能性。 除了已被證明是許多立委網絡的重要組成部分的互惠之外，我也要測試同性別，地區和政黨隸屬關係的立委員是否更有可能共同提案。</p>
+<table class="table table-condensed table-bordered" style="width: auto !important; margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="border-bottom:hidden" colspan="1">
+</th>
+<th style="border-bottom:hidden; padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="2">
+<div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">
+係數估計
+</div>
+</th>
+<th style="border-bottom:hidden; padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="2">
+<div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">
+擬合優度
+</div>
+</th>
+</tr>
+<tr>
+<th style="text-align:center;">
+模型
+</th>
+<th style="text-align:center;">
+變數
+</th>
+<th style="text-align:center;">
+估計
+</th>
+<th style="text-align:center;">
+AIC
+</th>
+<th style="text-align:center;">
+R^2
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center;">
+互惠模型
+</td>
+<td style="text-align:center;">
+互惠
+</td>
+<td style="text-align:center;">
+0.304 ***
+</td>
+<td style="text-align:center;">
+967931.3
+</td>
+<td style="text-align:center;">
+0.32
+</td>
+</tr>
+<tr>
+<td style="text-align:center;vertical-align: middle !important;" rowspan="3">
+協變量模型
+</td>
+<td style="text-align:center;">
+同性別
+</td>
+<td style="text-align:center;">
+-0.005 ***
+</td>
+<td style="text-align:center;vertical-align: middle !important;" rowspan="3">
+923682.6
+</td>
+<td style="text-align:center;vertical-align: middle !important;" rowspan="3">
+0.35
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+同選區
+</td>
+<td style="text-align:center;">
+0.047 ***
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+同黨派
+</td>
+<td style="text-align:center;">
+0.836 ***
+</td>
+</tr>
+<tr>
+<td style="text-align:center;vertical-align: middle !important;" rowspan="3">
+無度校正模型
+</td>
+<td style="text-align:center;">
+同性別
+</td>
+<td style="text-align:center;">
+0.027 ***
+</td>
+<td style="text-align:center;vertical-align: middle !important;" rowspan="3">
+2555309.6
+</td>
+<td style="text-align:center;vertical-align: middle !important;" rowspan="3">
+0.27
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+同選區
+</td>
+<td style="text-align:center;">
+-0.135 ***
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+同黨派
+</td>
+<td style="text-align:center;">
+1.087 ***
+</td>
+</tr>
+</tbody>
+<tfoot>
+<tr>
+<td style="padding: 0; border: 0;" colspan="100%">
+<span style="font-style: italic;">Note: </span>
+</td>
+</tr>
+<tr>
+<td style="padding: 0; border: 0;" colspan="100%">
+<sup></sup> *** - p &lt; 0.001, ** - p &lt; 0.01, * - p &lt; 0.05
+</td>
+</tr>
+</tfoot>
+</table>
+<p>根據以上結果，我們可以看到，來自同一個政黨的兩名立委員將共同提一項法案的機率提高了<span class="math inline">\((10^{0.825})/(1^{0.825}) =\)</span> 6.68倍。 相反，來自同一個縣市只能使機率提高1.1倍，顯示黨派關係對共同提案的影響很大。</p>
+<p>鑑於這種強大的聚類效果，我們還可以嘗試另一種稱為“塊約束配置模型”的模型，以查看這是否可以改善我們的擬合度。</p>
+<table class="table table-condensed table-bordered" style="width: auto !important; margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:center;">
+模型
+</th>
+<th style="text-align:center;">
+AIC
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center;">
+Block-Constrained Configuration Model
+</td>
+<td style="text-align:center;">
+671029.8
+</td>
+</tr>
+</tbody>
+</table>
+<p>鑑於較低的AIC分數，我們可以肯定地說，“塊約束配置模型”可以更好地擬合數據，並再次表明，共同提案很大程度上是沿著黨派路線進行的。 深入研究塊矩陣的估計，我們再次看到這些結果與典型的泛綠色與泛藍色的政治敘述相吻合。</p>
+<table class="table table-condensed table-bordered" style="width: auto !important; margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+Party
+</th>
+<th style="text-align:center;">
+中國國民黨
+</th>
+<th style="text-align:center;">
+台灣團結聯盟
+</th>
+<th style="text-align:center;">
+台灣基進
+</th>
+<th style="text-align:center;">
+台灣民眾黨
+</th>
+<th style="text-align:center;">
+時代力量
+</th>
+<th style="text-align:center;">
+民主進步黨
+</th>
+<th style="text-align:center;">
+無黨團結聯盟
+</th>
+<th style="text-align:center;">
+無黨籍
+</th>
+<th style="text-align:left;">
+親民黨
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+中國國民黨
+</td>
+<td style="text-align:center;">
+0.039
+</td>
+<td style="text-align:center;">
+0.003
+</td>
+<td style="text-align:center;">
+0.000
+</td>
+<td style="text-align:center;">
+0.004
+</td>
+<td style="text-align:center;">
+0.005
+</td>
+<td style="text-align:center;">
+0.000
+</td>
+<td style="text-align:center;">
+1.000
+</td>
+<td style="text-align:center;">
+0.397
+</td>
+<td style="text-align:left;">
+0.017
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+台灣團結聯盟
+</td>
+<td style="text-align:center;">
+0.002
+</td>
+<td style="text-align:center;">
+0.024
+</td>
+<td style="text-align:center;">
+0.000
+</td>
+<td style="text-align:center;">
+0.035
+</td>
+<td style="text-align:center;">
+0.010
+</td>
+<td style="text-align:center;">
+0.004
+</td>
+<td style="text-align:center;">
+0.002
+</td>
+<td style="text-align:center;">
+0.025
+</td>
+<td style="text-align:left;">
+0.850
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+台灣基進
+</td>
+<td style="text-align:center;">
+0.000
+</td>
+<td style="text-align:center;">
+0.000
+</td>
+<td style="text-align:center;">
+0.001
+</td>
+<td style="text-align:center;">
+0.029
+</td>
+<td style="text-align:center;">
+0.000
+</td>
+<td style="text-align:center;">
+0.154
+</td>
+<td style="text-align:center;">
+0.046
+</td>
+<td style="text-align:center;">
+0.000
+</td>
+<td style="text-align:left;">
+0.010
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+台灣民眾黨
+</td>
+<td style="text-align:center;">
+0.038
+</td>
+<td style="text-align:center;">
+0.000
+</td>
+<td style="text-align:center;">
+0.000
+</td>
+<td style="text-align:center;">
+0.015
+</td>
+<td style="text-align:center;">
+0.000
+</td>
+<td style="text-align:center;">
+0.000
+</td>
+<td style="text-align:center;">
+0.000
+</td>
+<td style="text-align:center;">
+0.000
+</td>
+<td style="text-align:left;">
+0.017
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+時代力量
+</td>
+<td style="text-align:center;">
+0.004
+</td>
+<td style="text-align:center;">
+0.000
+</td>
+<td style="text-align:center;">
+0.000
+</td>
+<td style="text-align:center;">
+0.000
+</td>
+<td style="text-align:center;">
+0.003
+</td>
+<td style="text-align:center;">
+0.000
+</td>
+<td style="text-align:center;">
+0.309
+</td>
+<td style="text-align:center;">
+0.008
+</td>
+<td style="text-align:left;">
+0.012
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+民主進步黨
+</td>
+<td style="text-align:center;">
+0.001
+</td>
+<td style="text-align:center;">
+0.016
+</td>
+<td style="text-align:center;">
+0.016
+</td>
+<td style="text-align:center;">
+0.002
+</td>
+<td style="text-align:center;">
+0.013
+</td>
+<td style="text-align:center;">
+0.002
+</td>
+<td style="text-align:center;">
+0.043
+</td>
+<td style="text-align:center;">
+0.056
+</td>
+<td style="text-align:left;">
+0.015
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+無黨團結聯盟
+</td>
+<td style="text-align:center;">
+0.036
+</td>
+<td style="text-align:center;">
+0.000
+</td>
+<td style="text-align:center;">
+0.000
+</td>
+<td style="text-align:center;">
+0.000
+</td>
+<td style="text-align:center;">
+0.000
+</td>
+<td style="text-align:center;">
+0.001
+</td>
+<td style="text-align:center;">
+0.039
+</td>
+<td style="text-align:center;">
+0.019
+</td>
+<td style="text-align:left;">
+0.000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+無黨籍
+</td>
+<td style="text-align:center;">
+0.017
+</td>
+<td style="text-align:center;">
+0.001
+</td>
+<td style="text-align:center;">
+0.101
+</td>
+<td style="text-align:center;">
+0.015
+</td>
+<td style="text-align:center;">
+0.225
+</td>
+<td style="text-align:center;">
+0.010
+</td>
+<td style="text-align:center;">
+0.000
+</td>
+<td style="text-align:center;">
+0.000
+</td>
+<td style="text-align:left;">
+0.000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+親民黨
+</td>
+<td style="text-align:center;">
+0.023
+</td>
+<td style="text-align:center;">
+0.013
+</td>
+<td style="text-align:center;">
+0.000
+</td>
+<td style="text-align:center;">
+0.000
+</td>
+<td style="text-align:center;">
+0.018
+</td>
+<td style="text-align:center;">
+0.006
+</td>
+<td style="text-align:center;">
+0.012
+</td>
+<td style="text-align:center;">
+0.012
+</td>
+<td style="text-align:left;">
+0.006
+</td>
+</tr>
+</tbody>
+</table>
+<p>在塊約束配置模型中，沿對角線的估計值顯示每個塊的密度，而對角線外的值顯示跨黨派關係的可能性。 例如，第一行顯示國民黨立委最會跟無黨籍，無黨團結聯盟和其他的國民黨立委共同提案。 同樣，第六行顯示民進黨比較會跟泛綠黨共同提案（台灣團結聯盟，台灣基進和時代力量的估計值都比泛藍黨的高）。</p>
+</div>
+</div>
