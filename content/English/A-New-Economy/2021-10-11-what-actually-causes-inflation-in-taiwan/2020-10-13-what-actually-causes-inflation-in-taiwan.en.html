@@ -3,6 +3,7 @@ title: What Actually Causes Inflation in Taiwan?
 author: Travis Dorsey
 date: '2021-10-11'
 slug: what-actually-causes-inflation-in-taiwan
+draft: true
 output:
   blogdown::html_page:
     toc: true
@@ -15,14 +16,18 @@ tags:
   - economics
 ---
 
-<script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
 
 <div id="TOC">
 <ul>
 <li><a href="#tldr">tl;dr</a></li>
 <li><a href="#what-is-inflation-and-why-do-we-care">What is Inflation and Why do we Care?</a></li>
 <li><a href="#what-causes-inflation">What Causes Inflation?</a></li>
-<li><a href="#modeling-inflation-in-taiwan">Modeling Inflation in Taiwan</a></li>
+<li><a href="#modeling-inflation-in-taiwan">Modeling Inflation in Taiwan</a>
+<ul>
+<li><a href="#looking-at-the-data">Looking at the Data</a></li>
+<li><a href="#additional-variables">Additional Variables</a></li>
+<li><a href="#regression-analysis">Regression Analysis</a></li>
+</ul></li>
 </ul>
 </div>
 
@@ -61,4 +66,66 @@ tags:
 </div>
 <div id="modeling-inflation-in-taiwan" class="section level1">
 <h1>Modeling Inflation in Taiwan</h1>
+<div id="looking-at-the-data" class="section level2">
+<h2>Looking at the Data</h2>
+<p>If we look at the time series of CPI for Taiwan over the last couple decades, excluding the pandemic period, we see that while there is a clear upward trend, we see a good deal of variation within years, and even a few periods of relatively rapid increases in inflation.</p>
+<p><img src="/English/A-New-Economy/2021-10-11-what-actually-causes-inflation-in-taiwan/2020-10-13-what-actually-causes-inflation-in-taiwan.en_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
+<p>If we look at percent change in CPI by quarter, the series appears quite stochastic.</p>
+<p><img src="/English/A-New-Economy/2021-10-11-what-actually-causes-inflation-in-taiwan/2020-10-13-what-actually-causes-inflation-in-taiwan.en_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<p>Decomposing the time series of CPI confirms our strong trend, as well as a significant seasonal component, along with the randomness that we identified above.</p>
+<p><img src="/English/A-New-Economy/2021-10-11-what-actually-causes-inflation-in-taiwan/2020-10-13-what-actually-causes-inflation-in-taiwan.en_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<p>If we compare CPI to M1B, a common measure of the liquid money supply, we see they follow a very similar (upward) trend, but the M1B series is much smoother and does not appear to be a 1:1 match for the CPI series. Moreover, this type of visual inspection tells us nothing of causality, so we need to do some more investigation.</p>
+<p><img src="/English/A-New-Economy/2021-10-11-what-actually-causes-inflation-in-taiwan/2020-10-13-what-actually-causes-inflation-in-taiwan.en_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+</div>
+<div id="additional-variables" class="section level2">
+<h2>Additional Variables</h2>
+<p>Based on our initial investigations, we know we need to take into account seasonal patterns when we model CPI, but what else determines the level of CPI? We can look at <a href="https://eng.stat.gov.tw/public/Data/12516716198HDYFK.pdf">what is included in the basket of goods</a> to get an idea of additional variables we may want to investigate to determine which are exogenous and which are endogenous. Taiwan’s CPI includes:</p>
+<ol style="list-style-type: decimal">
+<li>Food</li>
+<li>Clothing</li>
+<li>Housing</li>
+<li>Transportation and Communication</li>
+<li>Health</li>
+<li>Education and Entertainment</li>
+<li>Miscellaneous</li>
+</ol>
+<p>Based on the weights used to generate the CPI, the largest components are Food and Housing, so we may wish to split these out since Taiwan’s housing market has undergone significant changes in the last two decades (increased speculation, real estate development, and very high ratio of median home price to median income).</p>
+</div>
+<div id="regression-analysis" class="section level2">
+<h2>Regression Analysis</h2>
+<p>Here, we fit a model using the quantity theory of money as a baseline.</p>
+<p><img src="/English/A-New-Economy/2021-10-11-what-actually-causes-inflation-in-taiwan/2020-10-13-what-actually-causes-inflation-in-taiwan.en_files/figure-html/unnamed-chunk-6-1.png" width="672" /><img src="/English/A-New-Economy/2021-10-11-what-actually-causes-inflation-in-taiwan/2020-10-13-what-actually-causes-inflation-in-taiwan.en_files/figure-html/unnamed-chunk-6-2.png" width="672" /><img src="/English/A-New-Economy/2021-10-11-what-actually-causes-inflation-in-taiwan/2020-10-13-what-actually-causes-inflation-in-taiwan.en_files/figure-html/unnamed-chunk-6-3.png" width="672" /><img src="/English/A-New-Economy/2021-10-11-what-actually-causes-inflation-in-taiwan/2020-10-13-what-actually-causes-inflation-in-taiwan.en_files/figure-html/unnamed-chunk-6-4.png" width="672" /></p>
+<pre><code>## $MAE
+## [1] 96.74809
+## 
+## $rho
+## [1] -0.4847949
+## 
+## $RMSE
+## [1] 96.78653</code></pre>
+<pre><code>## 
+## Call:
+## glm(formula = CPI ~ lag(CPI) + M1B, family = &quot;gaussian&quot;, data = tw_macro_df)
+## 
+## Deviance Residuals: 
+##      Min        1Q    Median        3Q       Max  
+## -2.28044  -0.52208   0.04314   0.43394   2.07589  
+## 
+## Coefficients:
+##              Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept) 1.304e+01  4.792e+00   2.720  0.00793 ** 
+## lag(CPI)    8.367e-01  6.092e-02  13.733  &lt; 2e-16 ***
+## M1B         2.309e-05  8.715e-06   2.649  0.00964 ** 
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## (Dispersion parameter for gaussian family taken to be 0.6121296)
+## 
+##     Null deviance: 3308.755  on 86  degrees of freedom
+## Residual deviance:   51.419  on 84  degrees of freedom
+##   (1 observation deleted due to missingness)
+## AIC: 209.14
+## 
+## Number of Fisher Scoring iterations: 2</code></pre>
+</div>
 </div>

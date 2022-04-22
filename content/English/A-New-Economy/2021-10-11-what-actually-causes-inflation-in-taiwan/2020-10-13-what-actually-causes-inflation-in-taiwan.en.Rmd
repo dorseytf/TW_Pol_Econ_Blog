@@ -3,6 +3,7 @@ title: What Actually Causes Inflation in Taiwan?
 author: Travis Dorsey
 date: '2021-10-11'
 slug: what-actually-causes-inflation-in-taiwan
+draft: true
 output:
   blogdown::html_page:
     toc: true
@@ -65,10 +66,11 @@ Clearly, we need to do some further exploration with actual data to determine wh
 ## Looking at the Data
 If we look at the time series of CPI for Taiwan over the last couple decades, excluding the pandemic period, we see that while there is a clear upward trend, we see a good deal of variation within years, and even a few periods of relatively rapid increases in inflation. 
 
-```{r}
+```{r, include = FALSE}
 knitr::opts_chunk$set(warning = FALSE)
 knitr::opts_chunk$set(message = FALSE)
 knitr::opts_chunk$set(error = FALSE)
+knitr::opts_chunk$set(echo = FALSE)
 
 library(tidyverse)
 library(scales)
@@ -80,7 +82,9 @@ tw_macro_df_link <- "https://raw.githubusercontent.com/dorseytf/Blog-Replication
 tw_macro_df <- read_csv(url(tw_macro_df_link))
 
 cpi_m1b_colors <- c("CPI" = "blue", "M1B" = "darkred")
+```
 
+```{r}
 tw_macro_df %>%
   select(quarterly_date, CPI) %>%
   ggplot(aes(x = quarterly_date, y = CPI)) +
@@ -92,6 +96,7 @@ tw_macro_df %>%
        x = "",
        y = "CPI (2016 = 100)")
 ```
+
 
 If we look at percent change in CPI by quarter, the series appears quite stochastic. 
 

@@ -1,7 +1,7 @@
 ---
 title: Introduction - The What and Why
 author: Travis Dorsey
-date: '2022-04-29'
+date: '2022-04-22'
 slug: esfc-intro-what-and-why
 output:
   blogdown::html_page:
