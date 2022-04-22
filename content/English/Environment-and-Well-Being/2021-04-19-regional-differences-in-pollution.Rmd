@@ -1,0 +1,323 @@
+---
+title: Regional Differences in Pollution
+author: Travis Dorsey
+date: '2021-04-19'
+slug: regional-differences-in-pollution
+categories:
+  - Environmental Issues
+tags:
+  - data
+  - environment
+  - regional
+  - subnational
+---
+
+***
+
+# Environment as an Afterthought of Development
+
+It is a familiar story to most by this point: an impoverished country enters a phase of fast-paced growth and development, when new industries sprout up and cities swell, spurred on by governments focused on increased production and incomes above all else. Once the pace of growth slows after reaching middle/high income status, though, the detrimental impacts all of this growth has had on the environment is brought front and center by concerned citizens.
+
+While most readers are probably already familiar with how this pattern played out in Taiwan at the national scale, I want to dive into how this has played out at the sub-national level. Do the types or sources of pollution differ across regions in Taiwan? Do these patterns reflect historical inequities from the authoritarian period? What policies could be enacted to improve environmental quality?
+
+
+# Data Sources
+
+
+```{r data_pulldown, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(warning = FALSE)
+knitr::opts_chunk$set(message = FALSE)
+
+library(sp)
+library(spdep)
+library(sf)
+library(maptools)
+library(mapproj)
+library(spatialreg)
+library(rgeos)
+library(rgdal)
+library(tidyverse)
+library(scales)
+library(janitor)
+library(lubridate)
+library(repmis)
+library(broom)
+library(kableExtra)
+library(tidymodels)
+
+Sys.setlocale(category = "LC_ALL", locale = "cht")
+
+## Environmental Indicators 重要環保統計資料
+imp_env_stats_base_url <- "https://data.epa.gov.tw/api/v1/stat_p_%s?format=csv&api_key=9be7b239-557b-4c10-9775-78cadfc555e9"
+
+county_api_df <- tibble(county_name_en = c("New Taipei City", "Lienchiang County", "Kinmen County", "Chiayi City",
+                                           "Hsinchu City", "Keelung City", "Penghu County", "Hualien County",
+                                           "Taitung County", "Pingtung County", "Chiayi County", "Yunlin County",
+                                           "Nantou County", "Changhua County", "Miaoli County", "Hsinchu County",
+                                           "Taoyuan City", "Yilan County", "Kaohsiung City", "Tainan City",
+                                           "Taichung City", "Taipei City"),
+                        county_name_zh = c("新北市", "連江縣", "金門縣", "嘉義市", 
+                                           "新竹市", "基隆市", "澎湖縣", "花蓮縣",
+                                           "臺東縣", "屏東縣", "嘉義縣", "雲林縣",
+                                           "南投縣", "彰化縣", "苗栗縣", "新竹縣",
+                                           "桃園市", "宜蘭縣", "高雄市", "臺南市",
+                                           "臺中市", "臺北市"),
+                        api_num = c("03", "24", "23", "22", 
+                                    "21", "20", "19", "18",
+                                    "17", "16", "15", "14",
+                                    "13", "12", "11", "10",
+                                    "09", "08", "07", "06",
+                                    "05", "04")) %>%
+  mutate(imp_env_stats_url = sprintf(imp_env_stats_base_url, api_num))
+
+get_api_data <- function(api_num) {
+  read_csv(url(sprintf(imp_env_stats_base_url, api_num))) %>%
+    mutate(api_num = api_num)
+}
+
+# We are only going to use the most recent date at this point and a select number of environmental metrics
+env_metrics_df <- tibble(env_metric_list = c("污染源稽查罰款次數", "空氣污染公害陳情案件數",
+                                              "環保署空氣品質一般測站臭氧濃度", 
+                                              "環保署空氣品質一般測站細懸浮微粒(手動)濃度"),
+                         env_metric_list_en = c("Number of Fines from Pollution Source Inspections",
+                                                 "Number of Air Quality Complaints",
+                                                 "Ozone Concentration (EPA Monitoring Stations)",
+                                                 "Concentration of Fine Suspended Particulates")) %>%
+  mutate(clean_env_metric_en = make_clean_names(env_metric_list_en))
+
+
+imp_env_stats_df <- county_api_df$api_num %>%
+  map_dfr(get_api_data) %>%
+  left_join(county_api_df, by = "api_num") %>%
+  select(county_name_en, county_name_zh, ItemName, Category, Year, Month, ItemUnit, ItemValue)
+
+maxdate <- imp_env_stats_df %>%
+  select(Year, Month) %>%
+  distinct() %>%
+  filter(row_number() == 1)
+
+short_env_stats_df <- imp_env_stats_df %>%
+  filter(Year == maxdate$Year & Month == maxdate$Month) %>%
+  inner_join(env_metrics_df, by = c("ItemName" = "env_metric_list")) %>%
+  select(county_name_en, county_name_zh, env_metric_list_en, Year, Month, ItemValue) %>%
+  mutate(int_ItemValue = str_remove_all(ItemValue, ",")) %>%
+  mutate(int_ItemValue = as.numeric(int_ItemValue)) %>%
+  select(-ItemValue) %>%
+  replace_na(list(int_ItemValue = 0)) %>%
+  pivot_wider(names_from = env_metric_list_en,
+              values_from = int_ItemValue) %>%
+  clean_names()
+
+## Get covariate data and aggregate to county level
+load("C:/Users/dorse/OneDrive/Documents/Datasets/Covariates/tw_covar_df.RData")
+load("C:/Users/dorse/OneDrive/Documents/Datasets/Covariates/tw_econ_df.RData")
+
+tw_econ_df <- tw_econ_df %>%
+  select(1, 16, 18, 19, 22, 23, 25, 28, 32)
+colnames(tw_econ_df) <- c("county_name_zh", "mfg_ind", "agri", "trans_warehouse", 
+                          "elec_gas_supply", "factory_emp_num", "factory_num", "midlow_income_hh_num",
+                          "low_income_hh_num")
+
+tw_county_econ_df <- tw_econ_df %>%
+  group_by(county_name_zh) %>%
+  summarize(across(everything(), sum)) %>%
+  left_join(select(county_api_df, -c(api_num, imp_env_stats_url)), by = c("county_name_zh")) %>%
+  select(-county_name_zh)
+
+tw_county_covar_df <- tw_covar_df %>%
+  select(1, 4:9, 12, 16)
+colnames(tw_county_covar_df) <- c("county_name_zh", colnames(tw_covar_df)[4:9], "univ_and_up", "elderly_num")
+
+tw_county_covar_df <- tw_county_covar_df %>%
+  group_by(county_name_zh) %>%
+  mutate(across(everything(), as.numeric)) %>%
+  summarize(across(everything(), sum)) %>%
+  left_join(select(county_api_df, -c(api_num, imp_env_stats_url)), by = c("county_name_zh")) %>%
+  select(-county_name_zh) %>%
+  group_by(county_name_en) %>%
+  mutate(pop_15_and_up = sum(`pop_15-24`, `pop_25-34`, `pop_35-44`, `pop_45-54`, `pop_55-64`, `pop_65_up`)) %>%
+  mutate(pop_15_and_up_10k = pop_15_and_up/10000)
+
+##########################
+##  Setup Spatial Data  ##
+##########################
+
+### Load shapefiles
+
+## County-level
+TW_county_shp <- readOGR(dsn = "C:/Users/dorse/OneDrive/Documents/Datasets/Shapefiles/County",
+                         layer = "COUNTY_MOI_1090820",
+                         use_iconv=TRUE, encoding="UTF-8")
+
+TW_county_shp <- subset(TW_county_shp, !COUNTYENG %in% c("Lienchiang County", "Penghu County", "Kinmen County"))
+
+# Add environmental data
+TW_county_shp@data <- TW_county_shp@data %>%
+  left_join(short_env_stats_df, by = c("COUNTYENG" = "county_name_en")) %>%
+  left_join(tw_county_covar_df, by = c("COUNTYENG" = "county_name_en")) %>%
+  left_join(tw_county_econ_df, by = c("COUNTYENG" = "county_name_en")) %>%
+  mutate(n_fines_per_pop = number_of_fines_from_pollution_source_inspections/pop_15_and_up_10k,
+         n_complaints_per_pop = number_of_air_quality_complaints/pop_15_and_up_10k,
+         univ_per_pop = univ_and_up/pop_15_and_up_10k,
+         mfg_ind_per_pop = mfg_ind/pop_15_and_up_10k,
+         factory_per_pop = factory_num/pop_15_and_up_10k,
+         low_income_hh_per_pop = low_income_hh_num/pop_15_and_up_10k)
+county_names_en <- unique(TW_county_shp@data$COUNTYENG)
+
+
+# Get neighbor data
+county_queen_nb <- poly2nb(TW_county_shp, queen = TRUE, row.names = county_names_en)
+county_nb_W <- nb2listw(county_queen_nb, style = "W", zero.policy = TRUE)
+
+# Get K nearest neighbors
+k_to_use <- 5
+
+county_coord <- coordinates(TW_county_shp)
+county_knn <- knearneigh(county_coord, k = k_to_use, longlat = TRUE)
+county_knn_nb <- knn2nb(county_knn, row.names = county_names_en)
+county_knn_matrix <- nb2mat(county_knn_nb)
+
+
+### Test for Spatial Autocorrelation in Dependent Vars
+dv_moran_results <- vector("list", length = nrow(env_metrics_df))
+for(dv in 1:nrow(env_metrics_df)){
+  dv_to_use <- env_metrics_df$clean_env_metric_en[dv]
+  
+  dv_data <- TW_county_shp@data[, which(colnames(TW_county_shp@data) == dv_to_use)]
+  
+  dv_moran_results[[dv]] <- moran.test(dv_data, county_nb_W) %>%
+    tidy() %>%
+    mutate(dv_name = dv_to_use)
+}
+dv_moran_results <- bind_rows(dv_moran_results) %>%
+  left_join(env_metrics_df, by = c("dv_name" = "clean_env_metric_en"))
+
+dv_moran_results %>%
+  mutate(estimate1 = round(estimate1, 3),
+         p.value = round(p.value, 3)) %>%
+  select(`Environmental Metric` = env_metric_list_en, `Moran's I Statistic` = estimate1, `P-Value` = p.value) %>%
+  kbl("html", align = c("l", "c", "c"),
+      caption = "Testing for Spatial Clustering with Moran's I Statistic") %>%
+  kable_styling(bootstrap_options = c("striped", "condensed"), full_width = F, font_size = 12) %>%
+  row_spec(0, bold = TRUE, background = "grey", color = "white")
+
+
+
+# TW_county_df <- st_as_sf(TW_county_shp,coords=c('lon', 'lat'), crs=st_crs(TW_county_shp)) %>%
+#   clean_names() 
+# for(i in 1:nrow(TW_county_df)){
+#   TW_county_df$clean_geometry[i] <- TW_county_df$geometry[[1]][i]
+# }
+# TW_county_df <- TW_county_df %>%
+#   select(-geometry) %>%
+#   unnest(cols = c(clean_geometry)) %>%
+#   mutate(clean_geometry = map(clean_geometry, as_tibble)) %>%
+#   unnest(cols = c(clean_geometry)) %>%
+#   select(countyid, countycode, countyname, countyeng, lat = V1, long = V2)
+
+
+```
+
+
+```{r ols_block}
+## Define the regression equations
+reg_eq_fines <- n_fines_per_pop ~ univ_per_pop + agri + elec_gas_supply + factory_per_pop + 
+  low_income_hh_per_pop
+
+reg_eq_complaints <- n_complaints_per_pop ~ univ_per_pop + agri + elec_gas_supply + factory_per_pop + 
+  low_income_hh_per_pop
+
+reg_eq_ozone <- ozone_concentration_epa_monitoring_stations ~ univ_per_pop + agri + elec_gas_supply + 
+  factory_per_pop + low_income_hh_per_pop
+
+reg_eq_pm2 <- concentration_of_fine_suspended_particulates ~ univ_per_pop + agri + elec_gas_supply + 
+  factory_per_pop + low_income_hh_per_pop
+
+reg_eq_list <- list(reg_eq_fines, reg_eq_complaints, reg_eq_ozone, reg_eq_pm2)
+
+
+## Run OLS for each dv
+n_models <- vector("list", length = length(reg_eq_list))
+ols_model_results <- list(n_models, n_models, n_models, n_models)
+names(ols_model_results) <- c("ols_models", "ols_results", "ols_moran_test", "ols_lm_tests")
+
+lm_tests_to_use <- c("LMerr", "LMlag", "RLMerr", "RLMlag", "SARMA")
+
+for(m in 1:length(reg_eq_list)){
+  # Fit the OLS model
+  ols_model <- lm(reg_eq_list[[m]], data = TW_county_shp)
+  ols_model_results$ols_models[[m]] <- ols_model
+  
+  # Save out results
+  ols_model_results$ols_results[[m]] <- tidy(ols_model)
+  
+  # Run diagnostics
+  ols_model_results$ols_moran_test[[m]] <- lm.morantest(ols_model, county_nb_W)
+  ols_model_results$ols_lm_tests[[m]] <- lm.LMtests(ols_model, county_nb_W, 
+                                                    test = lm_tests_to_use)
+  
+  rm(ols_model)
+}
+
+names(ols_model_results$ols_models) <- dv_moran_results$env_metric_list_en
+names(ols_model_results$ols_results) <- dv_moran_results$env_metric_list_en
+names(ols_model_results$ols_moran_test) <- dv_moran_results$env_metric_list_en
+names(ols_model_results$ols_lm_tests) <- dv_moran_results$env_metric_list_en
+
+```
+
+```{r ols_summary}
+ols_summary_table_df <- n_models
+for(o in 1:length(ols_summary_table_df)){
+  ols_summary_table_df[[o]] <- ols_model_results$ols_results[[o]] %>%
+    mutate(dv_name = names(ols_model_results$ols_results)[[o]],
+           estimate = round(estimate, 4),
+           p.value = round(p.value, 4)) %>%
+    select(dv_name, term, estimate, p.value) 
+}
+ols_summary_table_df <- bind_rows(ols_summary_table_df) 
+
+colnames(ols_summary_table_df) <- c("Outcome Variable", "Explanatory Variable", "Estimated Coefficient", "P-value")
+
+ols_summary_table_df %>%
+  filter(`Explanatory Variable` != "(Intercept)") %>%
+  select(-`Outcome Variable`) %>%
+  kable("html", align = c("l", "c", "c")) %>%
+  kable_styling(bootstrap_options = c("striped", "condensed"), full_width = F, font_size = 12) %>%
+  pack_rows("Number of Fines from Pollution Source Inspections", 1, 5) %>%
+  pack_rows("Number of Air Quality Complaints", 6, 10) %>%
+  pack_rows("Ozone Concentration (EPA Monitoring Stations)", 11, 15) %>%
+  pack_rows("Concentration of Fine Suspended Particulates", 16, 20)
+
+```
+
+```{r ols_lmtests}
+
+ols_lmtests_table_df <- n_models
+for(o in 1:length(ols_lmtests_table_df)){
+  ols_lmtests_table_df[[o]] <- ols_model_results$ols_results[[o]] %>%
+    mutate(dv_name = names(ols_model_results$ols_results)[[o]],
+           estimate = round(estimate, 4),
+           p.value = round(p.value, 4)) %>%
+    select(dv_name, term, estimate, p.value) 
+}
+ols_lmtests_table_df <- bind_rows(ols_lmtests_table_df) 
+
+colnames(ols_lmtests_table_df) <- c("Outcome Variable", "Explanatory Variable", "Estimated Coefficient", "P-value")
+
+ols_lmtests_table_df %>%
+  filter(`Explanatory Variable` != "(Intercept)") %>%
+  select(-`Outcome Variable`) %>%
+  kable("html", align = c("l", "c", "c")) %>%
+  kable_styling(bootstrap_options = c("striped", "condensed"), full_width = F, font_size = 12) %>%
+  pack_rows("Number of Fines from Pollution Source Inspections", 1, 5) %>%
+  pack_rows("Number of Air Quality Complaints", 6, 10) %>%
+  pack_rows("Ozone Concentration (EPA Monitoring Stations)", 11, 15) %>%
+  pack_rows("Concentration of Fine Suspended Particulates", 16, 20)
+
+```
+
+
+
+

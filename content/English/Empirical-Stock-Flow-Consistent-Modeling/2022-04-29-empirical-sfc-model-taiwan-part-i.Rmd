@@ -1,0 +1,51 @@
+---
+title: Introduction - The What and Why
+author: Travis Dorsey
+date: '2022-04-29'
+slug: esfc-intro-what-and-why
+output:
+  blogdown::html_page:
+    toc: true
+    toc_depth: 2
+    number_sections: false
+categories:
+  - Econometric Models
+tags:
+  - data
+  - economics
+---
+
+# What is Stock-Flow Consistent Modeling?
+
+Essentially, stock-flow consistent (SFC) modeling is a method for looking at an economy as a whole. Most standard economic models focus on production in the real side of the economy (GDP, Consumption, etc.) and assume away impacts from the financial side.
+
+The SFC approach developed by [Godley and Lavoie](https://link.springer.com/book/10.1007/978-1-137-08599-3) explicitly models the interactions between these two sides of the economy, focusing on how transactions in each period flow into the stocks of assets and liabilities for each sector (both real and financial), and how these stocks affect monetary transactions in the next period. Such a robust and complete accounting framework has provided answers to many observations that mainstream economic models have been unable to explain (see [Zezza and Zezza (2022)](https://www.levyinstitute.org/publications/a-prototype-regional-stock-flow-consistent-model), [Natlin and Yajima (2020)](https://www.levyinstitute.org/publications/balance-sheet-effects-of-a-currency-devaluation-a-stock-flow-consistent-framework-for-mexico), and [Zezza (2020)](https://www.levyinstitute.org/publications/a-stock-flow-consistent-quarterly-model-of-the-italian-economy)).
+
+Central to the approach of SFC modeling is the creation of i) a balance sheet, and ii) a transaction-flow matrix for the economy under study. These two matrices allow us to map the flow of funds to/from each sector, as well as how each sector's stocks impact their payments to/from the other sectors. 
+
+![Example of a SFC Balance Sheet for Denmark, taken from Byrialsen and Raza (2020)](/English/Empirical-Stock-Flow-Consistent-Modeling/2022-04-29-empirical-sfc-model-taiwan-part-i_files/Denmark Balance Sheet.jpg)
+
+![Example of a SFC Transaction-Flow Matrix for Denmark, taken from Byrialsen and Raza (2020)](/English/Empirical-Stock-Flow-Consistent-Modeling/2022-04-29-empirical-sfc-model-taiwan-part-i_files/Denmark Transaction Matrix.jpg)
+
+From these two matrices, we can then write out our behavioral equations describing all of the transactions and stocks for the economy and estimate the system of equations. 
+
+# Why Do All This?
+
+As mentioned above, SFC models provide a holistic view of an economy. They give us greater insight into how economies actually work than mainstream models (especially DSGE models, [which are just the worst](https://www.ineteconomics.org/research/research-papers/cordon-of-conformity-why-dsge-models-are-not-the-future-of-macroeconomics)). 
+
+Armed with this better understanding of the mechanics of an economy, we can test out various policy proposals to build the world we want to see and choose the ones that perform best. 
+
+Towards that end, in this series I will build, from scratch, an empirical stock-flow consistent model for Taiwan, and use it to test out the impact of various shocks and policies, including a Job Guarantee program. 
+
+# What Next?
+
+This series of posts will be structured as follows:
+
+- First, I will pull down the relevant data for Taiwan. These data will come from a few sources, including the Central Bank and the Directorate-General of Budget, Accounting, and Statistics. (spoiler: not all of the data is provided quarterly, so we will have to do some hardcore data science and use some fancy algorithms to convert annual to quarterly in the most realistic way. Should be fun!)
+
+- Second, I will build the balance sheet and transaction-flow matrix for Taiwan. This step involves some modeling decisions regarding the assets and sectors we are most interested in. For robustness, I plan to build a couple different models ranging from very simple to fairly thorough, so we will need a few different versions of each matrix. 
+
+- Third, building the equations for the model(s). 
+
+- Finally, testing the performance of the model(s) and assessing the impact of various policy proposals. 
+

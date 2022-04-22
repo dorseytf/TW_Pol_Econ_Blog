@@ -1,0 +1,259 @@
+---
+title: What Actually Causes Inflation in Taiwan?
+author: Travis Dorsey
+date: '2021-10-11'
+slug: what-actually-causes-inflation-in-taiwan
+output:
+  blogdown::html_page:
+    toc: true
+    toc_depth: 2
+    number_sections: false
+categories:
+  - Econometric Models
+tags:
+  - data
+  - economics
+---
+
+***
+
+# tl;dr
+Inflation has grabbed everyone's attention lately; however, most cases we see in the news are temporary adjustments that are the result of 1) supply shortages caused by the pandemic, and 2) a statistical artifact caused by comparing relatively normal numbers to historically low values from 2020 (thus appearing to be a huge jump). 
+
+Perhaps the most significant result of this episode, however, is the fact that so many people (economists and not) are now aware of the fact that mainstream economics has no clue what causes inflation or how to combat it. [Many people](https://nathantankus.substack.com/p/the-new-frontier-debating-inflation) have [written about this topic](https://adamtooze.substack.com/p/chartbook-42-the-great-inflation) in recent months, and some [have caused quite a stir](https://www.federalreserve.gov/econres/feds/why-do-we-think-that-inflation-expectations-matter-for-Inflation-and-should-we.htm), but I want to look at a specific case with actual data to see what we can learn, and how we can improve our models. 
+
+
+# What is Inflation and Why do we Care?
+In everyday parlance, inflation means stuff gets more expensive. That's not very far off from the theoretical justification for why economists care about price level, but the official definition, "a sustained, general increase in prices," has two key components that differentiate it from the way the term is used in everyday conversation: 1) sustained, and 2) general. 
+
+For economists to consider a period of increasing prices to be inflation, it has to last for at least 2 consecutive quarters (sustained), and not be limited to just a couple of goods/services (general). 
+
+The idea is that, if left unchecked, inflation will lead to everything getting more and more expensive, meaning most people will be able to buy fewer goods and services with their money, and therefore see a worsening quality of life. Economists lay awake at night worrying that this type of inflation will lead to workers asking for more money to offset the impact of higher prices, thereby leading firms to raise prices to offset this cost (wage) increase, thus creating an infinite recursion leading to hyperinflation. 
+
+![Pictured: An economist thinking about hyperinflation](https://c.tenor.com/qdY8yCsaJtgAAAAC/star-wars-luke-skywalker.gif)
+
+In most economics courses and even many of the ["cutting-edge" models](https://www.ineteconomics.org/perspectives/blog/why-dsge-models-are-not-the-future-of-macroeconomics) used by economists, the economy is presented as producing only one or two goods. In reality, it's difficult to even count the number of unique goods and services produced, so how in the world do we measure a "general" increase in prices of these goods and services?
+
+The most widely used measure to track the general price level that consumers see is the Consumer Price Index (CPI). The CPI is usually what gets referenced in new articles, and measures the cost of various items in a "basket of goods" that the typical household might purchase. The [shortcomings of this measure](https://www.investopedia.com/ask/answers/012915/what-are-some-limitations-consumer-price-index-cpi.asp) have been hotly debated for [several](https://www.aeaweb.org/articles?id=10.1257/089533003321164921)  [decades](https://www.newyorkfed.org/medialibrary/media/research/current_issues/ci3-6.html) now, but this methodology is still widely used across the world.  
+
+
+# What Causes Inflation?
+
+Growing up, my parents always said the best way to lose friends was to discuss politics and religion, but I would posit that, if your friends are economists, arguing about the causes of inflation is a more efficient way to lose a dinner invitation.
+
+In Monetarist macroeconomic theory, inflation is very simply caused by increasing the amount of money in an economy (money supply). This is based on the following equation, which relates the money supply to prices
+
+$$ M*v = P*t $$
+
+where M is the total amount of money in circulation, v is the velocity of money, P is the price level of the economy, and t is the aggregate real value of transactions (i.e. real GDP). This quantity theory of money assumes that v and t are fixed, so therefore any increase in the money supply must be matched by an increase in prices, i.e. inflation. 
+
+However, there are numerous problems with this quantity theory of money. For our purposes in exploring the causes of inflation, the most egregious are: 
+
+1. <b>It is a truism.</b> $M*v$ is the amount of money paid by buyers, and $P*t$ is the amount of money received by sellers. There is nothing here about causality, it is simply an identity which states that one person's income is another person's expenditure. 
+
+2. <b>Velocity of money is not constant.</b> As mentioned above, quantity theory of money assumes the velocity of money fixed, but even the St. Louis Fed has said that [the velocity of money has never been constant](https://www.stlouisfed.org/on-the-economy/2014/september/what-does-money-velocity-tell-us-about-low-inflation-in-the-us). 
+
+3. <b>The evidence that M causes P is weak, at best.</b> The theory states that an increase in M results in a direct and proportional increase in P, but De Grauwe and Polan (2005) show that the [empirical evidence for this relationship is seriously lacking](https://www.jstor.org/stable/3441104). Indeed, [several](https://www.colectivoburbuja.org/juan-carlos-barba/the-quantity-theory-of-money-is-wrong/) [studies](https://www.jstor.org/stable/40719814) have shown that the direction of causation is not from M to P, but rather <i>from</i> credit demand <i>to</i> prices and <i>then to</i> M. 
+
+4. <b>Ignores where money comes from.</b> The quantity theory of money does not differentiate between sources of money, such as bank credit creation or government spending. 
+
+
+Clearly, we need to do some further exploration with actual data to determine what causes inflation. 
+
+# Modeling Inflation in Taiwan
+
+## Looking at the Data
+If we look at the time series of CPI for Taiwan over the last couple decades, excluding the pandemic period, we see that while there is a clear upward trend, we see a good deal of variation within years, and even a few periods of relatively rapid increases in inflation. 
+
+```{r}
+knitr::opts_chunk$set(warning = FALSE)
+knitr::opts_chunk$set(message = FALSE)
+knitr::opts_chunk$set(error = FALSE)
+
+library(tidyverse)
+library(scales)
+library(lubridate)
+library(broom)
+
+tw_macro_df_link <- "https://raw.githubusercontent.com/dorseytf/Blog-Replication-Scripts/master/Taiwan%20Macro%20Dataset.csv"
+
+tw_macro_df <- read_csv(url(tw_macro_df_link))
+
+cpi_m1b_colors <- c("CPI" = "blue", "M1B" = "darkred")
+
+tw_macro_df %>%
+  select(quarterly_date, CPI) %>%
+  ggplot(aes(x = quarterly_date, y = CPI)) +
+  geom_line(color = cpi_m1b_colors[1]) +
+  # geom_hline(yintercept = 100, linetype = 2) +
+  scale_x_date(breaks = pretty_breaks(n = 10)) +
+  scale_y_continuous(breaks = pretty_breaks(n = 6)) +
+  labs(title = "CPI in Taiwan, 1997-2018",
+       x = "",
+       y = "CPI (2016 = 100)")
+```
+
+If we look at percent change in CPI by quarter, the series appears quite stochastic. 
+
+```{r}
+tw_macro_df %>%
+  select(quarterly_date, CPI) %>%
+  mutate(CPI_pch = (CPI - lag(CPI))/lag(CPI)) %>%
+  ggplot(aes(x = quarterly_date, y = CPI_pch)) +
+  geom_line(color = cpi_m1b_colors[1]) +
+  geom_hline(yintercept = 0, linetype = 2) +
+  scale_x_date(breaks = pretty_breaks(n = 10)) +
+  scale_y_continuous(breaks = pretty_breaks(n = 6), labels = percent) +
+  labs(title = "Percent Change in CPI from Previous Quarter in Taiwan, 1997-2018",
+       x = "",
+       y = "Percent Change in CPI from Prior Quarter")
+
+
+```
+
+Decomposing the time series of CPI confirms our strong trend, as well as a significant seasonal component, along with the randomness that we identified above. 
+
+```{r}
+ts_start_yr <- year(min(tw_macro_df$quarterly_date))
+ts_start_qtr <- quarter(min(tw_macro_df$quarterly_date))
+
+cpi_ts <- ts(tw_macro_df$CPI, start = c(ts_start_yr, ts_start_qtr), frequency = 4)
+cpi_decompose <- decompose(cpi_ts) 
+
+cpi_decompose_df <- tibble(quarterly_date = tw_macro_df$quarterly_date,
+                           CPI = cpi_decompose$x,
+                           Trend = cpi_decompose$trend,
+                           Seasonal = cpi_decompose$seasonal,
+                           Random = cpi_decompose$random)
+
+cpi_decompose_df %>%
+  pivot_longer(cols = -quarterly_date, names_to = "metric", values_to = "values") %>%
+  mutate(metric = factor(metric, 
+                         levels = c("CPI","Trend","Seasonal","Random"),
+                         ordered = TRUE)) %>%
+  ggplot(aes(x = quarterly_date, y = values)) +
+  geom_line(aes(color = metric)) +
+  facet_wrap(~ metric, ncol = 1, scales = "free_y") +
+  scale_x_date(breaks = pretty_breaks(n = 10)) +
+  guides(color = "none") +
+  labs(title = "Decomposition of CPI",
+       x = "",
+       y = "")
+
+```
+
+
+If we compare CPI to M1B, a common measure of the liquid money supply, we see they follow a very similar (upward) trend, but the M1B series is much smoother and does not appear to be a 1:1 match for the CPI series. Moreover, this type of visual inspection tells us nothing of causality, so we need to do some more investigation. 
+
+```{r}
+tw_macro_df %>%
+  select(quarterly_date, CPI, M1B) %>%
+  pivot_longer(cols = c(CPI, M1B), names_to = "metric", values_to = "values") %>%
+  ggplot(aes(x = quarterly_date, y = values)) +
+  geom_line(aes(color = metric)) +
+  facet_wrap(~ metric, scales = "free_y") +
+  # geom_hline(yintercept = 100, linetype = 2) +
+  scale_x_date(breaks = pretty_breaks(n = 10)) +
+  scale_y_continuous(breaks = pretty_breaks(n = 6)) +
+  scale_color_manual(values = cpi_m1b_colors) +
+  guides(color = "none") +
+  labs(title = "CPI in Taiwan, 1997-2018",
+       x = "",
+       y = "CPI (2016 = 100)")
+```
+
+## Additional Variables
+
+Based on our initial investigations, we know we need to take into account seasonal patterns when we model CPI, but what else determines the level of CPI? We can look at [what is included in the basket of goods](https://eng.stat.gov.tw/public/Data/12516716198HDYFK.pdf) to get an idea of additional variables we may want to investigate to determine which are exogenous and which are endogenous. Taiwan's CPI includes:
+
+1. Food
+2. Clothing
+3. Housing
+4. Transportation and Communication
+5. Health
+6. Education and Entertainment
+7. Miscellaneous
+
+Based on the weights used to generate the CPI, the largest components are Food and Housing, so we may wish to split these out since Taiwan's housing market has undergone significant changes in the last two decades (increased speculation, real estate development, and very high ratio of median home price to median income).
+
+
+## Regression Analysis
+
+Here, we fit a model using the quantity theory of money as a baseline. 
+
+```{r}
+library(rEDM)
+
+#identify the best embedding dimensions
+cpi_embed <- EmbedDimension(dataFrame = tw_macro_df,
+                            columns = "CPI",
+                            target = "CPI",
+                            lib = "1 50",
+                            pred = "51 88")
+cpi_best_E <- cpi_embed$E[which(cpi_embed$rho == max(cpi_embed$rho))]
+
+m1b_embed <- EmbedDimension(dataFrame = tw_macro_df,
+                            columns = "M1B",
+                            target = "M1B",
+                            lib = "1 50",
+                            pred = "51 88")
+m1b_best_E <- m1b_embed$E[which(m1b_embed$rho == max(m1b_embed$rho))]
+
+#check for nonlinearity
+cpi_nonlinear <- PredictNonlinear(dataFrame = tw_macro_df,
+                                  columns = "CPI",
+                                  target = "CPI",
+                                  lib = "1 50",
+                                  pred = "51 88",
+                                  E = cpi_best_E)
+# as rho is strictly decreasing as theta increase, we don't have any nonlinearities
+
+m1b_nonlinear <- PredictNonlinear(dataFrame = tw_macro_df,
+                                  columns = "M1B",
+                                  target = "M1B",
+                                  lib = "1 50",
+                                  pred = "51 88",
+                                  E = m1b_best_E)
+
+## Add lags to the df
+tw_cpi_df <- tw_macro_df %>%
+  select(quarterly_date, CPI, M1B) %>%
+  mutate(cpi_1 = lag(CPI),
+         cpi_2 = lag(CPI, 2),
+         cpi_3 = lag(CPI, 3),
+         cpi_4 = lag(CPI, 4),
+         cpi_5 = lag(CPI, 5),
+         cpi_6 = lag(CPI, 6),
+         M1B_1 = lag(M1B),
+         M1B_2 = lag(M1B, 2),
+         M1B_3 = lag(M1B, 3),
+         M1B_4 = lag(M1B, 4),
+         M1B_5 = lag(M1B, 5),
+         M1B_6 = lag(M1B, 6),
+         M1B_7 = lag(M1B, 7))
+
+#simplex of CPI
+cpi_simplex <- Simplex(dataFrame = tw_macro_df,
+                       columns = "CPI M1B",
+                       target = "CPI",
+                       lib = "1 50",
+                       pred = "51 88",
+                       E = 6,
+                       embedded = FALSE)
+ComputeError(cpi_simplex$Observations, cpi_simplex$Pred_Variance)
+
+
+
+
+
+cpi_qtm_model <- glm(CPI ~ lag(CPI) + M1B, 
+                     data = tw_macro_df,
+                     family = "gaussian")
+summary(cpi_qtm_model)
+
+
+```
+
+
+
+

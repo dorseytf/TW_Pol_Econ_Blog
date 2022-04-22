@@ -1,0 +1,64 @@
+---
+title: What Actually Causes Inflation in Taiwan?
+author: Travis Dorsey
+date: '2021-10-11'
+slug: what-actually-causes-inflation-in-taiwan
+output:
+  blogdown::html_page:
+    toc: true
+    toc_depth: 2
+    number_sections: false
+categories:
+  - Econometric Models
+tags:
+  - data
+  - economics
+---
+
+<script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
+
+<div id="TOC">
+<ul>
+<li><a href="#tldr">tl;dr</a></li>
+<li><a href="#what-is-inflation-and-why-do-we-care">What is Inflation and Why do we Care?</a></li>
+<li><a href="#what-causes-inflation">What Causes Inflation?</a></li>
+<li><a href="#modeling-inflation-in-taiwan">Modeling Inflation in Taiwan</a></li>
+</ul>
+</div>
+
+<hr />
+<div id="tldr" class="section level1">
+<h1>tl;dr</h1>
+<p>Inflation has grabbed everyone’s attention lately; however, most cases we see in the news are temporary adjustments that are the result of 1) supply shortages caused by the pandemic, and 2) a statistical artifact caused by comparing relatively normal numbers to historically low values from 2020 (thus appearing to be a huge jump).</p>
+<p>Perhaps the most significant result of this episode, however, is the fact that so many people (economists and not) are now aware of the fact that mainstream economics has no clue what causes inflation or how to combat it. <a href="https://nathantankus.substack.com/p/the-new-frontier-debating-inflation">Many people</a> have <a href="https://adamtooze.substack.com/p/chartbook-42-the-great-inflation">written about this topic</a> in recent months, and some <a href="https://www.federalreserve.gov/econres/feds/why-do-we-think-that-inflation-expectations-matter-for-Inflation-and-should-we.htm">have caused quite a stir</a>, but I want to look at a specific case with actual data to see what we can learn, and how we can improve our models.</p>
+</div>
+<div id="what-is-inflation-and-why-do-we-care" class="section level1">
+<h1>What is Inflation and Why do we Care?</h1>
+<p>In everyday parlance, inflation means stuff gets more expensive. That’s not very far off from the theoretical justification for why economists care about price level, but the official definition, “a sustained, general increase in prices,” has two key components that differentiate it from the way the term is used in everyday conversation: 1) sustained, and 2) general.</p>
+<p>For economists to consider a period of increasing prices to be inflation, it has to last for at least 2 consecutive quarters (sustained), and not be limited to just a couple of goods/services (general).</p>
+<p>The idea is that, if left unchecked, inflation will lead to everything getting more and more expensive, meaning most people will be able to buy fewer goods and services with their money, and therefore see a worsening quality of life. Economists lay awake at night worrying that this type of inflation will lead to workers asking for more money to offset the impact of higher prices, thereby leading firms to raise prices to offset this cost (wage) increase, thus creating an infinite recursion leading to hyperinflation.</p>
+<div class="figure">
+<img src="https://c.tenor.com/qdY8yCsaJtgAAAAC/star-wars-luke-skywalker.gif" alt="" />
+<p class="caption">Pictured: An economist thinking about hyperinflation</p>
+</div>
+<p>In most economics courses and even many of the <a href="https://www.ineteconomics.org/perspectives/blog/why-dsge-models-are-not-the-future-of-macroeconomics">“cutting-edge” models</a> used by economists, the economy is presented as producing only one or two goods. In reality, it’s difficult to even count the number of unique goods and services produced, so how in the world do we measure a “general” increase in prices of these goods and services?</p>
+<p>The most widely used measure to track the general price level that consumers see is the Consumer Price Index (CPI). The CPI is usually what gets referenced in new articles, and measures the cost of various items in a “basket of goods” that the typical household might purchase. The <a href="https://www.investopedia.com/ask/answers/012915/what-are-some-limitations-consumer-price-index-cpi.asp">shortcomings of this measure</a> have been hotly debated for <a href="https://www.aeaweb.org/articles?id=10.1257/089533003321164921">several</a> <a href="https://www.newyorkfed.org/medialibrary/media/research/current_issues/ci3-6.html">decades</a> now, but this methodology is still widely used across the world.</p>
+</div>
+<div id="what-causes-inflation" class="section level1">
+<h1>What Causes Inflation?</h1>
+<p>Growing up, my parents always said the best way to lose friends was to discuss politics and religion, but I would posit that, if your friends are economists, arguing about the causes of inflation is a more efficient way to lose a dinner invitation.</p>
+<p>In Monetarist macroeconomic theory, inflation is very simply caused by increasing the amount of money in an economy (money supply). This is based on the following equation, which relates the money supply to prices</p>
+<p><span class="math display">\[ M*v = P*t \]</span></p>
+<p>where M is the total amount of money in circulation, v is the velocity of money, P is the price level of the economy, and t is the aggregate real value of transactions (i.e. real GDP). This quantity theory of money assumes that v and t are fixed, so therefore any increase in the money supply must be matched by an increase in prices, i.e. inflation.</p>
+<p>However, there are numerous problems with this quantity theory of money. For our purposes in exploring the causes of inflation, the most egregious are:</p>
+<ol style="list-style-type: decimal">
+<li><p><b>It is a truism.</b> <span class="math inline">\(M*v\)</span> is the amount of money paid by buyers, and <span class="math inline">\(P*t\)</span> is the amount of money received by sellers. There is nothing here about causality, it is simply an identity which states that one person’s income is another person’s expenditure.</p></li>
+<li><p><b>Velocity of money is not constant.</b> As mentioned above, quantity theory of money assumes the velocity of money fixed, but even the St. Louis Fed has said that <a href="https://www.stlouisfed.org/on-the-economy/2014/september/what-does-money-velocity-tell-us-about-low-inflation-in-the-us">the velocity of money has never been constant</a>.</p></li>
+<li><p><b>The evidence that M causes P is weak, at best.</b> The theory states that an increase in M results in a direct and proportional increase in P, but De Grauwe and Polan (2005) show that the <a href="https://www.jstor.org/stable/3441104">empirical evidence for this relationship is seriously lacking</a>. Indeed, <a href="https://www.colectivoburbuja.org/juan-carlos-barba/the-quantity-theory-of-money-is-wrong/">several</a> <a href="https://www.jstor.org/stable/40719814">studies</a> have shown that the direction of causation is not from M to P, but rather <i>from</i> credit demand <i>to</i> prices and <i>then to</i> M.</p></li>
+<li><p><b>Ignores where money comes from.</b> The quantity theory of money does not differentiate between sources of money, such as bank credit creation or government spending.</p></li>
+</ol>
+<p>Clearly, we need to do some further exploration with actual data to determine what causes inflation.</p>
+</div>
+<div id="modeling-inflation-in-taiwan" class="section level1">
+<h1>Modeling Inflation in Taiwan</h1>
+</div>
