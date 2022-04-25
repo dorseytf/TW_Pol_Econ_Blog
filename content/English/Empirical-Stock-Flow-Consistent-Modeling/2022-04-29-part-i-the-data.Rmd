@@ -20,14 +20,14 @@ tags:
 
 In the canonical SFC text, [Godley and Lavoie (2012)](https://link.springer.com/book/10.1007/978-1-137-08599-3) use purely theoretical models with numerical simulation. While these work well for exposition and theory purposes, I (and many others) are mostly interested in models based on real world data. This poses a very challenging problem, though, as many of the flows and stocks needed to make a fully consistent and thorough model are not explicitly produced by statistical agencies. But there are ways around this, and any model requires leaving out some level of detail, so it's not the end of the world. 
 
-At a high level, since SFC models are focused on linking the real and financial sides of the economy, we know that we will need all the usual economic variables (GDP, Consumption, Government expenditures, etc.) plus financial data. The latter are usually provided by the Central Bank via the Flow of Funds data. 
+At a high level, since SFC models are focused on linking the real and financial sides of the economy, we know that we will need all the usual economic variables (GDP, Consumption, Government expenditures, etc.) plus financial data. The latter are usually provided by the Central Bank via the Flow of Funds data. And given that the name of the method is "stock-flow consistent modeling", we can also be sure that we will need data on the stock of assets, as well as the flows (aka transactions) that feed into/out of these stocks. 
 
-With all the data in hand, we can put together an initial balance sheet to determine which sectors and assets will be significant enough to model. 
+With all the data in hand, we first put together an initial balance sheet to determine which sectors and assets will be significant enough to model. 
 
 
-# An Initial Balance Sheet
+# A Quick Look at Each Sector's Balance Sheet
 
-As a first step, we take the Consolidated Assets and Liabilities data from [Taiwan's central bank](https://cpx.cbc.gov.tw/Tree/TreeSelect) and calculate each sector's net position (Assets - Liabilities) for each asset.
+As a first step, we take the Consolidated Assets and Liabilities data from [Taiwan's central bank](https://cpx.cbc.gov.tw/Tree/TreeSelect) and calculate each sector's net position (Assets - Liabilities) for each asset. This will give us a good idea of which assets are the most important to model (large size or of particular interest) as well as which sectors are paying/receiving each asset. 
 
 ```{r, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
@@ -133,20 +133,150 @@ bank_loans_by_sector <- bank_loans_by_sector[, colnames(net_lending_by_sector_me
 
 # Now add these back to the sectoral balance sheet to identify the assets to model
 net_lending_by_sector_metric <- net_lending_by_sector_metric %>%
-  bind_rows(bank_loans_by_sector)
+  bind_rows(bank_loans_by_sector) %>%
+  filter(!str_detect(metric, "Loans by")) 
 
 ```
 
 ```{r}
 net_lending_by_sector_metric %>%
   rename(Year = year, `Asset Name` = metric) %>%
-  kbl(caption = "Net Lending Status by Sector for Taiwan") %>%
-  kable_styling(bootstrap_options = c("striped"), full_width = F)
+  select(-Year) %>%
+  mutate(Households = cell_spec(Households, color = ifelse(Households < 0, "red", "gray40"))) %>%
+  kbl(caption = "Net Lending by Sector for Taiwan in 2020", escape = F) %>%
+  kable_styling(bootstrap_options = "striped", full_width = F)
 ```
 
-A few assets stick out from the table above. Namely,
+From the table above, we can see a few important takeaways:
 
-- 
+- The Central Bank does not purchase Government Securities like we see in most developed economies. Government securities are almost entirely purchased by Financial Firms, while the Central Bank issues its own securities to Financial Firms in order to control excess reserves in the banking system.
 
+- The magnitude of Public Enterprises' balance sheet is significantly smaller than the other sectors.
+
+- In contrast to every other SFC model I have seen, we will likely need to model Life Insurance explicitly, as we can see that Life insurance reserves are the single largest asset for Households. This makes sense given the fact that life insurance is one of the most popular investment options in Taiwan, with [over twice as many in-force policies as people](https://www.fsc.gov.tw/uploaddowndoc?file=endownload/202109271443370.pdf&filedisplay=202107Indicators.pdf&flag=doc).
+
+- In addition to deposits (demand, time, and foreign currency), the Household sector's largest assets are equities (foreign and domestic) and Pension reserves.
+
+- Most Outward FDI comes from Non-Financial firms. 
+
+- Domestic Corporate bonds are a relatively insignificant asset. 
+
+- Most Domestic Equities are issued by Non-Financial Firms (Shares + Other equities).
+
+# Streamlined Balance Sheet
+
+Now that we have a better understanding of which assets are likely most important to model and how they flow from sector to sector, we can create a streamlined version of the balance sheet.
+
+```{r}
+# Financial Assets to model:
+  assets_to_model <- tibble(orig_asset_name = c("Currency", 
+                                                "Demand deposits", 
+                                                "Government deposits", 
+                                                "Foreign deposits",
+                                                "Outward securities investment and issuance",
+                                                "Outward direct investment",
+                                                "Reserve assets of Central Bank", 
+                                                "Life insurance reserves",
+                                                "Pension fund reserves", 
+                                                "Time deposits & foreign currency deposits ",
+                                                "Central Bank securities",
+                                                "Government securities", 
+                                                "Deposits with Central Bank other than reserve requirements",
+                                                "Reserves against deposits", 
+                                                "Bank loans - Mortgages",
+                                                "Bank loans - Consumer Credit", 
+                                                "Bank loans to Firms",
+                                                "Bank loans to Public Enterprises", 
+                                                "Bank loans to Government",
+                                                "Shares", 
+                                                "Other equities", 
+                                                "Accommodations from Central Bank"),
+                            new_asset_name = c("Currency", 
+                                               "Bank Deposits", 
+                                               "Government Deposits", 
+                                               "Foreign Liabilities",
+                                               "Foreign Liabilities", 
+                                               "Outgoing FDI", 
+                                               "Foreign Reserves",
+                                               "Life Insurance, Pensions, and Time Deposits",
+                                               "Life Insurance, Pensions, and Time Deposits",
+                                               "Life Insurance, Pensions, and Time Deposits",
+                                               "Securities - Central Bank", 
+                                               "Securities - Government", 
+                                               "Deposits with Central Bank", 
+                                               "Required Reserves", 
+                                               "Bank loans: Mortgages",
+                                               "Bank loans: Consumer Credit", 
+                                               "Bank loans to Firms",
+                                               "Bank loans to Public Enterprises", 
+                                               "Bank loans to Government",
+                                               "Shares and Other Equities", 
+                                               "Shares and Other Equities",
+                                               "Accommodations from Central Bank"))
+  
+  balance_sheet_fa <- net_lending_by_sector_metric %>%
+    ungroup() %>%
+    left_join(assets_to_model, by = c("metric"="orig_asset_name")) %>%
+    replace_na(list(new_asset_name = "Other net")) %>%
+    select(-metric) %>%
+    rename(metric = new_asset_name) %>%
+    group_by(year, metric) %>%
+    summarize(across(where(is.numeric), sum))
+  
+  # Split Incoming FDI from Shares and Other Equities
+  shares_and_equities <- balance_sheet_fa %>%
+    filter(metric == "Shares and Other Equities") %>%
+    mutate(`Non-Financial Firms` = `Non-Financial Firms` + `Rest of World`,
+           `Rest of World` = 0)
+    
+  incoming_fdi <- balance_sheet_fa %>%
+    filter(metric == "Shares and Other Equities") %>%
+    mutate(`Non-Financial Firms` = `Rest of World` * -1,
+           metric = "Incoming FDI",
+           Households = 0,
+           Government = 0,
+           `Financial Firms` = 0,
+           `Public Enterprises` = 0,
+           `Central Bank` = 0,
+           diff = `Non-Financial Firms` + `Rest of World`)
+  
+  balance_sheet_fa <- balance_sheet_fa %>%
+    filter(metric != "Shares and Other Equities") %>%
+    bind_rows(shares_and_equities) %>%
+    bind_rows(incoming_fdi)
+  
+  bs_three_sector <- balance_sheet_fa %>%
+    select(-diff) %>%
+    pivot_longer(cols = -c(year, metric), names_to = "Sector", values_to = "value") %>%
+    left_join(sector_collapse, by = c("Sector" = "sector")) %>%
+    group_by(year, metric, top_sector) %>%
+    summarize(value = sum(value)) %>%
+    group_by(year, metric) %>%
+    mutate(all_zeros = ifelse(all(value == 0), 1, 0)) %>%
+    filter(all_zeros == 0) %>%
+    ungroup() %>%
+    select(-all_zeros) %>%
+    pivot_wider(names_from = top_sector, values_from = value)
+```
+
+```{r}
+balance_sheet_fa %>%
+  rename(Year = year, `Asset Name` = metric) %>%
+  select(-Year) %>%
+  kbl(caption = "Balance Sheet by Sector for Taiwan in 2020") %>%
+  kable_styling(bootstrap_options = "striped", full_width = F)
+```
+
+## And a Simple 3-Sector Balance Sheet
+
+We can also consolidate the sectors down to create a simplified 3-Sector model. 
+
+```{r}
+bs_three_sector %>%
+  rename(Year = year, `Asset Name` = metric) %>%
+  select(-Year) %>%
+  kbl(caption = "Simple 3-Sector Balance Sheet for Taiwan in 2020") %>%
+  kable_styling(bootstrap_options = "striped", full_width = F)
+```
 
 
